@@ -1,8 +1,14 @@
+export interface FileEntity {
+  id: string;
+  path: string;
+}
+
 export interface User {
   id: string;
   email: string;
   firstName?: string;
   lastName?: string;
+  photo?: FileEntity;
   role: {
     id: number;
     name: string;

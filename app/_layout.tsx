@@ -9,7 +9,6 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { AuthProvider } from '~/lib/auth/context';
 
 import { Stack } from 'expo-router';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { StatusBar } from 'expo-status-bar';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -17,6 +16,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/theme';
+import { useAppFonts } from '~/src/hooks/useFonts';
+import { ActivityIndicator, View } from 'react-native';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -26,6 +27,21 @@ export {
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
+  const fontsLoaded = useAppFonts();
+
+  if (!fontsLoaded) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#0F172A',
+        }}>
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -44,8 +60,6 @@ export default function RootLayout() {
                 <Stack screenOptions={SCREEN_OPTIONS}>
                   <Stack.Screen name="(tabs)" options={TABS_OPTIONS} />
                   <Stack.Screen name="modal" options={MODAL_OPTIONS} />
-                  <Stack.Screen name="auth" options={{ headerShown: false }} />
-                  <Stack.Screen name="dashboard" options={{ headerShown: false }} />
                 </Stack>
               </AuthProvider>
             </NavThemeProvider>

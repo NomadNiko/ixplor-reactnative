@@ -1,16 +1,20 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  StyleSheet, 
-  Image, 
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
   TouchableOpacity,
-  SafeAreaView 
+  SafeAreaView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Header from '../components/Header';
 import BottomTabs from '../components/BottomTabs';
+import { useAuth } from '~/lib/auth/context';
+import { ticketsApi, Ticket } from '~/lib/api/tickets';
 
 type TicketCardProps = {
   title: string;
@@ -23,7 +27,16 @@ type TicketCardProps = {
   status: 'ACTIVE' | 'UPCOMING';
 };
 
-const TicketCard = ({ title, subtitle, date, time, ticketId, quantity, price, status }: TicketCardProps) => {
+const TicketCard = ({
+  title,
+  subtitle,
+  date,
+  time,
+  ticketId,
+  quantity,
+  price,
+  status,
+}: TicketCardProps) => {
   return (
     <View style={styles.ticketCard}>
       <View style={styles.ticketHeader}>
@@ -35,7 +48,7 @@ const TicketCard = ({ title, subtitle, date, time, ticketId, quantity, price, st
           <Text style={styles.statusText}>{status}</Text>
         </View>
       </View>
-      
+
       <View style={styles.ticketDetails}>
         <View style={styles.ticketDetailRow}>
           <Text style={styles.ticketIcon}>📅</Text>
@@ -50,7 +63,7 @@ const TicketCard = ({ title, subtitle, date, time, ticketId, quantity, price, st
           <Text style={styles.ticketDetailText}>ID: {ticketId}</Text>
         </View>
       </View>
-      
+
       <View style={styles.ticketFooter}>
         <Text style={styles.quantityText}>Qty: {quantity}</Text>
         <Text style={styles.priceText}>{price}</Text>
@@ -60,46 +73,63 @@ const TicketCard = ({ title, subtitle, date, time, ticketId, quantity, price, st
 };
 
 export default function Dashboard({ navigation }: any) {
-  const user = {
-    name: 'Nomad Niko',
-    email: 'nomad.niko.inc@gmail.com',
-    profileImage: 'https://via.placeholder.com/150',
-  };
+  const { user } = useAuth();
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const tickets = [
-    {
-      title: 'Nightly Beach Walk',
-      subtitle: 'Thursdays',
-      date: '12 Mar \'25',
-      time: '16:20 (1h)',
-      ticketId: 'cbf83cac',
-      quantity: 1,
-      price: '$69.00',
-      status: 'ACTIVE' as const,
-    },
-    {
-      title: 'Nightly Beach Walk',
-      subtitle: 'Thursdays',
-      date: '19 Mar \'25',
-      time: '16:20 (1h)',
-      ticketId: 'df92ab21',
-      quantity: 2,
-      price: '$138.00',
-      status: 'UPCOMING' as const,
-    },
-  ];
+  useEffect(() => {
+    const loadUserTickets = async () => {
+      if (!user?.id) return;
+
+      try {
+        setIsLoading(true);
+        const response = await ticketsApi.getUserTickets(user.id);
+        setTickets(response.data);
+      } catch (error) {
+        Alert.alert('Error', 'Failed to load tickets');
+        console.error('Failed to load tickets:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserTickets();
+  }, [user?.id]);
+
+  const formatTicketForDisplay = (ticket: Ticket) => ({
+    title: ticket.product?.name || 'Unknown Product',
+    subtitle: ticket.vendor?.name || 'Unknown Vendor',
+    date: new Date(ticket.purchaseDate).toLocaleDateString(),
+    time: ticket.expiryDate ? new Date(ticket.expiryDate).toLocaleTimeString() : 'No expiry',
+    ticketId: ticket.id.substring(0, 8),
+    quantity: ticket.quantity,
+    price: `$${ticket.totalPrice.toFixed(2)}`,
+    status: ticket.status,
+  });
+
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+          <Text style={styles.errorText}>Please log in to view your dashboard</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <Header showCart={true} />
-      
+
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <LinearGradient
-          colors={['#1C283A', '#151D2B']}
-          style={styles.profileCard}
-        >
-          <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
-          <Text style={styles.userName}>{user.name}</Text>
+        <LinearGradient colors={['#1C283A', '#151D2B']} style={styles.profileCard}>
+          <Image
+            source={{ uri: user.photo || 'https://via.placeholder.com/150' }}
+            style={styles.profileImage}
+          />
+          <Text style={styles.userName}>
+            {user.firstName} {user.lastName}
+          </Text>
           <Text style={styles.userEmail}>{user.email}</Text>
           <TouchableOpacity style={styles.editButton}>
             <Text style={styles.editButtonText}>Edit</Text>
@@ -107,13 +137,27 @@ export default function Dashboard({ navigation }: any) {
         </LinearGradient>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Upcoming Tickets</Text>
-          {tickets.map((ticket, index) => (
-            <TicketCard key={index} {...ticket} />
-          ))}
+          <Text style={styles.sectionTitle}>Your Tickets</Text>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#3B82F6" />
+              <Text style={styles.loadingText}>Loading tickets...</Text>
+            </View>
+          ) : tickets.length > 0 ? (
+            tickets.map((ticket, index) => (
+              <TicketCard key={ticket.id} {...formatTicketForDisplay(ticket)} />
+            ))
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No tickets found</Text>
+              <Text style={styles.emptySubtext}>
+                Purchase tickets from vendors to see them here
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
-      
+
       <BottomTabs navigation={navigation} />
     </SafeAreaView>
   );
@@ -246,5 +290,33 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#3B82F6',
     fontWeight: '600',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#94A3B8',
+    marginTop: 8,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#F8FAFC',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#94A3B8',
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#F8FAFC',
   },
 });

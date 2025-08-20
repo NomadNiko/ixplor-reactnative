@@ -1,22 +1,19 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useAuth } from '~/lib/auth/context';
 
 type HeaderProps = {
   showCart?: boolean;
+  onMenuPress?: () => void;
 };
 
-export default function Header({ showCart = true }: HeaderProps) {
-  const navigation = useNavigation<DrawerNavigationProp<any>>();
+export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
+  const { user } = useAuth();
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        onPress={() => navigation.openDrawer()}
-        style={styles.menuButton}
-      >
+      <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
         <Ionicons name="menu" size={28} color="#F8FAFC" />
       </TouchableOpacity>
 
@@ -30,8 +27,9 @@ export default function Header({ showCart = true }: HeaderProps) {
         )}
         <TouchableOpacity style={styles.profileButton}>
           <Image 
-            source={{ uri: 'https://via.placeholder.com/40' }}
-            style={styles.profileImage}
+            source={{ uri: user?.photo?.path || 'https://via.placeholder.com/40' }} 
+            style={styles.profileImage} 
+            onError={() => console.log('Header profile image failed to load')}
           />
         </TouchableOpacity>
       </View>
@@ -61,6 +59,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: 'center',
+    fontFamily: 'Iceland_400Regular',
   },
   rightSection: {
     flexDirection: 'row',

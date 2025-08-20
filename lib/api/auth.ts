@@ -1,16 +1,10 @@
-import { API_URL, AUTH_ENDPOINTS } from "./config";
-import { getTokensInfo } from "./storage";
-import type {
-  AuthResponse,
-  LoginRequest,
-  RegisterRequest,
-  GoogleAuthRequest,
-  User,
-} from "./types";
+import { API_URL, AUTH_ENDPOINTS } from './config';
+import { getTokensInfo } from './storage';
+import type { AuthResponse, LoginRequest, RegisterRequest, GoogleAuthRequest, User } from './types';
 
 const createHeaders = async (includeAuth = true) => {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 
   if (includeAuth) {
@@ -26,14 +20,14 @@ const createHeaders = async (includeAuth = true) => {
 export const authApi = {
   async login(data: LoginRequest): Promise<AuthResponse> {
     const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.SIGN_IN}`, {
-      method: "POST",
+      method: 'POST',
       headers: await createHeaders(false),
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Login failed");
+      throw new Error(error.message || 'Login failed');
     }
 
     return response.json();
@@ -41,14 +35,14 @@ export const authApi = {
 
   async register(data: RegisterRequest): Promise<void> {
     const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.SIGN_UP}`, {
-      method: "POST",
+      method: 'POST',
       headers: await createHeaders(false),
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Registration failed");
+      throw new Error(error.message || 'Registration failed');
     }
   },
 
@@ -57,9 +51,9 @@ export const authApi = {
     console.log('Endpoint:', `${API_URL}${AUTH_ENDPOINTS.GOOGLE_AUTH}`);
     console.log('Request data being sent:', data);
     console.log('Request headers:', await createHeaders(false));
-    
+
     const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.GOOGLE_AUTH}`, {
-      method: "POST",
+      method: 'POST',
       headers: await createHeaders(false),
       body: JSON.stringify(data),
     });
@@ -70,7 +64,7 @@ export const authApi = {
     if (!response.ok) {
       const error = await response.json();
       console.log('Error response from backend:', error);
-      throw new Error(error.message || "Google authentication failed");
+      throw new Error(error.message || 'Google authentication failed');
     }
 
     const result = await response.json();
@@ -80,12 +74,12 @@ export const authApi = {
 
   async getMe(): Promise<User> {
     const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.ME}`, {
-      method: "GET",
+      method: 'GET',
       headers: await createHeaders(true),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to get user info");
+      throw new Error('Failed to get user info');
     }
 
     return response.json();
@@ -93,31 +87,31 @@ export const authApi = {
 
   async logout(): Promise<void> {
     const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.LOGOUT}`, {
-      method: "POST",
+      method: 'POST',
       headers: await createHeaders(true),
     });
 
     if (!response.ok) {
-      console.warn("Logout request failed, but proceeding with local cleanup");
+      console.warn('Logout request failed, but proceeding with local cleanup');
     }
   },
 
   async refreshToken(): Promise<AuthResponse> {
     const tokens = await getTokensInfo();
     if (!tokens?.refreshToken) {
-      throw new Error("No refresh token available");
+      throw new Error('No refresh token available');
     }
 
     const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.REFRESH}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${tokens.refreshToken}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error("Token refresh failed");
+      throw new Error('Token refresh failed');
     }
 
     return response.json();

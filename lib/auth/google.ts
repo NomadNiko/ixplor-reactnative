@@ -8,7 +8,7 @@ WebBrowser.maybeCompleteAuthSession();
 export const useGoogleAuth = () => {
   // Get client IDs from app config
   const googleConfig = Constants.expoConfig?.extra?.googleAuth;
-  
+
   if (!googleConfig) {
     throw new Error('Google auth configuration not found in app config');
   }
@@ -26,13 +26,13 @@ export const useGoogleAuth = () => {
   };
 
   const clientId = getClientId();
-  
+
   console.log('Google OAuth Debug:');
   console.log('Platform:', Platform.OS);
   console.log('Client ID:', clientId);
-  
+
   // Use Google's useIdTokenAuthRequest with the correct iOS redirect URI
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+  const [request, , promptAsync] = Google.useIdTokenAuthRequest({
     clientId: clientId,
     scopes: ['openid', 'profile', 'email'],
     // Specify the correct client ID for the platform
@@ -41,7 +41,7 @@ export const useGoogleAuth = () => {
     webClientId: Platform.OS === 'web' ? clientId : googleConfig.webClientId,
     // Force the correct iOS redirect URI format from the plist
     ...(Platform.OS === 'ios' && {
-      redirectUri: 'com.googleusercontent.apps.459247012471-a043kaeklmp17h1gemhhkp533aej0mvi:/'
+      redirectUri: 'com.googleusercontent.apps.459247012471-a043kaeklmp17h1gemhhkp533aej0mvi:/',
     }),
   });
 
@@ -59,31 +59,31 @@ export const useGoogleAuth = () => {
 
       const result = await promptAsync();
       console.log('Google auth result:', result.type);
-      
+
       if (result.type === 'success') {
         console.log('Auth success, checking response:', result.params);
-        
+
         // Check if we got an ID token directly
         if (result.params.id_token) {
           console.log('Successfully received ID token');
           return result.params.id_token;
         }
-        
+
         // Check if we got an authorization code that needs to be exchanged
         if (result.params.code) {
           console.log('Received authorization code, sending to backend');
           console.log('Authorization code:', result.params.code);
           console.log('Redirect URI used in request:', request?.redirectUri);
           console.log('Code verifier for PKCE:', request?.codeVerifier);
-          
+
           // Return the code, redirect URI, and code verifier for PKCE
           return {
             code: result.params.code,
             redirectUri: request?.redirectUri,
-            codeVerifier: request?.codeVerifier
+            codeVerifier: request?.codeVerifier,
           };
         }
-        
+
         console.error('No ID token or authorization code in response:', result.params);
         throw new Error('No valid authentication token received from Google');
       } else if (result.type === 'cancel') {

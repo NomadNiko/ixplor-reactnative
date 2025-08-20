@@ -43,12 +43,12 @@ export default function SignUpScreen() {
     setIsLoading(true);
     try {
       await register({ firstName, lastName, email, password });
-      
+
       // Auto-login after successful registration (like the webapp)
       try {
         await login({ email, password });
-        router.replace('/(tabs)');
-      } catch (loginError) {
+        router.replace('/(tabs)/dashboard');
+      } catch {
         Alert.alert(
           'Success',
           'Account created! Please check your email to confirm your account.',
@@ -72,7 +72,7 @@ export default function SignUpScreen() {
     try {
       const idToken = await signInWithGoogle();
       await googleSignIn(idToken);
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/dashboard');
     } catch (error) {
       Alert.alert('Error', error instanceof Error ? error.message : 'Google sign up failed');
     } finally {
@@ -84,14 +84,11 @@ export default function SignUpScreen() {
     <SafeAreaView className="flex-1 bg-background">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-      >
+        className="flex-1">
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="flex-1 justify-center px-6 py-8">
             <View className="mb-8">
-              <Text className="text-4xl font-bold text-foreground mb-2">
-                Sign Up
-              </Text>
+              <Text className="mb-2 text-4xl font-bold text-foreground">Sign Up</Text>
               <Text className="text-lg text-muted-foreground">
                 Create your account to get started
               </Text>
@@ -99,39 +96,39 @@ export default function SignUpScreen() {
 
             <View className="space-y-4">
               <View>
-                <Text className="text-foreground mb-2 font-medium">First Name</Text>
+                <Text className="mb-2 font-medium text-foreground">First Name</Text>
                 <TextInput
                   value={firstName}
                   onChangeText={setFirstName}
                   placeholder="Enter your first name"
                   placeholderTextColor="#9CA3AF"
-                  className="bg-card border border-border rounded-lg px-4 py-3 text-foreground"
+                  className="rounded-lg border border-border bg-card px-4 py-3 text-foreground"
                   autoCapitalize="words"
                   autoComplete="given-name"
                 />
               </View>
 
               <View>
-                <Text className="text-foreground mb-2 font-medium">Last Name</Text>
+                <Text className="mb-2 font-medium text-foreground">Last Name</Text>
                 <TextInput
                   value={lastName}
                   onChangeText={setLastName}
                   placeholder="Enter your last name"
                   placeholderTextColor="#9CA3AF"
-                  className="bg-card border border-border rounded-lg px-4 py-3 text-foreground"
+                  className="rounded-lg border border-border bg-card px-4 py-3 text-foreground"
                   autoCapitalize="words"
                   autoComplete="family-name"
                 />
               </View>
 
               <View>
-                <Text className="text-foreground mb-2 font-medium">Email</Text>
+                <Text className="mb-2 font-medium text-foreground">Email</Text>
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
                   placeholder="Enter your email"
                   placeholderTextColor="#9CA3AF"
-                  className="bg-card border border-border rounded-lg px-4 py-3 text-foreground"
+                  className="rounded-lg border border-border bg-card px-4 py-3 text-foreground"
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoComplete="email"
@@ -139,36 +136,32 @@ export default function SignUpScreen() {
               </View>
 
               <View>
-                <Text className="text-foreground mb-2 font-medium">Password</Text>
+                <Text className="mb-2 font-medium text-foreground">Password</Text>
                 <TextInput
                   value={password}
                   onChangeText={setPassword}
                   placeholder="Enter your password (min 6 characters)"
                   placeholderTextColor="#9CA3AF"
-                  className="bg-card border border-border rounded-lg px-4 py-3 text-foreground"
+                  className="rounded-lg border border-border bg-card px-4 py-3 text-foreground"
                   secureTextEntry
                   autoComplete="new-password"
                 />
               </View>
 
-              <View className="flex-row items-start mt-4">
+              <View className="mt-4 flex-row items-start">
                 <TouchableOpacity
                   onPress={() => setAcceptPolicy(!acceptPolicy)}
-                  className="mr-3 mt-1"
-                >
-                  <View className={`w-5 h-5 border-2 rounded ${
-                    acceptPolicy 
-                      ? 'bg-primary border-primary' 
-                      : 'border-border bg-card'
-                  } items-center justify-center`}>
-                    {acceptPolicy && (
-                      <Text className="text-primary-foreground text-xs">✓</Text>
-                    )}
+                  className="mr-3 mt-1">
+                  <View
+                    className={`h-5 w-5 rounded border-2 ${
+                      acceptPolicy ? 'border-primary bg-primary' : 'border-border bg-card'
+                    } items-center justify-center`}>
+                    {acceptPolicy && <Text className="text-xs text-primary-foreground">✓</Text>}
                   </View>
                 </TouchableOpacity>
                 <View className="flex-1">
-                  <Text className="text-muted-foreground text-sm leading-5">
-                    {"I have read and accept the "}
+                  <Text className="text-sm leading-5 text-muted-foreground">
+                    {'I have read and accept the '}
                     <Text className="text-primary underline">Privacy Policy</Text>
                   </Text>
                 </View>
@@ -177,24 +170,22 @@ export default function SignUpScreen() {
               <TouchableOpacity
                 onPress={handleSignUp}
                 disabled={isLoading}
-                className="bg-primary rounded-lg py-4 mt-6"
-              >
-                <Text className="text-primary-foreground text-center font-semibold text-lg">
+                className="mt-6 rounded-lg bg-primary py-4">
+                <Text className="text-center text-lg font-semibold text-primary-foreground">
                   {isLoading ? 'Creating Account...' : 'Sign Up'}
                 </Text>
               </TouchableOpacity>
 
-              <View className="flex-row items-center my-6">
-                <View className="flex-1 h-px bg-border" />
+              <View className="my-6 flex-row items-center">
+                <View className="h-px flex-1 bg-border" />
                 <Text className="mx-4 text-muted-foreground">OR</Text>
-                <View className="flex-1 h-px bg-border" />
+                <View className="h-px flex-1 bg-border" />
               </View>
 
               <TouchableOpacity
                 onPress={handleGoogleSignUp}
-                className="bg-card border border-border rounded-lg py-4 flex-row items-center justify-center"
-              >
-                <Text className="text-foreground font-semibold text-lg ml-2">
+                className="flex-row items-center justify-center rounded-lg border border-border bg-card py-4">
+                <Text className="ml-2 text-lg font-semibold text-foreground">
                   Continue with Google
                 </Text>
               </TouchableOpacity>
@@ -204,7 +195,7 @@ export default function SignUpScreen() {
               <Text className="text-muted-foreground">Already have an account? </Text>
               <Link href="/auth/login" asChild>
                 <TouchableOpacity>
-                  <Text className="text-primary font-semibold">Sign In</Text>
+                  <Text className="font-semibold text-primary">Sign In</Text>
                 </TouchableOpacity>
               </Link>
             </View>

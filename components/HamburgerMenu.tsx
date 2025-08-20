@@ -11,11 +11,7 @@ interface HamburgerMenuProps {
 
 export const HamburgerMenuButton: React.FC<HamburgerMenuProps> = ({ onPress }) => {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      className="mr-4 p-2"
-      accessibilityLabel="Menu"
-    >
+    <TouchableOpacity onPress={onPress} className="mr-4 p-2" accessibilityLabel="Menu">
       <Icon name="menu" size={24} className="text-foreground" />
     </TouchableOpacity>
   );
@@ -50,12 +46,12 @@ export const MenuSheet: React.FC<MenuSheetProps> = ({ sheetRef }) => {
 
   const handleHome = () => {
     sheetRef.current?.dismiss();
-    router.push('/(tabs)');
+    router.push('/(tabs)/dashboard');
   };
 
   const menuItems = isAuthenticated
     ? [
-        { title: 'Home', onPress: handleHome, icon: 'home' },
+        { title: 'Dashboard', onPress: handleHome, icon: 'home' },
         { title: 'Sign Out', onPress: handleLogout, icon: 'log-out' },
       ]
     : [
@@ -68,13 +64,9 @@ export const MenuSheet: React.FC<MenuSheetProps> = ({ sheetRef }) => {
     <Sheet ref={sheetRef} snapPoints={[300]}>
       <View className="flex-1 p-6">
         <View className="mb-6">
-          <Text className="text-2xl font-bold text-foreground mb-2">
-            Menu
-          </Text>
+          <Text className="mb-2 text-2xl font-bold text-foreground">Menu</Text>
           {isAuthenticated && user && (
-            <Text className="text-muted-foreground">
-              Welcome, {user.email}
-            </Text>
+            <Text className="text-muted-foreground">Welcome, {user.email}</Text>
           )}
         </View>
 
@@ -83,12 +75,9 @@ export const MenuSheet: React.FC<MenuSheetProps> = ({ sheetRef }) => {
             <TouchableOpacity
               key={index}
               onPress={item.onPress}
-              className="flex-row items-center py-3 px-2 rounded-lg bg-card"
-            >
-              <Icon name={item.icon} size={20} className="text-foreground mr-3" />
-              <Text className="text-foreground text-lg font-medium">
-                {item.title}
-              </Text>
+              className="flex-row items-center rounded-lg bg-card px-2 py-3">
+              <Icon name={item.icon} size={20} className="mr-3 text-foreground" />
+              <Text className="text-lg font-medium text-foreground">{item.title}</Text>
             </TouchableOpacity>
           ))}
         </View>

@@ -1,8 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const TOKEN_KEY = "@ixplor_token";
-const REFRESH_TOKEN_KEY = "@ixplor_refresh_token";
-const TOKEN_EXPIRES_KEY = "@ixplor_token_expires";
+const TOKEN_KEY = '@ixplor_token';
+const REFRESH_TOKEN_KEY = '@ixplor_refresh_token';
+const TOKEN_EXPIRES_KEY = '@ixplor_token_expires';
 
 export interface TokensInfo {
   token: string;
@@ -26,21 +26,15 @@ export const getTokensInfo = async (): Promise<TokensInfo | null> => {
       tokenExpires: parseInt(tokenExpires, 10),
     };
   } catch (error) {
-    console.error("Error getting tokens:", error);
+    console.error('Error getting tokens:', error);
     return null;
   }
 };
 
-export const setTokensInfo = async (
-  tokensInfo: TokensInfo | null,
-): Promise<void> => {
+export const setTokensInfo = async (tokensInfo: TokensInfo | null): Promise<void> => {
   try {
     if (!tokensInfo) {
-      await AsyncStorage.multiRemove([
-        TOKEN_KEY,
-        REFRESH_TOKEN_KEY,
-        TOKEN_EXPIRES_KEY,
-      ]);
+      await AsyncStorage.multiRemove([TOKEN_KEY, REFRESH_TOKEN_KEY, TOKEN_EXPIRES_KEY]);
       return;
     }
 
@@ -50,7 +44,7 @@ export const setTokensInfo = async (
       [TOKEN_EXPIRES_KEY, tokensInfo.tokenExpires.toString()],
     ]);
   } catch (error) {
-    console.error("Error setting tokens:", error);
+    console.error('Error setting tokens:', error);
   }
 };
 

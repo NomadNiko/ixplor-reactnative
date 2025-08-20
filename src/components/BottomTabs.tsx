@@ -14,17 +14,11 @@ type TabProps = {
 
 const Tab = ({ name, icon, label, isActive, onPress, iconLibrary = 'ionicons' }: TabProps) => {
   const IconComponent = iconLibrary === 'material-community' ? MaterialCommunityIcons : Ionicons;
-  
+
   return (
     <TouchableOpacity style={styles.tab} onPress={onPress}>
-      <IconComponent 
-        name={icon as any} 
-        size={24} 
-        color={isActive ? '#3B82F6' : '#6B7280'} 
-      />
-      <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
-        {label}
-      </Text>
+      <IconComponent name={icon as any} size={24} color={isActive ? '#3B82F6' : '#6B7280'} />
+      <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>{label}</Text>
     </TouchableOpacity>
   );
 };
@@ -38,10 +32,34 @@ export default function BottomTabs({ navigation }: BottomTabsProps) {
   const currentRoute = route.name;
 
   const tabs = [
-    { name: 'Explore', icon: 'walk-outline', label: 'Explore', iconLibrary: 'ionicons' as const },
-    { name: 'Dashboard', icon: 'home-outline', label: 'Dashboard', iconLibrary: 'ionicons' as const },
-    { name: 'Groups', icon: 'account-group', label: 'Groups', iconLibrary: 'material-community' as const },
-    { name: 'Tickets', icon: 'ticket-outline', label: 'Tickets', iconLibrary: 'ionicons' as const },
+    {
+      name: 'index',
+      route: '/(tabs)',
+      icon: 'home-outline',
+      label: 'Home',
+      iconLibrary: 'ionicons' as const,
+    },
+    {
+      name: 'dashboard',
+      route: '/(tabs)/dashboard',
+      icon: 'person-outline',
+      label: 'Dashboard',
+      iconLibrary: 'ionicons' as const,
+    },
+    {
+      name: 'two',
+      route: '/(tabs)/two',
+      icon: 'search-outline',
+      label: 'Discover',
+      iconLibrary: 'ionicons' as const,
+    },
+    {
+      name: 'tickets',
+      route: '/tickets',
+      icon: 'ticket-outline',
+      label: 'Tickets',
+      iconLibrary: 'ionicons' as const,
+    },
   ];
 
   return (
@@ -52,9 +70,15 @@ export default function BottomTabs({ navigation }: BottomTabsProps) {
           name={tab.name}
           icon={tab.icon}
           label={tab.label}
-          isActive={currentRoute === tab.name}
+          isActive={currentRoute === tab.name || (tab.name === 'index' && currentRoute === 'Home')}
           iconLibrary={tab.iconLibrary}
-          onPress={() => navigation.navigate(tab.name)}
+          onPress={() => {
+            if (tab.route.startsWith('/(tabs)')) {
+              navigation.navigate(tab.name);
+            } else {
+              navigation.navigate(tab.route);
+            }
+          }}
         />
       ))}
     </View>
