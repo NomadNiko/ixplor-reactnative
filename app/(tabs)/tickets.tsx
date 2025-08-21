@@ -8,16 +8,18 @@ import {
   ActivityIndicator,
   Alert,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
 import { ticketsApi, Ticket } from '~/lib/api/tickets';
-import { 
+import TicketCardModal from '~/src/components/TicketCardModal';
+import {
   sortTicketsByStatusAndDate,
   getTicketStatusColor,
   formatTicketDate,
   formatTicketPrice,
-  getStatusBreakdown
+  getStatusBreakdown,
 } from '~/lib/utils/ticketUtils';
 
 type TicketListItemProps = {
@@ -39,18 +41,12 @@ const TicketListItem = ({ ticket, onPress }: TicketListItemProps) => {
         </View>
       </View>
 
-      <Text style={styles.vendorName}>
-        {ticket.vendor?.name || 'Unknown Vendor'}
-      </Text>
+      {ticket.vendorName && <Text style={styles.vendorText}>by {ticket.vendorName}</Text>}
 
       <View style={styles.ticketDetails}>
-        <Text style={styles.detailText}>
-          📅 {formatTicketDate(ticket)}
-        </Text>
+        <Text style={styles.detailText}>📅 {formatTicketDate(ticket)}</Text>
         <Text style={styles.detailText}>Qty: {ticket.quantity}</Text>
-        <Text style={styles.priceText}>
-          {formatTicketPrice(ticket)}
-        </Text>
+        <Text style={styles.priceText}>{formatTicketPrice(ticket)}</Text>
       </View>
 
       {ticket.expiryDate && (
@@ -66,58 +62,71 @@ export default function Tickets() {
   const { user } = useAuth();
   const [sortedTickets, setSortedTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [showTicketModal, setShowTicketModal] = useState(false);
+
+  const loadUserTickets = async (isRefresh = false) => {
+    if (!user?.id) {
+      console.log('Tickets screen - No user ID found for loading tickets');
+      if (!isRefresh) setIsLoading(false);
+      return;
+    }
+
+    console.log('Tickets screen - Loading ALL tickets for user:', user.id, isRefresh ? '(refreshing)' : '');
+
+    try {
+      if (!isRefresh) setIsLoading(true);
+      const response = await ticketsApi.getUserTickets(user.id);
+      console.log('Tickets screen - API response:', {
+        totalTickets: response.data?.length || 0,
+        statusBreakdown: getStatusBreakdown(response.data || []),
+      });
+
+      const allTickets = response.data || [];
+
+      // Sort tickets by status priority (ACTIVE -> REDEEMED -> CANCELLED/EXPIRED) then by date
+      const sorted = sortTicketsByStatusAndDate(allTickets);
+      setSortedTickets(sorted);
+
+      console.log('Tickets screen - Sorted and set:', {
+        totalSorted: sorted.length,
+        first3: sorted.slice(0, 3).map((t) => ({
+          id: t._id?.substring(0, 8),
+          status: t.status,
+          product: t.productName,
+          date: t.productDate || t.createdAt,
+        })),
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load tickets');
+      console.error('Tickets screen - Failed to load tickets:', error);
+    } finally {
+      if (!isRefresh) {
+        setIsLoading(false);
+      } else {
+        setRefreshing(false);
+      }
+    }
+  };
 
   useEffect(() => {
-    const loadUserTickets = async () => {
-      if (!user?.id) {
-        console.log('Tickets screen - No user ID found for loading tickets');
-        setIsLoading(false);
-        return;
-      }
-
-      console.log('Tickets screen - Loading ALL tickets for user:', user.id);
-
-      try {
-        setIsLoading(true);
-        const response = await ticketsApi.getUserTickets(user.id);
-        console.log('Tickets screen - API response:', {
-          totalTickets: response.data?.length || 0,
-          statusBreakdown: getStatusBreakdown(response.data || [])
-        });
-        
-        const allTickets = response.data || [];
-        
-        // Sort tickets by status priority (ACTIVE -> REDEEMED -> CANCELLED/EXPIRED) then by date
-        const sorted = sortTicketsByStatusAndDate(allTickets);
-        setSortedTickets(sorted);
-        
-        console.log('Tickets screen - Sorted and set:', {
-          totalSorted: sorted.length,
-          first3: sorted.slice(0, 3).map(t => ({
-            id: t._id?.substring(0, 8),
-            status: t.status,
-            product: t.productName,
-            date: t.productDate || t.createdAt
-          }))
-        });
-        
-      } catch (error) {
-        Alert.alert('Error', 'Failed to load tickets');
-        console.error('Tickets screen - Failed to load tickets:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadUserTickets();
   }, [user?.id]);
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    loadUserTickets(true);
+  };
+
   const handleTicketPress = (ticket: Ticket) => {
-    // TODO: Navigate to ticket detail screen or show QR code
-    Alert.alert(
-      'Ticket Details',
-      `Ticket ID: ${ticket.id || ticket._id}\nProduct: ${ticket.productName || ticket.product?.name}\nVendor: ${ticket.vendor?.name || 'Unknown Vendor'}\nPrice: $${(ticket.totalPrice || ticket.productPrice || 0).toFixed(2)}`
-    );
+    setSelectedTicket(ticket);
+    setShowTicketModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowTicketModal(false);
+    setSelectedTicket(null);
   };
 
   if (!user) {
@@ -138,7 +147,8 @@ export default function Tickets() {
       <View style={styles.headerSection}>
         <Text style={styles.pageTitle}>All Tickets</Text>
         <Text style={styles.pageSubtitle}>
-          {sortedTickets.length} ticket{sortedTickets.length !== 1 ? 's' : ''} sorted by status & date
+          {sortedTickets.length} ticket{sortedTickets.length !== 1 ? 's' : ''} sorted by status &
+          date
         </Text>
       </View>
 
@@ -148,7 +158,18 @@ export default function Tickets() {
           <Text style={styles.loadingText}>Loading all your tickets...</Text>
         </View>
       ) : sortedTickets.length > 0 ? (
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          style={styles.scrollView} 
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={handleRefresh}
+              tintColor="#3B82F6"
+              colors={["#3B82F6"]}
+            />
+          }
+        >
           {sortedTickets.map((ticket) => (
             <TicketListItem
               key={ticket.id || ticket._id}
@@ -163,6 +184,12 @@ export default function Tickets() {
           <Text style={styles.emptySubtitle}>Purchase tickets from vendors to see them here</Text>
         </View>
       )}
+
+      <TicketCardModal
+        visible={showTicketModal}
+        ticket={selectedTicket}
+        onClose={handleCloseModal}
+      />
     </SafeAreaView>
   );
 }
@@ -221,10 +248,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  vendorName: {
+  vendorText: {
     fontSize: 14,
-    color: '#94A3B8',
-    marginBottom: 12,
+    color: '#64748B',
+    fontStyle: 'italic',
+    marginBottom: 8,
+    marginTop: -4,
   },
   ticketDetails: {
     flexDirection: 'row',

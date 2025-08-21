@@ -75,22 +75,21 @@ export default function Home() {
     try {
       setIsLoadingVendors(true);
       console.log('Home - Loading nearby vendors for location:', { lat, lng });
-      
+
       // Use client-side filtering approach (same as frontend)
       const response = await vendorsApi.getNearbyVendors(lat, lng, 10000); // 10km radius
-      
+
       console.log('Home - Nearby vendors loaded:', {
         nearbyCount: response.data?.length || 0,
-        sample: response.data?.slice(0, 3).map(v => ({
+        sample: response.data?.slice(0, 3).map((v) => ({
           id: v._id?.substring(0, 8),
           name: getVendorDisplayName(v),
-          location: getVendorLocation(v)
-        }))
+          location: getVendorLocation(v),
+        })),
       });
-      
+
       // Vendors are already filtered and sorted by the API
       setVendors(response.data || []);
-      
     } catch (error) {
       console.error('Home - Failed to load nearby vendors:', error);
       setVendors([]);
@@ -294,34 +293,41 @@ export default function Home() {
             showsMyLocationButton={true}
             rotateEnabled={true}
             pitchEnabled={true}>
-            {vendors.map((vendor) => {
-              const location = getVendorLocation(vendor);
-              
-              // Skip vendor if coordinates are invalid
-              if (!location.lat || !location.lng || 
-                  isNaN(location.lat) || isNaN(location.lng) ||
-                  Math.abs(location.lat) > 90 || Math.abs(location.lng) > 180) {
-                console.warn('Skipping vendor with invalid coordinates:', {
-                  id: vendor._id?.substring(0, 8),
-                  name: getVendorDisplayName(vendor),
-                  coordinates: [location.lng, location.lat]
-                });
-                return null;
-              }
-              
-              return (
-                <Marker
-                  key={vendor._id}
-                  coordinate={{
-                    latitude: location.lat,
-                    longitude: location.lng,
-                  }}
-                  title={getVendorDisplayName(vendor)}
-                  description={vendor.description || 'No description'}
-                  pinColor="#3B82F6"
-                />
-              );
-            }).filter(Boolean)}
+            {vendors
+              .map((vendor) => {
+                const location = getVendorLocation(vendor);
+
+                // Skip vendor if coordinates are invalid
+                if (
+                  !location.lat ||
+                  !location.lng ||
+                  isNaN(location.lat) ||
+                  isNaN(location.lng) ||
+                  Math.abs(location.lat) > 90 ||
+                  Math.abs(location.lng) > 180
+                ) {
+                  console.warn('Skipping vendor with invalid coordinates:', {
+                    id: vendor._id?.substring(0, 8),
+                    name: getVendorDisplayName(vendor),
+                    coordinates: [location.lng, location.lat],
+                  });
+                  return null;
+                }
+
+                return (
+                  <Marker
+                    key={vendor._id}
+                    coordinate={{
+                      latitude: location.lat,
+                      longitude: location.lng,
+                    }}
+                    title={getVendorDisplayName(vendor)}
+                    description={vendor.description || 'No description'}
+                    pinColor="#3B82F6"
+                  />
+                );
+              })
+              .filter(Boolean)}
           </MapView>
         )}
 

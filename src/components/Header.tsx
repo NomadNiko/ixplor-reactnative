@@ -26,9 +26,9 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
           </TouchableOpacity>
         )}
         <TouchableOpacity style={styles.profileButton}>
-          <Image 
-            source={{ uri: user?.photo?.path || 'https://via.placeholder.com/40' }} 
-            style={styles.profileImage} 
+          <Image
+            source={{ uri: user?.photo?.path || 'https://via.placeholder.com/40' }}
+            style={styles.profileImage}
             onError={() => console.log('Header profile image failed to load')}
           />
         </TouchableOpacity>

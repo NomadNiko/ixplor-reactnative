@@ -26,9 +26,12 @@ const createHeaders = async (includeAuth = true) => {
 };
 
 export const supportTicketsApi = {
-  async getUserSupportTickets(page: number = 1, limit: number = 20): Promise<SupportTicketsResponse> {
+  async getUserSupportTickets(
+    page: number = 1,
+    limit: number = 20
+  ): Promise<SupportTicketsResponse> {
     console.log('SupportTicketsAPI - Fetching user support tickets:', { page, limit });
-    
+
     const response = await fetch(`${API_URL}/support-tickets?page=${page}&limit=${limit}`, {
       method: 'GET',
       headers: await createHeaders(true),
@@ -41,32 +44,33 @@ export const supportTicketsApi = {
     }
 
     const result = await response.json();
-    
-    // Backend returns array directly, wrap in data field for consistency
-    const tickets = Array.isArray(result) ? result : result.data || [];
-    
+
+    // Backend returns { tickets: [], total, totalPages, currentPage }
+    const tickets = result.tickets || [];
+
     console.log('SupportTicketsAPI - User support tickets fetched:', {
       ticketCount: tickets.length,
+      total: result.total,
       sample: tickets.slice(0, 3).map((ticket: SupportTicket) => ({
         id: ticket._id?.substring(0, 8),
         ticketId: ticket.ticketId,
         status: ticket.status,
         category: ticket.ticketCategory,
-        title: ticket.ticketTitle?.substring(0, 30)
-      }))
+        title: ticket.ticketTitle?.substring(0, 30),
+      })),
     });
 
     return {
       data: tickets,
-      total: tickets.length,
-      page,
-      limit
+      total: result.total || tickets.length,
+      page: result.currentPage || page,
+      limit,
     };
   },
 
   async getSupportTicket(ticketId: string): Promise<{ data: SupportTicket }> {
     console.log('SupportTicketsAPI - Fetching support ticket:', ticketId);
-    
+
     const response = await fetch(`${API_URL}/support-tickets/${ticketId}`, {
       method: 'GET',
       headers: await createHeaders(true),
@@ -79,13 +83,13 @@ export const supportTicketsApi = {
     }
 
     const result = await response.json();
-    
+
     console.log('SupportTicketsAPI - Support ticket fetched:', {
       id: result._id?.substring(0, 8),
       ticketId: result.ticketId,
       status: result.status,
       title: result.ticketTitle?.substring(0, 30),
-      updatesCount: result.updates?.length || 0
+      updatesCount: result.updates?.length || 0,
     });
 
     return { data: result };
@@ -94,9 +98,9 @@ export const supportTicketsApi = {
   async createSupportTicket(ticketData: CreateSupportTicketDto): Promise<{ data: SupportTicket }> {
     console.log('SupportTicketsAPI - Creating support ticket:', {
       category: ticketData.ticketCategory,
-      title: ticketData.ticketTitle?.substring(0, 30)
+      title: ticketData.ticketTitle?.substring(0, 30),
     });
-    
+
     const response = await fetch(`${API_URL}/support-tickets`, {
       method: 'POST',
       headers: await createHeaders(true),
@@ -110,19 +114,22 @@ export const supportTicketsApi = {
     }
 
     const result = await response.json();
-    
+
     console.log('SupportTicketsAPI - Support ticket created:', {
       id: result._id?.substring(0, 8),
       ticketId: result.ticketId,
-      status: result.status
+      status: result.status,
     });
 
     return { data: result };
   },
 
-  async updateSupportTicket(ticketId: string, updateData: UpdateSupportTicketDto): Promise<{ data: SupportTicket }> {
+  async updateSupportTicket(
+    ticketId: string,
+    updateData: UpdateSupportTicketDto
+  ): Promise<{ data: SupportTicket }> {
     console.log('SupportTicketsAPI - Updating support ticket:', ticketId, updateData);
-    
+
     const response = await fetch(`${API_URL}/support-tickets/${ticketId}`, {
       method: 'PUT',
       headers: await createHeaders(true),
@@ -136,19 +143,22 @@ export const supportTicketsApi = {
     }
 
     const result = await response.json();
-    
+
     console.log('SupportTicketsAPI - Support ticket updated:', {
       id: result._id?.substring(0, 8),
       ticketId: result.ticketId,
-      status: result.status
+      status: result.status,
     });
 
     return { data: result };
   },
 
-  async addTicketUpdate(ticketId: string, updateData: AddTicketUpdateDto): Promise<{ data: SupportTicket }> {
+  async addTicketUpdate(
+    ticketId: string,
+    updateData: AddTicketUpdateDto
+  ): Promise<{ data: SupportTicket }> {
     console.log('SupportTicketsAPI - Adding update to support ticket:', ticketId);
-    
+
     const response = await fetch(`${API_URL}/support-tickets/${ticketId}/updates`, {
       method: 'POST',
       headers: await createHeaders(true),
@@ -162,19 +172,22 @@ export const supportTicketsApi = {
     }
 
     const result = await response.json();
-    
+
     console.log('SupportTicketsAPI - Ticket update added:', {
       id: result._id?.substring(0, 8),
       ticketId: result.ticketId,
-      updatesCount: result.updates?.length || 0
+      updatesCount: result.updates?.length || 0,
     });
 
     return { data: result };
   },
 
-  async updateTicketStatus(ticketId: string, status: SupportTicketStatus): Promise<{ data: SupportTicket }> {
+  async updateTicketStatus(
+    ticketId: string,
+    status: SupportTicketStatus
+  ): Promise<{ data: SupportTicket }> {
     console.log('SupportTicketsAPI - Updating ticket status:', ticketId, status);
-    
+
     const response = await fetch(`${API_URL}/support-tickets/${ticketId}/status`, {
       method: 'PUT',
       headers: await createHeaders(true),
@@ -188,11 +201,11 @@ export const supportTicketsApi = {
     }
 
     const result = await response.json();
-    
+
     console.log('SupportTicketsAPI - Ticket status updated:', {
       id: result._id?.substring(0, 8),
       ticketId: result.ticketId,
-      status: result.status
+      status: result.status,
     });
 
     return { data: result };

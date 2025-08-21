@@ -21,6 +21,7 @@ export interface Ticket {
   id?: string;
   userId: string;
   vendorId: string;
+  vendorName?: string;
   productItemId?: string;
   transactionId: string;
   status: 'ACTIVE' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED';
@@ -54,23 +55,6 @@ export interface Ticket {
   statusUpdatedAt?: string;
   statusUpdatedBy?: string;
   statusUpdateReason?: string;
-  // Relations
-  vendor?: {
-    id: string;
-    name: string;
-    description?: string;
-    location?: {
-      lat: number;
-      lng: number;
-      address?: string;
-    };
-  };
-  product?: {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-  };
 }
 
 export const ticketsApi = {

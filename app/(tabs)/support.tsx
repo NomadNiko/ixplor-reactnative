@@ -16,6 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
 import { supportTicketsApi } from '~/lib/api/support-tickets';
+import TicketDetailModal from '~/src/components/TicketDetailModal';
 import {
   SupportTicket,
   CreateSupportTicketDto,
@@ -48,22 +49,21 @@ const SupportTicketCard = ({ ticket, onPress }: SupportTicketCardProps) => {
     <TouchableOpacity onPress={onPress} style={styles.ticketCard}>
       <LinearGradient
         colors={['rgba(28, 40, 58, 0.8)', 'rgba(21, 29, 43, 0.8)']}
-        style={styles.cardGradient}
-      >
+        style={styles.cardGradient}>
         <View style={styles.cardHeader}>
           <View style={styles.ticketInfo}>
             <Text style={styles.ticketId}>{ticket.ticketId}</Text>
-            <Text style={styles.ticketDate}>
-              {formatDate(ticket.createDate)}
-            </Text>
+            <Text style={styles.ticketDate}>{formatDate(ticket.createDate)}</Text>
           </View>
-          <View style={[styles.statusBadge, { backgroundColor: SUPPORT_TICKET_STATUS_COLORS[ticket.status] }]}>
-            <Text style={styles.statusText}>
-              {SUPPORT_TICKET_STATUS_LABELS[ticket.status]}
-            </Text>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: SUPPORT_TICKET_STATUS_COLORS[ticket.status] },
+            ]}>
+            <Text style={styles.statusText}>{SUPPORT_TICKET_STATUS_LABELS[ticket.status]}</Text>
           </View>
         </View>
-        
+
         <View style={styles.cardBody}>
           <Text style={styles.ticketTitle} numberOfLines={2}>
             {ticket.ticketTitle}
@@ -76,7 +76,7 @@ const SupportTicketCard = ({ ticket, onPress }: SupportTicketCardProps) => {
         <View style={styles.cardFooter}>
           <View style={styles.categoryBadge}>
             <Text style={styles.categoryText}>
-              {SUPPORT_TICKET_CATEGORY_LABELS[ticket.ticketCategory]}
+              {SUPPORT_TICKET_CATEGORY_LABELS[ticket.ticketCategory] || ticket.ticketCategory}
             </Text>
           </View>
           {ticket.updates && ticket.updates.length > 0 && (
@@ -90,11 +90,11 @@ const SupportTicketCard = ({ ticket, onPress }: SupportTicketCardProps) => {
   );
 };
 
-const CreateTicketModal = ({ 
-  visible, 
-  onClose, 
+const CreateTicketModal = ({
+  visible,
+  onClose,
   onSubmit,
-  isSubmitting
+  isSubmitting,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -146,12 +146,13 @@ const CreateTicketModal = ({
                 selectedValue={category}
                 onValueChange={setCategory}
                 style={styles.picker}
-              >
+                itemStyle={{ color: '#F8FAFC' }}>
                 {Object.values(SupportTicketCategory).map((cat) => (
                   <Picker.Item
                     key={cat}
                     label={SUPPORT_TICKET_CATEGORY_LABELS[cat]}
                     value={cat}
+                    color="#F8FAFC"
                   />
                 ))}
               </Picker>
@@ -194,6 +195,8 @@ export default function Support() {
   const [refreshing, setRefreshing] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -215,29 +218,31 @@ export default function Support() {
       }
 
       const response = await supportTicketsApi.getUserSupportTickets();
-      
+
       console.log('Support - All support tickets loaded:', {
         totalTickets: response.data?.length || 0,
-        statusBreakdown: response.data?.reduce((acc, ticket) => {
-          acc[ticket.status] = (acc[ticket.status] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>)
+        statusBreakdown: response.data?.reduce(
+          (acc, ticket) => {
+            acc[ticket.status] = (acc[ticket.status] || 0) + 1;
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       });
-      
+
       // Sort by status priority then by date (most recent first)
       const sortedTickets = (response.data || []).sort((a, b) => {
         const statusA = SUPPORT_TICKET_STATUS_PRIORITY[a.status] || 999;
         const statusB = SUPPORT_TICKET_STATUS_PRIORITY[b.status] || 999;
-        
+
         if (statusA !== statusB) {
           return statusA - statusB;
         }
-        
+
         return new Date(b.createDate).getTime() - new Date(a.createDate).getTime();
       });
-      
+
       setTickets(sortedTickets);
-      
     } catch (error) {
       console.error('Support - Failed to load support tickets:', error);
       Alert.alert('Error', 'Failed to load support tickets. Please try again.');
@@ -258,20 +263,25 @@ export default function Support() {
   const handleCreateTicket = async (ticketData: CreateSupportTicketDto) => {
     try {
       setIsCreatingTicket(true);
-      
-      const response = await supportTicketsApi.createSupportTicket(ticketData);
-      
+
+      // Add the createdBy field with the user's ID
+      const ticketDataWithUser = {
+        ...ticketData,
+        createdBy: user?.id,
+      };
+
+      const response = await supportTicketsApi.createSupportTicket(ticketDataWithUser);
+
       console.log('Support - Support ticket created:', response.data.ticketId);
-      
+
       Alert.alert(
         'Ticket Created',
         `Your support ticket ${response.data.ticketId} has been created successfully.`,
         [{ text: 'OK', onPress: () => setShowCreateModal(false) }]
       );
-      
+
       // Reload tickets to show the new one
       loadSupportTickets();
-      
     } catch (error) {
       console.error('Support - Failed to create support ticket:', error);
       Alert.alert('Error', 'Failed to create support ticket. Please try again.');
@@ -281,28 +291,35 @@ export default function Support() {
   };
 
   const showTicketDetails = (ticket: SupportTicket) => {
-    const updates = ticket.updates
-      ?.map((update, index) => `${index + 1}. ${new Date(update.timestamp).toLocaleDateString()}: ${update.updateText}`)
-      .join('\n\n') || 'No updates yet';
+    setSelectedTicket(ticket);
+    setShowDetailModal(true);
+  };
 
-    Alert.alert(
-      `Ticket ${ticket.ticketId}`,
-      `Status: ${SUPPORT_TICKET_STATUS_LABELS[ticket.status]}\n` +
-      `Category: ${SUPPORT_TICKET_CATEGORY_LABELS[ticket.ticketCategory]}\n` +
-      `Created: ${new Date(ticket.createDate).toLocaleDateString()}\n\n` +
-      `Title: ${ticket.ticketTitle}\n\n` +
-      `Description: ${ticket.ticketDescription}\n\n` +
-      `Updates:\n${updates}`,
-      [
-        { text: 'Close', style: 'cancel' },
-      ],
-      { userInterfaceStyle: 'dark' }
-    );
+  const handleDetailModalClose = () => {
+    setShowDetailModal(false);
+    setSelectedTicket(null);
+  };
+
+  const handleTicketUpdate = (updatedTicket?: SupportTicket) => {
+    if (updatedTicket) {
+      // Update the ticket in the local state immediately
+      setTickets((prevTickets) =>
+        prevTickets.map((t) => (t._id === updatedTicket._id ? updatedTicket : t))
+      );
+
+      // Also update the selected ticket if it's the same one
+      if (selectedTicket?._id === updatedTicket._id) {
+        setSelectedTicket(updatedTicket);
+      }
+    }
+
+    // Also reload tickets from server to ensure consistency
+    loadSupportTickets();
   };
 
   const getStatusCounts = () => {
     const counts: Record<string, number> = {};
-    tickets.forEach(ticket => {
+    tickets.forEach((ticket) => {
       counts[ticket.status] = (counts[ticket.status] || 0) + 1;
     });
     return counts;
@@ -311,27 +328,18 @@ export default function Support() {
   return (
     <SafeAreaView style={styles.container}>
       <Header showCart={true} />
-      
+
       <ScrollView
         style={styles.content}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      >
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
         <View style={styles.header}>
           <Text style={styles.title}>Support Tickets</Text>
           <Text style={styles.subtitle}>Get help with your Ixplor experience</Text>
         </View>
 
         {/* Create Ticket Button */}
-        <TouchableOpacity 
-          style={styles.createButton}
-          onPress={() => setShowCreateModal(true)}
-        >
-          <LinearGradient
-            colors={['#3B82F6', '#2563EB']}
-            style={styles.createButtonGradient}
-          >
+        <TouchableOpacity style={styles.createButton} onPress={() => setShowCreateModal(true)}>
+          <LinearGradient colors={['#3B82F6', '#2563EB']} style={styles.createButtonGradient}>
             <Text style={styles.createButtonText}>Create New Ticket</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -341,8 +349,7 @@ export default function Support() {
           <View style={styles.summaryContainer}>
             <LinearGradient
               colors={['rgba(28, 40, 58, 0.6)', 'rgba(21, 29, 43, 0.6)']}
-              style={styles.summaryCard}
-            >
+              style={styles.summaryCard}>
               <View style={styles.summaryRow}>
                 {Object.entries(getStatusCounts()).map(([status, count]) => (
                   <View key={status} style={styles.summaryItem}>
@@ -367,7 +374,7 @@ export default function Support() {
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No support tickets found</Text>
             <Text style={styles.emptySubtext}>
-              {"Create a ticket above if you need help with anything"}
+              {'Create a ticket above if you need help with anything'}
             </Text>
           </View>
         ) : (
@@ -388,6 +395,13 @@ export default function Support() {
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateTicket}
         isSubmitting={isCreatingTicket}
+      />
+
+      <TicketDetailModal
+        visible={showDetailModal}
+        ticket={selectedTicket}
+        onClose={handleDetailModalClose}
+        onUpdate={handleTicketUpdate}
       />
     </SafeAreaView>
   );
@@ -615,10 +629,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+    justifyContent: 'center',
   },
   picker: {
     color: '#F8FAFC',
     height: 50,
+    width: '100%',
   },
   textInput: {
     backgroundColor: 'rgba(28, 40, 58, 0.8)',

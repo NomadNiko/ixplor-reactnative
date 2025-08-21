@@ -40,8 +40,8 @@ export interface Product extends ProductTemplate {
 
 export enum ProductStatusEnum {
   DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED', 
-  ARCHIVED = 'ARCHIVED'
+  PUBLISHED = 'PUBLISHED',
+  ARCHIVED = 'ARCHIVED',
 }
 
 export interface ProductResponse {
@@ -74,7 +74,7 @@ export enum ProductItemStatus {
   DRAFT = 'DRAFT',
   PUBLISHED = 'PUBLISHED',
   CANCELLED = 'CANCELLED',
-  COMPLETED = 'COMPLETED'
+  COMPLETED = 'COMPLETED',
 }
 
 export interface ProductItem {
@@ -144,7 +144,7 @@ export const PRODUCT_TYPES: ProductType[] = ['tours', 'lessons', 'rentals', 'tic
 
 export const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
   tours: 'Tours',
-  lessons: 'Lessons', 
+  lessons: 'Lessons',
   rentals: 'Rentals',
-  tickets: 'Tickets'
+  tickets: 'Tickets',
 };

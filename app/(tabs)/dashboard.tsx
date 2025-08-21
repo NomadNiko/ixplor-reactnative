@@ -17,9 +17,19 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
 import { ticketsApi, Ticket } from '~/lib/api/tickets';
-import { invoicesApi, Invoice, formatInvoiceAmount, getInvoiceTotalItems, formatInvoiceDate } from '~/lib/api/invoices';
+import {
+  invoicesApi,
+  Invoice,
+  formatInvoiceAmount,
+  getInvoiceTotalItems,
+  formatInvoiceDate,
+} from '~/lib/api/invoices';
 import { supportTicketsApi } from '~/lib/api/support-tickets';
-import { SupportTicket, SUPPORT_TICKET_STATUS_LABELS, SUPPORT_TICKET_STATUS_COLORS } from '~/lib/types/support-ticket';
+import {
+  SupportTicket,
+  SUPPORT_TICKET_STATUS_LABELS,
+  SUPPORT_TICKET_STATUS_COLORS,
+} from '~/lib/types/support-ticket';
 import { profileApi, UpdateProfileDto } from '~/lib/api/profile';
 import { getRecentActiveTickets } from '~/lib/utils/ticketUtils';
 import { router } from 'expo-router';
@@ -88,22 +98,21 @@ type ReceiptCardProps = {
 const ReceiptCard = ({ invoice, onPress }: ReceiptCardProps) => {
   const totalItems = getInvoiceTotalItems(invoice);
   const vendorCount = invoice.vendorGroups?.length || 0;
-  
+
   return (
     <TouchableOpacity style={styles.receiptCard} onPress={onPress}>
       <View style={styles.receiptHeader}>
         <Text style={styles.receiptAmount}>
           {formatInvoiceAmount(invoice.amount, invoice.currency)}
         </Text>
-        <Text style={styles.receiptDate}>
-          {formatInvoiceDate(invoice.invoiceDate)}
-        </Text>
+        <Text style={styles.receiptDate}>{formatInvoiceDate(invoice.invoiceDate)}</Text>
       </View>
-      
+
       <Text style={styles.receiptDetails}>
-        {vendorCount} vendor{vendorCount !== 1 ? 's' : ''} • {totalItems} item{totalItems !== 1 ? 's' : ''}
+        {vendorCount} vendor{vendorCount !== 1 ? 's' : ''} • {totalItems} item
+        {totalItems !== 1 ? 's' : ''}
       </Text>
-      
+
       <View style={styles.receiptVendors}>
         {invoice.vendorGroups?.slice(0, 2).map((group, index) => (
           <Text key={group.vendorId} style={styles.receiptVendorName}>
@@ -111,11 +120,7 @@ const ReceiptCard = ({ invoice, onPress }: ReceiptCardProps) => {
             {index < Math.min(invoice.vendorGroups.length - 1, 1) && ', '}
           </Text>
         ))}
-        {vendorCount > 2 && (
-          <Text style={styles.receiptVendorName}>
-            +{vendorCount - 2} more
-          </Text>
-        )}
+        {vendorCount > 2 && <Text style={styles.receiptVendorName}>+{vendorCount - 2} more</Text>}
       </View>
     </TouchableOpacity>
   );
@@ -138,30 +143,32 @@ const SupportTicketCard = ({ ticket, onPress }: SupportTicketCardProps) => {
     <TouchableOpacity style={styles.supportTicketCard} onPress={onPress}>
       <View style={styles.supportTicketHeader}>
         <Text style={styles.supportTicketId}>{ticket.ticketId}</Text>
-        <View style={[styles.supportStatusBadge, { backgroundColor: SUPPORT_TICKET_STATUS_COLORS[ticket.status] }]}>
+        <View
+          style={[
+            styles.supportStatusBadge,
+            { backgroundColor: SUPPORT_TICKET_STATUS_COLORS[ticket.status] },
+          ]}>
           <Text style={styles.supportStatusText}>
             {SUPPORT_TICKET_STATUS_LABELS[ticket.status]}
           </Text>
         </View>
       </View>
-      
+
       <Text style={styles.supportTicketTitle} numberOfLines={2}>
         {ticket.ticketTitle}
       </Text>
-      
-      <Text style={styles.supportTicketDate}>
-        {formatDate(ticket.createDate)}
-      </Text>
+
+      <Text style={styles.supportTicketDate}>{formatDate(ticket.createDate)}</Text>
     </TouchableOpacity>
   );
 };
 
-const EditProfileModal = ({ 
-  visible, 
-  onClose, 
+const EditProfileModal = ({
+  visible,
+  onClose,
   user,
   onSave,
-  isLoading 
+  isLoading,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -178,31 +185,30 @@ const EditProfileModal = ({
     try {
       // Request permission to access media library
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
+
       if (!permissionResult.granted) {
-        Alert.alert('Permission required', 'Please allow access to your photos to change your profile picture.');
+        Alert.alert(
+          'Permission required',
+          'Please allow access to your photos to change your profile picture.'
+        );
         return;
       }
 
       // Show options for camera or gallery
-      Alert.alert(
-        'Select Photo',
-        'Choose from where you want to select a photo',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Camera',
-            onPress: openCamera,
-          },
-          {
-            text: 'Photo Library',
-            onPress: openImageLibrary,
-          },
-        ]
-      );
+      Alert.alert('Select Photo', 'Choose from where you want to select a photo', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Camera',
+          onPress: openCamera,
+        },
+        {
+          text: 'Photo Library',
+          onPress: openImageLibrary,
+        },
+      ]);
     } catch (error) {
       console.error('Error requesting permission:', error);
       Alert.alert('Error', 'Failed to access photos');
@@ -267,10 +273,10 @@ const EditProfileModal = ({
       try {
         setIsUploadingImage(true);
         console.log('Uploading selected image:', selectedImage);
-        
+
         const uploadedFile = await profileApi.uploadProfileImage(selectedImage);
         updateData.photo = uploadedFile;
-        
+
         console.log('Image uploaded successfully:', uploadedFile);
       } catch (error) {
         console.error('Failed to upload image:', error);
@@ -289,13 +295,21 @@ const EditProfileModal = ({
       <SafeAreaView style={styles.modalContainer}>
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} disabled={isLoading || isUploadingImage}>
-            <Text style={[styles.modalCancelText, (isLoading || isUploadingImage) && styles.modalButtonDisabled]}>
+            <Text
+              style={[
+                styles.modalCancelText,
+                (isLoading || isUploadingImage) && styles.modalButtonDisabled,
+              ]}>
               Cancel
             </Text>
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Edit Profile</Text>
           <TouchableOpacity onPress={handleSave} disabled={isLoading || isUploadingImage}>
-            <Text style={[styles.modalSaveText, (isLoading || isUploadingImage) && styles.modalButtonDisabled]}>
+            <Text
+              style={[
+                styles.modalSaveText,
+                (isLoading || isUploadingImage) && styles.modalButtonDisabled,
+              ]}>
               {isLoading || isUploadingImage ? 'Saving...' : 'Save'}
             </Text>
           </TouchableOpacity>
@@ -306,15 +320,12 @@ const EditProfileModal = ({
             <Text style={styles.formLabel}>Profile Picture</Text>
             <View style={styles.profileImageSection}>
               {selectedImage ? (
-                <Image
-                  source={{ uri: selectedImage }}
-                  style={styles.modalProfileImage}
-                />
+                <Image source={{ uri: selectedImage }} style={styles.modalProfileImage} />
               ) : user?.photo?.path ? (
                 <Image
-                  source={{ 
+                  source={{
                     uri: user.photo.path,
-                    headers: { 'User-Agent': 'ixplor-mobile' }
+                    headers: { 'User-Agent': 'ixplor-mobile' },
                   }}
                   style={styles.modalProfileImage}
                 />
@@ -325,11 +336,10 @@ const EditProfileModal = ({
                   </Text>
                 </View>
               )}
-              <TouchableOpacity 
-                style={styles.changePhotoButton} 
+              <TouchableOpacity
+                style={styles.changePhotoButton}
                 disabled={isLoading || isUploadingImage}
-                onPress={handleChangePhoto}
-              >
+                onPress={handleChangePhoto}>
                 <Text style={styles.changePhotoText}>
                   {isUploadingImage ? 'Uploading...' : 'Change Photo'}
                 </Text>
@@ -360,7 +370,6 @@ const EditProfileModal = ({
               editable={!isLoading && !isUploadingImage}
             />
           </View>
-
         </ScrollView>
       </SafeAreaView>
     </Modal>
@@ -379,27 +388,23 @@ export default function Dashboard() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await logout();
+          } catch (error) {
+            console.error('Logout error:', error);
+          }
         },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await logout();
-            } catch (error) {
-              console.error('Logout error:', error);
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -416,23 +421,22 @@ export default function Dashboard() {
         setIsLoading(true);
         const response = await ticketsApi.getUserTickets(user.id);
         console.log('Dashboard - All tickets loaded:', {
-          totalTickets: response.data?.length || 0
+          totalTickets: response.data?.length || 0,
         });
-        
+
         // Get only the 4 most recent ACTIVE tickets
         const recentActive = getRecentActiveTickets(response.data || [], 4);
         setRecentActiveTickets(recentActive);
-        
+
         console.log('Dashboard - Recent active tickets set:', {
           activeCount: recentActive.length,
-          tickets: recentActive.map(t => ({
+          tickets: recentActive.map((t) => ({
             id: t._id?.substring(0, 8),
             product: t.productName,
             status: t.status,
-            date: t.productDate || t.createdAt
-          }))
+            date: t.productDate || t.createdAt,
+          })),
         });
-        
       } catch (error) {
         Alert.alert('Error', 'Failed to load recent tickets');
         console.error('Dashboard - Failed to load recent tickets:', error);
@@ -455,23 +459,22 @@ export default function Dashboard() {
         const response = await invoicesApi.getUserInvoices(user.id);
         console.log('Dashboard - All invoices loaded:', {
           totalInvoices: response.data?.length || 0,
-          totalAmount: response.data?.reduce((sum, inv) => sum + inv.amount, 0) || 0
+          totalAmount: response.data?.reduce((sum, inv) => sum + inv.amount, 0) || 0,
         });
-        
+
         // Get only the 4 most recent invoices
         const recent = response.data?.slice(0, 4) || [];
         setRecentInvoices(recent);
-        
+
         console.log('Dashboard - Recent invoices set:', {
           count: recent.length,
-          invoices: recent.map(inv => ({
+          invoices: recent.map((inv) => ({
             id: inv._id?.substring(0, 8),
             amount: formatInvoiceAmount(inv.amount),
             vendors: inv.vendorGroups?.length || 0,
-            date: inv.invoiceDate
-          }))
+            date: inv.invoiceDate,
+          })),
         });
-        
       } catch (error) {
         console.warn('Dashboard - Failed to load recent invoices (non-critical):', error);
         // Don't show error alert for invoices since it's not critical
@@ -494,23 +497,22 @@ export default function Dashboard() {
         setIsLoadingSupportTickets(true);
         const response = await supportTicketsApi.getUserSupportTickets(1, 10);
         console.log('Dashboard - All support tickets loaded:', {
-          totalTickets: response.data?.length || 0
+          totalTickets: response.data?.length || 0,
         });
-        
+
         // Get only the 4 most recent support tickets
         const recent = response.data?.slice(0, 4) || [];
         setRecentSupportTickets(recent);
-        
+
         console.log('Dashboard - Recent support tickets set:', {
           count: recent.length,
-          tickets: recent.map(t => ({
+          tickets: recent.map((t) => ({
             id: t._id?.substring(0, 8),
             ticketId: t.ticketId,
             status: t.status,
-            title: t.ticketTitle?.substring(0, 30)
-          }))
+            title: t.ticketTitle?.substring(0, 30),
+          })),
         });
-        
       } catch (error) {
         console.warn('Dashboard - Failed to load recent support tickets (non-critical):', error);
         // Don't show error alert for support tickets since it's not critical
@@ -528,20 +530,17 @@ export default function Dashboard() {
   const handleUpdateProfile = async (updateData: UpdateProfileDto) => {
     try {
       setIsUpdatingProfile(true);
-      
+
       const response = await profileApi.updateProfile(updateData);
-      
+
       // Update the user context with new data
       if (updateUser) {
         updateUser(response.data);
       }
-      
-      Alert.alert(
-        'Success', 
-        'Profile updated successfully',
-        [{ text: 'OK', onPress: () => setShowEditProfile(false) }]
-      );
-      
+
+      Alert.alert('Success', 'Profile updated successfully', [
+        { text: 'OK', onPress: () => setShowEditProfile(false) },
+      ]);
     } catch (error) {
       console.error('Dashboard - Failed to update profile:', error);
       Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update profile');
@@ -553,7 +552,9 @@ export default function Dashboard() {
   const formatTicketForDisplay = (ticket: Ticket) => ({
     title: ticket.productName || ticket.product?.name || 'Unknown Product',
     subtitle: ticket.vendor?.name || 'Unknown Vendor',
-    date: new Date(ticket.productDate || ticket.purchaseDate || ticket.createdAt).toLocaleDateString(),
+    date: new Date(
+      ticket.productDate || ticket.purchaseDate || ticket.createdAt
+    ).toLocaleDateString(),
     time: ticket.expiryDate ? new Date(ticket.expiryDate).toLocaleTimeString() : 'No expiry',
     ticketId: (ticket.id || ticket._id)?.substring(0, 8) || 'N/A',
     quantity: ticket.quantity,
@@ -579,11 +580,11 @@ export default function Dashboard() {
         <LinearGradient colors={['#1C283A', '#151D2B']} style={styles.profileCard}>
           {user.photo?.path ? (
             <Image
-              source={{ 
+              source={{
                 uri: user.photo.path,
                 headers: {
-                  'User-Agent': 'ixplor-mobile'
-                }
+                  'User-Agent': 'ixplor-mobile',
+                },
               }}
               style={styles.profileImage}
               onLoad={() => console.log('Profile image loaded successfully')}
@@ -603,10 +604,7 @@ export default function Dashboard() {
           </Text>
           <Text style={styles.userEmail}>{user.email}</Text>
           <View style={styles.buttonRow}>
-            <TouchableOpacity 
-              style={styles.editButton}
-              onPress={() => setShowEditProfile(true)}
-            >
+            <TouchableOpacity style={styles.editButton} onPress={() => setShowEditProfile(true)}>
               <Text style={styles.editButtonText}>Edit Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -634,9 +632,7 @@ export default function Dashboard() {
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No active tickets</Text>
-              <Text style={styles.emptySubtext}>
-                {"You don't have any upcoming tickets"}
-              </Text>
+              <Text style={styles.emptySubtext}>{"You don't have any upcoming tickets"}</Text>
             </View>
           )}
         </View>
@@ -659,16 +655,17 @@ export default function Dashboard() {
                 key={invoice._id}
                 invoice={invoice}
                 onPress={() => {
-                  Alert.alert('Receipt Details', `Invoice: ${invoice._id}\nAmount: ${formatInvoiceAmount(invoice.amount)}\nDate: ${formatInvoiceDate(invoice.invoiceDate)}`);
+                  Alert.alert(
+                    'Receipt Details',
+                    `Invoice: ${invoice._id}\nAmount: ${formatInvoiceAmount(invoice.amount)}\nDate: ${formatInvoiceDate(invoice.invoiceDate)}`
+                  );
                 }}
               />
             ))
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No receipts found</Text>
-              <Text style={styles.emptySubtext}>
-                Your purchase receipts will appear here
-              </Text>
+              <Text style={styles.emptySubtext}>Your purchase receipts will appear here</Text>
             </View>
           )}
         </View>
@@ -701,9 +698,7 @@ export default function Dashboard() {
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No support tickets</Text>
-              <Text style={styles.emptySubtext}>
-                Create a ticket if you need help
-              </Text>
+              <Text style={styles.emptySubtext}>Create a ticket if you need help</Text>
             </View>
           )}
         </View>

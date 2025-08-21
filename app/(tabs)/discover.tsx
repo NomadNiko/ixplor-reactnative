@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  SafeAreaView, 
-  ScrollView, 
-  TextInput, 
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
   Image,
-  Alert
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Header from '~/src/components/Header';
@@ -39,15 +39,15 @@ export default function Discover() {
       console.log('Discover - Loading all products');
       setIsLoading(true);
       const response = await productsApi.getAllProducts();
-      
+
       console.log('Discover - Products loaded:', {
         total: response.data?.length || 0,
         types: response.data?.reduce((acc: Record<string, number>, p) => {
           acc[p.productType] = (acc[p.productType] || 0) + 1;
           return acc;
-        }, {})
+        }, {}),
       });
-      
+
       setProducts(response.data || []);
     } catch (error) {
       console.error('Discover - Failed to load products:', error);
@@ -63,15 +63,16 @@ export default function Discover() {
 
     // Filter by type
     if (selectedType !== 'all') {
-      filtered = filtered.filter(p => p.productType === selectedType);
+      filtered = filtered.filter((p) => p.productType === selectedType);
     }
 
     // Filter by search term
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.productName.toLowerCase().includes(search) ||
-        p.productDescription.toLowerCase().includes(search)
+      filtered = filtered.filter(
+        (p) =>
+          p.productName.toLowerCase().includes(search) ||
+          p.productDescription.toLowerCase().includes(search)
       );
     }
 
@@ -79,19 +80,17 @@ export default function Discover() {
   };
 
   const renderProductCard = ({ item: product }: { item: Product }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.productCard}
       onPress={() => {
         Alert.alert(
           product.productName,
           `${product.productDescription}\n\nPrice: $${product.productPrice}\nType: ${PRODUCT_TYPE_LABELS[product.productType]}`
         );
-      }}
-    >
+      }}>
       <LinearGradient
         colors={['rgba(28, 40, 58, 0.8)', 'rgba(21, 29, 43, 0.8)']}
-        style={styles.cardGradient}
-      >
+        style={styles.cardGradient}>
         {product.productImageURL && (
           <Image
             source={{ uri: product.productImageURL }}
@@ -104,23 +103,18 @@ export default function Discover() {
             <Text style={styles.productName} numberOfLines={2}>
               {product.productName}
             </Text>
-            <View style={[styles.typeBadge, { backgroundColor: getTypeColor(product.productType) }]}>
-              <Text style={styles.typeText}>
-                {PRODUCT_TYPE_LABELS[product.productType]}
-              </Text>
+            <View
+              style={[styles.typeBadge, { backgroundColor: getTypeColor(product.productType) }]}>
+              <Text style={styles.typeText}>{PRODUCT_TYPE_LABELS[product.productType]}</Text>
             </View>
           </View>
           <Text style={styles.productDescription} numberOfLines={3}>
             {product.productDescription}
           </Text>
           <View style={styles.cardFooter}>
-            <Text style={styles.productPrice}>
-              ${product.productPrice}
-            </Text>
+            <Text style={styles.productPrice}>${product.productPrice}</Text>
             {product.productDuration && (
-              <Text style={styles.duration}>
-                {product.productDuration} min
-              </Text>
+              <Text style={styles.duration}>{product.productDuration} min</Text>
             )}
           </View>
         </View>
@@ -131,9 +125,9 @@ export default function Discover() {
   const getTypeColor = (type: ProductType): string => {
     const colors = {
       tours: '#3B82F6',
-      lessons: '#10B981', 
+      lessons: '#10B981',
       rentals: '#F59E0B',
-      tickets: '#EF4444'
+      tickets: '#EF4444',
     };
     return colors[type];
   };
@@ -142,8 +136,7 @@ export default function Discover() {
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
       <TouchableOpacity
         style={[styles.filterChip, selectedType === 'all' && styles.filterChipActive]}
-        onPress={() => setSelectedType('all')}
-      >
+        onPress={() => setSelectedType('all')}>
         <Text style={[styles.filterText, selectedType === 'all' && styles.filterTextActive]}>
           All
         </Text>
@@ -152,8 +145,7 @@ export default function Discover() {
         <TouchableOpacity
           key={type}
           style={[styles.filterChip, selectedType === type && styles.filterChipActive]}
-          onPress={() => setSelectedType(type)}
-        >
+          onPress={() => setSelectedType(type)}>
           <Text style={[styles.filterText, selectedType === type && styles.filterTextActive]}>
             {PRODUCT_TYPE_LABELS[type]}
           </Text>
@@ -165,7 +157,7 @@ export default function Discover() {
   return (
     <SafeAreaView style={styles.container}>
       <Header showCart={true} />
-      
+
       <View style={styles.content}>
         {/* Search Bar */}
         <View style={styles.searchContainer}>

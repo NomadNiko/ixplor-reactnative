@@ -5,13 +5,9 @@ import { StyleSheet } from 'react-native';
 
 type FontFamily = 'FontAwesome' | 'FontAwesome5' | 'FontAwesome6';
 
-export const TabBarIcon = (props: {
-  name: string;
-  color: string;
-  family?: FontFamily;
-}) => {
+export const TabBarIcon = (props: { name: string; color: string; family?: FontFamily }) => {
   const { family = 'FontAwesome6', ...iconProps } = props;
-  
+
   switch (family) {
     case 'FontAwesome':
       return <FontAwesome size={28} style={styles.tabBarIcon} {...iconProps} />;

@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const tokens = await getTokensInfo();
       console.log('Auth check - tokens:', tokens ? 'Found' : 'None');
-      
+
       if (!tokens?.token) {
         console.log('Auth check - no token found');
         setUser(null);
@@ -51,10 +51,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: userData?.email,
         firstName: userData?.firstName,
         lastName: userData?.lastName,
-        photo: userData?.photo ? {
-          id: userData.photo.id,
-          path: userData.photo.path
-        } : 'No photo'
+        photo: userData?.photo
+          ? {
+              id: userData.photo.id,
+              path: userData.photo.path,
+            }
+          : 'No photo',
       });
       setUser(userData);
     } catch (error) {
@@ -72,12 +74,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: response.user?.email,
         firstName: response.user?.firstName,
         lastName: response.user?.lastName,
-        photo: response.user?.photo ? {
-          id: response.user.photo.id,
-          path: response.user.photo.path
-        } : 'No photo'
+        photo: response.user?.photo
+          ? {
+              id: response.user.photo.id,
+              path: response.user.photo.path,
+            }
+          : 'No photo',
       });
-      
+
       await setTokensInfo({
         token: response.token,
         refreshToken: response.refreshToken,
@@ -136,12 +140,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: response.user?.email,
         firstName: response.user?.firstName,
         lastName: response.user?.lastName,
-        photo: response.user?.photo ? {
-          id: response.user.photo.id,
-          path: response.user.photo.path
-        } : 'No photo'
+        photo: response.user?.photo
+          ? {
+              id: response.user.photo.id,
+              path: response.user.photo.path,
+            }
+          : 'No photo',
       });
-      
+
       await setTokensInfo({
         token: response.token,
         refreshToken: response.refreshToken,

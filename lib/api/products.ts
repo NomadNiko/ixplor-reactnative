@@ -1,6 +1,13 @@
 import { API_URL } from './config';
 import { getTokensInfo } from './storage';
-import { Product, ProductTemplate, ProductItem, ProductResponse, ProductItemResponse, ProductType } from '~/lib/types/product';
+import {
+  Product,
+  ProductTemplate,
+  ProductItem,
+  ProductResponse,
+  ProductItemResponse,
+  ProductType,
+} from '~/lib/types/product';
 
 const createHeaders = async (includeAuth = true) => {
   const headers: Record<string, string> = {
@@ -22,7 +29,7 @@ const transformProductTemplate = (template: any): ProductTemplate => {
   // Extract coordinates from GeoJSON location
   const longitude = template.location?.coordinates?.[0] || 0;
   const latitude = template.location?.coordinates?.[1] || 0;
-  
+
   return {
     ...template,
     longitude,
@@ -35,7 +42,7 @@ const transformProduct = (product: any): Product => {
   // Extract coordinates from GeoJSON location
   const longitude = product.location?.coordinates?.[0] || 0;
   const latitude = product.location?.coordinates?.[1] || 0;
-  
+
   // Map template fields to product fields for backward compatibility
   return {
     ...product,
@@ -53,12 +60,12 @@ const transformProduct = (product: any): Product => {
   };
 };
 
-// Transform product item data from backend format to mobile format  
+// Transform product item data from backend format to mobile format
 const transformProductItem = (item: any): ProductItem => {
   // Extract coordinates from GeoJSON location
   const longitude = item.location?.coordinates?.[0] || 0;
   const latitude = item.location?.coordinates?.[1] || 0;
-  
+
   return {
     ...item,
     longitude,
@@ -81,24 +88,24 @@ export const productsApi = {
     }
 
     const result = await response.json();
-    
+
     // Transform product data to include computed lat/lng fields
     const products = result.data ? result.data.map(transformProduct) : [];
-    
-    console.log('ProductsAPI - Products fetched and transformed:', { 
+
+    console.log('ProductsAPI - Products fetched and transformed:', {
       count: products.length,
       sample: products.slice(0, 3).map((p: Product) => ({
         id: p._id?.substring(0, 8),
         name: p.productName,
         type: p.productType,
         vendor: p.vendorId?.substring(0, 8),
-        coordinates: [p.longitude, p.latitude]
-      }))
+        coordinates: [p.longitude, p.latitude],
+      })),
     });
-    
+
     return {
       ...result,
-      data: products
+      data: products,
     };
   },
 
@@ -116,27 +123,34 @@ export const productsApi = {
     }
 
     const result = await response.json();
-    
+
     // Transform product data to include computed lat/lng fields
     const products = result.data ? result.data.map(transformProduct) : [];
-    
+
     console.log('ProductsAPI - Vendor products fetched and transformed:', {
       vendorId: vendorId.substring(0, 8),
-      count: products.length
+      count: products.length,
     });
-    
+
     return {
       ...result,
-      data: products
+      data: products,
     };
   },
 
-  async getNearbyProducts(lat: number, lng: number, radius: number = 10000): Promise<ProductResponse> {
+  async getNearbyProducts(
+    lat: number,
+    lng: number,
+    radius: number = 10000
+  ): Promise<ProductResponse> {
     console.log('ProductsAPI - Fetching nearby product items:', { lat, lng, radius });
-    const response = await fetch(`${API_URL}/product-items/nearby?lat=${lat}&lng=${lng}&radius=${radius}`, {
-      method: 'GET',
-      headers: await createHeaders(false),
-    });
+    const response = await fetch(
+      `${API_URL}/product-items/nearby?lat=${lat}&lng=${lng}&radius=${radius}`,
+      {
+        method: 'GET',
+        headers: await createHeaders(false),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
@@ -145,10 +159,10 @@ export const productsApi = {
     }
 
     const result = await response.json();
-    console.log('ProductsAPI - Nearby products fetched:', { 
+    console.log('ProductsAPI - Nearby products fetched:', {
       location: `${lat},${lng}`,
       radius,
-      count: result.data?.length || 0
+      count: result.data?.length || 0,
     });
     return result;
   },
@@ -167,19 +181,22 @@ export const productsApi = {
     }
 
     const result = await response.json();
-    console.log('ProductsAPI - Products by type fetched:', { 
+    console.log('ProductsAPI - Products by type fetched:', {
       type,
-      count: result.data?.length || 0
+      count: result.data?.length || 0,
     });
     return result;
   },
 
   async searchProducts(searchTerm: string): Promise<ProductResponse> {
     console.log('ProductsAPI - Searching products:', searchTerm);
-    const response = await fetch(`${API_URL}/products/search?term=${encodeURIComponent(searchTerm)}`, {
-      method: 'GET',
-      headers: await createHeaders(false),
-    });
+    const response = await fetch(
+      `${API_URL}/products/search?term=${encodeURIComponent(searchTerm)}`,
+      {
+        method: 'GET',
+        headers: await createHeaders(false),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
@@ -188,9 +205,9 @@ export const productsApi = {
     }
 
     const result = await response.json();
-    console.log('ProductsAPI - Products search results:', { 
+    console.log('ProductsAPI - Products search results:', {
       searchTerm,
-      count: result.data?.length || 0
+      count: result.data?.length || 0,
     });
     return result;
   },
@@ -212,7 +229,7 @@ export const productsApi = {
     console.log('ProductsAPI - Product fetched:', {
       id: result.data._id?.substring(0, 8),
       name: result.data.productName,
-      type: result.data.productType
+      type: result.data.productType,
     });
     return result;
   },

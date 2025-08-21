@@ -60,7 +60,7 @@ export interface InvoicesResponse {
 export const invoicesApi = {
   async getUserInvoices(userId: string): Promise<InvoicesResponse> {
     console.log('InvoicesAPI - Fetching invoices for user:', userId);
-    
+
     const response = await fetch(`${API_URL}/invoices/user/${userId}`, {
       method: 'GET',
       headers: await createHeaders(true),
@@ -73,10 +73,10 @@ export const invoicesApi = {
     }
 
     const result = await response.json();
-    
+
     // Backend returns array directly, wrap in data field for consistency
     const invoices = Array.isArray(result) ? result : result.data || [];
-    
+
     console.log('InvoicesAPI - User invoices fetched:', {
       userId: userId.substring(0, 8),
       invoiceCount: invoices.length,
@@ -86,19 +86,19 @@ export const invoicesApi = {
         amount: inv.amount,
         vendorCount: inv.vendorGroups?.length || 0,
         date: inv.invoiceDate,
-        status: inv.status
-      }))
+        status: inv.status,
+      })),
     });
 
     return {
       data: invoices,
-      total: invoices.length
+      total: invoices.length,
     };
   },
 
   async getVendorInvoices(vendorId: string): Promise<InvoicesResponse> {
     console.log('InvoicesAPI - Fetching invoices for vendor:', vendorId);
-    
+
     const response = await fetch(`${API_URL}/invoices/vendor/${vendorId}`, {
       method: 'GET',
       headers: await createHeaders(true),
@@ -111,24 +111,24 @@ export const invoicesApi = {
     }
 
     const result = await response.json();
-    
+
     // Backend returns array directly, wrap in data field for consistency
     const invoices = Array.isArray(result) ? result : result.data || [];
-    
+
     console.log('InvoicesAPI - Vendor invoices fetched:', {
       vendorId: vendorId.substring(0, 8),
-      invoiceCount: invoices.length
+      invoiceCount: invoices.length,
     });
 
     return {
       data: invoices,
-      total: invoices.length
+      total: invoices.length,
     };
   },
 
   async getInvoice(invoiceId: string): Promise<{ data: Invoice }> {
     console.log('InvoicesAPI - Fetching invoice:', invoiceId);
-    
+
     const response = await fetch(`${API_URL}/invoices/${invoiceId}`, {
       method: 'GET',
       headers: await createHeaders(true),
@@ -144,7 +144,7 @@ export const invoicesApi = {
     console.log('InvoicesAPI - Invoice fetched:', {
       id: result.data._id.substring(0, 8),
       amount: result.data.amount,
-      vendorGroups: result.data.vendorGroups?.length || 0
+      vendorGroups: result.data.vendorGroups?.length || 0,
     });
 
     return result;
@@ -152,13 +152,16 @@ export const invoicesApi = {
 };
 
 export const formatInvoiceAmount = (amount: number, currency: string = 'USD'): string => {
-  return `$${(amount / 100).toFixed(2)}`; // Convert cents to dollars
+  // Amount is already converted from cents to dollars by the server
+  return `$${Number(amount).toFixed(2)}`;
 };
 
 export const getInvoiceTotalItems = (invoice: Invoice): number => {
-  return invoice.vendorGroups?.reduce((total, group) => {
-    return total + group.items.reduce((groupTotal, item) => groupTotal + item.quantity, 0);
-  }, 0) || 0;
+  return (
+    invoice.vendorGroups?.reduce((total, group) => {
+      return total + group.items.reduce((groupTotal, item) => groupTotal + item.quantity, 0);
+    }, 0) || 0
+  );
 };
 
 export const formatInvoiceDate = (dateString: string): string => {

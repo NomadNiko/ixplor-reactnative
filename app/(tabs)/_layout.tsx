@@ -32,42 +32,54 @@ export default function TabLayout() {
           name="index"
           options={{
             title: 'Home',
-            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} family="FontAwesome5" />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="home" color={color} family="FontAwesome5" />
+            ),
           }}
         />
         <Tabs.Screen
           name="dashboard"
           options={{
             title: 'Dashboard',
-            tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} family="FontAwesome6" />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="user" color={color} family="FontAwesome6" />
+            ),
           }}
         />
         <Tabs.Screen
           name="discover"
           options={{
             title: 'Discover',
-            tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} family="FontAwesome5" />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="search" color={color} family="FontAwesome5" />
+            ),
           }}
         />
         <Tabs.Screen
           name="tickets"
           options={{
             title: 'Tickets',
-            tabBarIcon: ({ color }) => <TabBarIcon name="tag" color={color} family="FontAwesome5" />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="tag" color={color} family="FontAwesome5" />
+            ),
           }}
         />
         <Tabs.Screen
           name="receipts"
           options={{
             title: 'Receipts',
-            tabBarIcon: ({ color }) => <TabBarIcon name="receipt" color={color} family="FontAwesome5" />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="receipt" color={color} family="FontAwesome5" />
+            ),
           }}
         />
         <Tabs.Screen
           name="support"
           options={{
             title: 'Support',
-            tabBarIcon: ({ color }) => <TabBarIcon name="headset" color={color} family="FontAwesome5" />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="headset" color={color} family="FontAwesome5" />
+            ),
           }}
         />
       </Tabs>

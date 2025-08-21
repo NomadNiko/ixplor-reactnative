@@ -51,9 +51,9 @@ export const profileApi = {
       lastName: updateData.lastName,
       email: updateData.email,
       hasPhoto: !!updateData.photo,
-      hasPassword: !!updateData.password
+      hasPassword: !!updateData.password,
     });
-    
+
     const response = await fetch(`${API_URL}/v1/auth/me`, {
       method: 'PATCH',
       headers: await createHeaders(true),
@@ -67,12 +67,12 @@ export const profileApi = {
     }
 
     const result = await response.json();
-    
+
     console.log('ProfileAPI - Profile updated successfully:', {
       id: result.id,
       name: `${result.firstName} ${result.lastName}`,
       email: result.email,
-      hasPhoto: !!result.photo
+      hasPhoto: !!result.photo,
     });
 
     return { data: result };
@@ -80,7 +80,7 @@ export const profileApi = {
 
   async uploadProfileImage(imageUri: string): Promise<FileEntity> {
     console.log('ProfileAPI - Uploading profile image');
-    
+
     const formData = new FormData();
     formData.append('file', {
       uri: imageUri,
@@ -90,7 +90,7 @@ export const profileApi = {
 
     const tokens = await getTokensInfo();
     const headers: Record<string, string> = {};
-    
+
     if (tokens?.token) {
       headers.Authorization = `Bearer ${tokens.token}`;
     }
@@ -108,13 +108,13 @@ export const profileApi = {
     }
 
     const result = await response.json();
-    
+
     // The backend returns the file in a specific format based on the frontend code
     const fileEntity = result.file || result;
-    
+
     console.log('ProfileAPI - Image uploaded successfully:', {
       id: fileEntity.id,
-      path: fileEntity.path
+      path: fileEntity.path,
     });
 
     return fileEntity;

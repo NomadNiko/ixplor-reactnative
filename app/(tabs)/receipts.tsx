@@ -13,7 +13,13 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
-import { invoicesApi, Invoice, formatInvoiceAmount, getInvoiceTotalItems, formatInvoiceDate } from '~/lib/api/invoices';
+import {
+  invoicesApi,
+  Invoice,
+  formatInvoiceAmount,
+  getInvoiceTotalItems,
+  formatInvoiceDate,
+} from '~/lib/api/invoices';
 
 type ReceiptCardProps = {
   invoice: Invoice;
@@ -28,25 +34,21 @@ const ReceiptCard = ({ invoice, onPress }: ReceiptCardProps) => {
     <TouchableOpacity onPress={onPress} style={styles.receiptCard}>
       <LinearGradient
         colors={['rgba(28, 40, 58, 0.8)', 'rgba(21, 29, 43, 0.8)']}
-        style={styles.cardGradient}
-      >
+        style={styles.cardGradient}>
         <View style={styles.cardHeader}>
           <View style={styles.receiptInfo}>
             <Text style={styles.receiptId}>#{invoice._id.substring(0, 8)}</Text>
-            <Text style={styles.receiptDate}>
-              {formatInvoiceDate(invoice.invoiceDate)}
-            </Text>
+            <Text style={styles.receiptDate}>{formatInvoiceDate(invoice.invoiceDate)}</Text>
           </View>
-          <Text style={styles.receiptAmount}>
-            {formatInvoiceAmount(invoice.amount)}
-          </Text>
+          <Text style={styles.receiptAmount}>{formatInvoiceAmount(invoice.amount)}</Text>
         </View>
-        
+
         <View style={styles.cardBody}>
           <Text style={styles.receiptDescription}>
-            {vendorCount} {vendorCount === 1 ? 'vendor' : 'vendors'} • {totalItems} {totalItems === 1 ? 'item' : 'items'}
+            {vendorCount} {vendorCount === 1 ? 'vendor' : 'vendors'} • {totalItems}{' '}
+            {totalItems === 1 ? 'item' : 'items'}
           </Text>
-          
+
           <View style={styles.vendorsList}>
             {invoice.vendorGroups?.slice(0, 2).map((group, index) => (
               <Text key={group.vendorId} style={styles.vendorName}>
@@ -54,9 +56,7 @@ const ReceiptCard = ({ invoice, onPress }: ReceiptCardProps) => {
                 {index < Math.min(invoice.vendorGroups.length - 1, 1) && ', '}
               </Text>
             ))}
-            {vendorCount > 2 && (
-              <Text style={styles.moreVendors}>+{vendorCount - 2} more</Text>
-            )}
+            {vendorCount > 2 && <Text style={styles.moreVendors}>+{vendorCount - 2} more</Text>}
           </View>
         </View>
 
@@ -111,19 +111,18 @@ export default function Receipts() {
       }
 
       const response = await invoicesApi.getUserInvoices(user.id);
-      
+
       console.log('Receipts - All invoices loaded:', {
         totalInvoices: response.data?.length || 0,
-        totalAmount: response.data?.reduce((sum, inv) => sum + inv.amount, 0) || 0
+        totalAmount: response.data?.reduce((sum, inv) => sum + inv.amount, 0) || 0,
       });
-      
+
       // Sort by date (most recent first)
-      const sortedInvoices = (response.data || []).sort((a, b) => 
-        new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime()
+      const sortedInvoices = (response.data || []).sort(
+        (a, b) => new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime()
       );
-      
+
       setInvoices(sortedInvoices);
-      
     } catch (error) {
       console.error('Receipts - Failed to load invoices:', error);
       Alert.alert('Error', 'Failed to load receipts. Please try again.');
@@ -142,20 +141,19 @@ export default function Receipts() {
   };
 
   const showReceiptDetails = (invoice: Invoice) => {
-    const vendorDetails = invoice.vendorGroups
-      ?.map(group => `${group.vendorName}: $${group.subtotal.toFixed(2)}`)
-      .join('\n') || 'No vendor details';
+    const vendorDetails =
+      invoice.vendorGroups
+        ?.map((group) => `${group.vendorName}: $${group.subtotal.toFixed(2)}`)
+        .join('\n') || 'No vendor details';
 
     Alert.alert(
       `Receipt #${invoice._id.substring(0, 8)}`,
       `Date: ${formatInvoiceDate(invoice.invoiceDate)}\n` +
-      `Total: ${formatInvoiceAmount(invoice.amount)}\n` +
-      `Status: ${invoice.status}\n` +
-      `Type: ${invoice.type}\n\n` +
-      `Vendors:\n${vendorDetails}`,
-      [
-        { text: 'Close', style: 'cancel' },
-      ]
+        `Total: ${formatInvoiceAmount(invoice.amount)}\n` +
+        `Status: ${invoice.status}\n` +
+        `Type: ${invoice.type}\n\n` +
+        `Vendors:\n${vendorDetails}`,
+      [{ text: 'Close', style: 'cancel' }]
     );
   };
 
@@ -167,22 +165,19 @@ export default function Receipts() {
     const thisMonth = new Date();
     thisMonth.setDate(1);
     thisMonth.setHours(0, 0, 0, 0);
-    
+
     return invoices
-      .filter(inv => new Date(inv.invoiceDate) >= thisMonth)
+      .filter((inv) => new Date(inv.invoiceDate) >= thisMonth)
       .reduce((sum, inv) => sum + inv.amount, 0);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <Header showCart={true} />
-      
+
       <ScrollView
         style={styles.content}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      >
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
         <View style={styles.header}>
           <Text style={styles.title}>All Receipts</Text>
           <Text style={styles.subtitle}>Your purchase history</Text>
@@ -193,8 +188,7 @@ export default function Receipts() {
           <View style={styles.summaryContainer}>
             <LinearGradient
               colors={['rgba(28, 40, 58, 0.6)', 'rgba(21, 29, 43, 0.6)']}
-              style={styles.summaryCard}
-            >
+              style={styles.summaryCard}>
               <View style={styles.summaryRow}>
                 <View style={styles.summaryItem}>
                   <Text style={styles.summaryLabel}>Total Receipts</Text>
@@ -202,17 +196,13 @@ export default function Receipts() {
                 </View>
                 <View style={styles.summaryItem}>
                   <Text style={styles.summaryLabel}>Total Spent</Text>
-                  <Text style={styles.summaryValue}>
-                    ${getTotalSpent().toFixed(2)}
-                  </Text>
+                  <Text style={styles.summaryValue}>${getTotalSpent().toFixed(2)}</Text>
                 </View>
               </View>
               <View style={styles.summaryRow}>
                 <View style={styles.summaryItem}>
                   <Text style={styles.summaryLabel}>This Month</Text>
-                  <Text style={styles.summaryValue}>
-                    ${getThisMonthSpent().toFixed(2)}
-                  </Text>
+                  <Text style={styles.summaryValue}>${getThisMonthSpent().toFixed(2)}</Text>
                 </View>
                 <View style={styles.summaryItem}>
                   <Text style={styles.summaryLabel}>Average Order</Text>
