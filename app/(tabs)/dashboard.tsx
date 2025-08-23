@@ -33,6 +33,10 @@ import {
 import { profileApi, UpdateProfileDto } from '~/lib/api/profile';
 import { getRecentActiveTickets } from '~/lib/utils/ticketUtils';
 import { router } from 'expo-router';
+import { FontFamilies } from '~/src/styles/fonts';
+import { TicketDetailModal } from '~/src/components/TicketDetailModal';
+import TicketCardModal from '~/src/components/TicketCardModal';
+import { ReceiptDetailModal } from '~/src/components/ReceiptDetailModal';
 
 type TicketCardProps = {
   title: string;
@@ -54,9 +58,10 @@ const TicketCard = ({
   quantity,
   price,
   status,
-}: TicketCardProps) => {
+  onPress,
+}: TicketCardProps & { onPress?: () => void }) => {
   return (
-    <View style={styles.ticketCard}>
+    <TouchableOpacity style={styles.ticketCard} onPress={onPress}>
       <View style={styles.ticketHeader}>
         <View style={styles.ticketInfo}>
           <Text style={styles.ticketTitle}>{title}</Text>
@@ -86,7 +91,7 @@ const TicketCard = ({
         <Text style={styles.quantityText}>Qty: {quantity}</Text>
         <Text style={styles.priceText}>{price}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -387,6 +392,14 @@ export default function Dashboard() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
+  // Modal states
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [selectedSupportTicket, setSelectedSupportTicket] = useState<SupportTicket | null>(null);
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       {
@@ -615,7 +628,7 @@ export default function Dashboard() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Upcoming Tickets</Text>
+            <Text style={styles.sectionTitle}>Tickets</Text>
             <TouchableOpacity onPress={() => router.push('/(tabs)/tickets')}>
               <Text style={styles.viewAllText}>View All</Text>
             </TouchableOpacity>
@@ -627,7 +640,14 @@ export default function Dashboard() {
             </View>
           ) : recentActiveTickets.length > 0 ? (
             recentActiveTickets.map((ticket) => (
-              <TicketCard key={ticket._id || ticket.id} {...formatTicketForDisplay(ticket)} />
+              <TicketCard
+                key={ticket._id || ticket.id}
+                {...formatTicketForDisplay(ticket)}
+                onPress={() => {
+                  setSelectedTicket(ticket);
+                  setShowTicketModal(true);
+                }}
+              />
             ))
           ) : (
             <View style={styles.emptyContainer}>
@@ -655,10 +675,8 @@ export default function Dashboard() {
                 key={invoice._id}
                 invoice={invoice}
                 onPress={() => {
-                  Alert.alert(
-                    'Receipt Details',
-                    `Invoice: ${invoice._id}\nAmount: ${formatInvoiceAmount(invoice.amount)}\nDate: ${formatInvoiceDate(invoice.invoiceDate)}`
-                  );
+                  setSelectedInvoice(invoice);
+                  setShowReceiptModal(true);
                 }}
               />
             ))
@@ -688,10 +706,8 @@ export default function Dashboard() {
                 key={ticket._id}
                 ticket={ticket}
                 onPress={() => {
-                  Alert.alert(
-                    `Ticket ${ticket.ticketId}`,
-                    `Status: ${SUPPORT_TICKET_STATUS_LABELS[ticket.status]}\nTitle: ${ticket.ticketTitle}\n\nTap "View All" to manage your tickets.`
-                  );
+                  setSelectedSupportTicket(ticket);
+                  setShowSupportModal(true);
                 }}
               />
             ))
@@ -710,6 +726,43 @@ export default function Dashboard() {
         user={user}
         onSave={handleUpdateProfile}
         isLoading={isUpdatingProfile}
+      />
+
+      {/* Ticket Modal */}
+      <TicketCardModal
+        visible={showTicketModal}
+        ticket={selectedTicket}
+        onClose={() => {
+          setShowTicketModal(false);
+          setSelectedTicket(null);
+        }}
+      />
+
+      {/* Support Ticket Modal */}
+      <TicketDetailModal
+        visible={showSupportModal}
+        ticket={selectedSupportTicket}
+        onClose={() => {
+          setShowSupportModal(false);
+          setSelectedSupportTicket(null);
+        }}
+        onUpdate={(updatedTicket) => {
+          if (updatedTicket) {
+            setRecentSupportTickets((prev) =>
+              prev.map((t) => (t._id === updatedTicket._id ? updatedTicket : t))
+            );
+          }
+        }}
+      />
+
+      {/* Receipt Modal */}
+      <ReceiptDetailModal
+        visible={showReceiptModal}
+        invoice={selectedInvoice}
+        onClose={() => {
+          setShowReceiptModal(false);
+          setSelectedInvoice(null);
+        }}
       />
     </SafeAreaView>
   );
@@ -741,7 +794,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 4,
   },
@@ -749,6 +802,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94A3B8',
     marginBottom: 16,
+    fontFamily: FontFamilies.primary,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -763,7 +817,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
   },
   logoutButton: {
     backgroundColor: '#EF4444',
@@ -774,7 +828,7 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
   },
   debugText: {
     fontSize: 12,
@@ -793,12 +847,12 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
   },
   subSectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginTop: 20,
     marginBottom: 12,
@@ -806,13 +860,14 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 14,
     color: '#3B82F6',
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
   },
   supportText: {
     fontSize: 14,
     color: '#94A3B8',
     marginBottom: 16,
     lineHeight: 20,
+    fontFamily: FontFamilies.primary,
   },
   supportButton: {
     backgroundColor: '#3B82F6',
@@ -824,7 +879,7 @@ const styles = StyleSheet.create({
   supportButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     textAlign: 'center',
   },
   receiptCard: {
@@ -843,17 +898,19 @@ const styles = StyleSheet.create({
   },
   receiptAmount: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#3B82F6',
   },
   receiptDate: {
     fontSize: 14,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   receiptDetails: {
     fontSize: 14,
     color: '#94A3B8',
     marginBottom: 8,
+    fontFamily: FontFamilies.primary,
   },
   receiptVendors: {
     flexDirection: 'row',
@@ -862,7 +919,7 @@ const styles = StyleSheet.create({
   receiptVendorName: {
     fontSize: 14,
     color: '#F8FAFC',
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
   },
   ticketCard: {
     backgroundColor: 'rgba(28, 40, 58, 0.8)',
@@ -883,13 +940,14 @@ const styles = StyleSheet.create({
   },
   ticketTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 4,
   },
   ticketSubtitle: {
     fontSize: 14,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   statusBadge: {
     backgroundColor: '#3B82F6',
@@ -900,7 +958,7 @@ const styles = StyleSheet.create({
   statusText: {
     color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   ticketDetails: {
     marginBottom: 12,
@@ -918,6 +976,7 @@ const styles = StyleSheet.create({
   ticketDetailText: {
     fontSize: 14,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   ticketFooter: {
     flexDirection: 'row',
@@ -930,12 +989,12 @@ const styles = StyleSheet.create({
   quantityText: {
     fontSize: 14,
     color: '#3B82F6',
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
   },
   priceText: {
     fontSize: 18,
     color: '#3B82F6',
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -945,6 +1004,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#94A3B8',
     marginTop: 8,
+    fontFamily: FontFamilies.primary,
   },
   emptyContainer: {
     alignItems: 'center',
@@ -953,17 +1013,19 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     color: '#F8FAFC',
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
     color: '#94A3B8',
     textAlign: 'center',
+    fontFamily: FontFamilies.primary,
   },
   errorText: {
     fontSize: 16,
     color: '#F8FAFC',
+    fontFamily: FontFamilies.primary,
   },
   // Support Ticket Card Styles
   supportTicketCard: {
@@ -982,7 +1044,7 @@ const styles = StyleSheet.create({
   },
   supportTicketId: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#3B82F6',
   },
   supportStatusBadge: {
@@ -992,13 +1054,13 @@ const styles = StyleSheet.create({
   },
   supportStatusText: {
     fontSize: 10,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#FFFFFF',
     textTransform: 'uppercase',
   },
   supportTicketTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 8,
     lineHeight: 20,
@@ -1006,6 +1068,7 @@ const styles = StyleSheet.create({
   supportTicketDate: {
     fontSize: 12,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   // Profile placeholder styles
   profilePlaceholder: {
@@ -1015,7 +1078,7 @@ const styles = StyleSheet.create({
   },
   profileInitials: {
     fontSize: 40,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#FFFFFF',
   },
   // Modal styles
@@ -1033,17 +1096,18 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
   },
   modalCancelText: {
     fontSize: 16,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   modalSaveText: {
     fontSize: 16,
     color: '#3B82F6',
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   modalButtonDisabled: {
     opacity: 0.5,
@@ -1057,7 +1121,7 @@ const styles = StyleSheet.create({
   },
   formLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 8,
   },
@@ -1081,7 +1145,7 @@ const styles = StyleSheet.create({
   changePhotoText: {
     fontSize: 14,
     color: '#3B82F6',
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
   },
   textInput: {
     backgroundColor: 'rgba(28, 40, 58, 0.8)',
@@ -1091,5 +1155,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    fontFamily: FontFamilies.primary,
   },
 });

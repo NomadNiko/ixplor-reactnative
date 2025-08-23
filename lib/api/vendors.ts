@@ -1,6 +1,20 @@
 import { API_URL } from './config';
 import { getTokensInfo } from './storage';
 
+// Cache for vendors data to reduce API calls
+interface VendorCache {
+  data: Vendor[];
+  timestamp: number;
+  ttl: number; // Time to live in milliseconds
+}
+
+let vendorCache: VendorCache | null = null;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Distance calculation cache to avoid repeated calculations
+const distanceCache = new Map<string, number>();
+const DISTANCE_CACHE_SIZE = 1000;
+
 const createHeaders = async (includeAuth = true) => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -79,7 +93,16 @@ const transformVendor = (vendor: any): Vendor => {
 
 export const vendorsApi = {
   async getVendors(): Promise<VendorsResponse> {
-    console.log('VendorsAPI - Fetching all approved vendors');
+    // Check cache first
+    if (vendorCache && (Date.now() - vendorCache.timestamp) < vendorCache.ttl) {
+      console.log('VendorsAPI - Returning cached vendors data');
+      return {
+        data: vendorCache.data,
+        total: vendorCache.data.length,
+      };
+    }
+    
+    console.log('VendorsAPI - Fetching all approved vendors from API');
     const response = await fetch(`${API_URL}/vendors`, {
       method: 'GET',
       headers: await createHeaders(false),
@@ -95,8 +118,15 @@ export const vendorsApi = {
 
     // Transform vendor data to include computed lat/lng fields
     const transformedVendors = result.data?.map(transformVendor) || [];
+    
+    // Update cache
+    vendorCache = {
+      data: transformedVendors,
+      timestamp: Date.now(),
+      ttl: CACHE_TTL,
+    };
 
-    console.log('VendorsAPI - Vendors fetched and transformed:', {
+    console.log('VendorsAPI - Vendors fetched, transformed, and cached:', {
       count: transformedVendors.length,
       sample: transformedVendors.slice(0, 3).map((v: Vendor) => ({
         id: v._id?.substring(0, 8),
@@ -201,8 +231,17 @@ export const vendorsApi = {
     };
   },
 
-  // Distance calculation (Haversine formula) - same as frontend
+  // Optimized distance calculation with caching
   calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    // Create cache key
+    const cacheKey = `${lat1.toFixed(4)},${lon1.toFixed(4)},${lat2.toFixed(4)},${lon2.toFixed(4)}`;
+    
+    // Check cache first
+    if (distanceCache.has(cacheKey)) {
+      return distanceCache.get(cacheKey)!;
+    }
+    
+    // Calculate distance using Haversine formula
     const R = 3963; // Radius of Earth in miles
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
@@ -213,7 +252,23 @@ export const vendorsApi = {
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in miles
+    const distance = R * c; // Distance in miles
+    
+    // Cache the result (with size limit)
+    if (distanceCache.size >= DISTANCE_CACHE_SIZE) {
+      // Remove oldest entries (first in Map)
+      const firstKey = distanceCache.keys().next().value;
+      distanceCache.delete(firstKey);
+    }
+    distanceCache.set(cacheKey, distance);
+    
+    return distance;
+  },
+  
+  // Clear caches (useful for testing or memory management)
+  clearCaches(): void {
+    vendorCache = null;
+    distanceCache.clear();
   },
 
   async getVendorsByType(

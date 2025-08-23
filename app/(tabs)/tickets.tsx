@@ -21,6 +21,7 @@ import {
   formatTicketPrice,
   getStatusBreakdown,
 } from '~/lib/utils/ticketUtils';
+import { FontFamilies } from '~/src/styles/fonts';
 
 type TicketListItemProps = {
   ticket: Ticket;
@@ -73,7 +74,11 @@ export default function Tickets() {
       return;
     }
 
-    console.log('Tickets screen - Loading ALL tickets for user:', user.id, isRefresh ? '(refreshing)' : '');
+    console.log(
+      'Tickets screen - Loading ALL tickets for user:',
+      user.id,
+      isRefresh ? '(refreshing)' : ''
+    );
 
     try {
       if (!isRefresh) setIsLoading(true);
@@ -158,18 +163,17 @@ export default function Tickets() {
           <Text style={styles.loadingText}>Loading all your tickets...</Text>
         </View>
       ) : sortedTickets.length > 0 ? (
-        <ScrollView 
-          style={styles.scrollView} 
+        <ScrollView
+          style={styles.scrollView}
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl 
-              refreshing={refreshing} 
+            <RefreshControl
+              refreshing={refreshing}
               onRefresh={handleRefresh}
               tintColor="#3B82F6"
-              colors={["#3B82F6"]}
+              colors={['#3B82F6']}
             />
-          }
-        >
+          }>
           {sortedTickets.map((ticket) => (
             <TicketListItem
               key={ticket.id || ticket._id}
@@ -205,13 +209,14 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 16,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   scrollView: {
     flex: 1,
@@ -233,7 +238,7 @@ const styles = StyleSheet.create({
   },
   ticketTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     flex: 1,
     marginRight: 12,
@@ -246,7 +251,7 @@ const styles = StyleSheet.create({
   statusText: {
     color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   vendorText: {
     fontSize: 14,
@@ -254,6 +259,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginBottom: 8,
     marginTop: -4,
+    fontFamily: FontFamilies.primary,
   },
   ticketDetails: {
     flexDirection: 'row',
@@ -264,16 +270,18 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 14,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   priceText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#3B82F6',
   },
   expiryText: {
     fontSize: 12,
     color: '#EF4444',
     fontStyle: 'italic',
+    fontFamily: FontFamilies.primary,
   },
   centerContainer: {
     flex: 1,
@@ -285,10 +293,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#94A3B8',
     marginTop: 12,
+    fontFamily: FontFamilies.primary,
   },
   emptyTitle: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 8,
     textAlign: 'center',
@@ -298,10 +307,12 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     textAlign: 'center',
     lineHeight: 24,
+    fontFamily: FontFamilies.primary,
   },
   errorText: {
     fontSize: 18,
     color: '#F8FAFC',
     textAlign: 'center',
+    fontFamily: FontFamilies.primary,
   },
 });

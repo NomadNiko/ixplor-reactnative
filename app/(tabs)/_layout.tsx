@@ -18,9 +18,9 @@ export default function TabLayout() {
             backgroundColor: '#1C283A',
             borderTopColor: '#334155',
             borderTopWidth: 1,
-            height: 70,
-            paddingBottom: 10,
-            paddingTop: 10,
+            height: 90,
+            paddingBottom: 25,
+            paddingTop: 12,
           },
           tabBarLabelStyle: {
             fontSize: 12,
@@ -42,7 +42,7 @@ export default function TabLayout() {
           options={{
             title: 'Dashboard',
             tabBarIcon: ({ color }) => (
-              <TabBarIcon name="user" color={color} family="FontAwesome6" />
+              <TabBarIcon name="user-secret" color={color} family="FontAwesome" />
             ),
           }}
         />
@@ -51,7 +51,7 @@ export default function TabLayout() {
           options={{
             title: 'Discover',
             tabBarIcon: ({ color }) => (
-              <TabBarIcon name="search" color={color} family="FontAwesome5" />
+              <TabBarIcon name="passport" color={color} family="FontAwesome5" />
             ),
           }}
         />

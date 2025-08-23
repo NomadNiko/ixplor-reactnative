@@ -113,7 +113,7 @@ export const productsApi = {
     console.log('ProductsAPI - Fetching product templates for vendor:', vendorId);
     const response = await fetch(`${API_URL}/product-templates/by-vendor/${vendorId}`, {
       method: 'GET',
-      headers: await createHeaders(false),
+      headers: await createHeaders(true), // Changed to true to include auth token
     });
 
     if (!response.ok) {
@@ -136,6 +136,11 @@ export const productsApi = {
       ...result,
       data: products,
     };
+  },
+
+  async getVendorProducts(vendorId: string): Promise<ProductResponse> {
+    // Alias for getProductsByVendor for consistency
+    return this.getProductsByVendor(vendorId);
   },
 
   async getNearbyProducts(
@@ -165,6 +170,63 @@ export const productsApi = {
       count: result.data?.length || 0,
     });
     return result;
+  },
+
+  async getNearbyActivitiesForToday(
+    lat: number,
+    lng: number,
+    radius: number = 10
+  ): Promise<ProductItemResponse> {
+    const today = new Date();
+    const twoDaysFromNow = new Date(today);
+    twoDaysFromNow.setDate(today.getDate() + 2);
+
+    console.log('ProductsAPI - Fetching nearby activities for today:', {
+      lat,
+      lng,
+      radius,
+      startDate: today.toISOString(),
+      endDate: twoDaysFromNow.toISOString(),
+    });
+
+    const response = await fetch(
+      `${API_URL}/product-items/nearby-today?` +
+        `lat=${lat}&lng=${lng}&radius=${radius}&` +
+        `startDate=${today.toISOString()}&endDate=${twoDaysFromNow.toISOString()}`,
+      {
+        method: 'GET',
+        headers: await createHeaders(true),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('ProductsAPI - Failed to get nearby activities:', error);
+      throw new Error(error.message || 'Failed to get nearby activities');
+    }
+
+    const result = await response.json();
+
+    // Transform product items to include computed lat/lng fields
+    const activities = result.data ? result.data.map(transformProductItem) : [];
+
+    console.log('ProductsAPI - Nearby activities fetched:', {
+      location: `${lat},${lng}`,
+      radius,
+      count: activities.length,
+      sample: activities.slice(0, 3).map((item: ProductItem) => ({
+        id: item._id?.substring(0, 8),
+        name: item.templateName,
+        date: item.productDate,
+        startTime: item.startTime,
+        coordinates: [item.longitude, item.latitude],
+      })),
+    });
+
+    return {
+      ...result,
+      data: activities,
+    };
   },
 
   async getProductsByType(type: ProductType): Promise<ProductResponse> {

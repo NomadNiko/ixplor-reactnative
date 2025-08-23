@@ -12,6 +12,7 @@ import {
 import { Link, router } from 'expo-router';
 import { useAuth } from '~/lib/auth/context';
 import { useGoogleAuth } from '~/lib/auth/google';
+import { FontFamilies } from '~/src/styles/fonts';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -62,19 +63,20 @@ export default function LoginScreen() {
         className="flex-1">
         <View className="flex-1 justify-center px-6">
           <View className="mb-8">
-            <Text className="mb-2 text-4xl font-bold text-foreground">Welcome Back</Text>
-            <Text className="text-lg text-muted-foreground">Sign in to continue exploring</Text>
+            <Text className="mb-2 text-4xl text-foreground" style={{ fontFamily: FontFamilies.primaryBold }}>Welcome Back</Text>
+            <Text className="text-lg text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>Sign in to continue exploring</Text>
           </View>
 
           <View className="space-y-4">
             <View>
-              <Text className="mb-2 font-medium text-foreground">Email</Text>
+              <Text className="mb-2 text-foreground" style={{ fontFamily: FontFamilies.primaryMedium }}>Email</Text>
               <TextInput
                 value={email}
                 onChangeText={setEmail}
                 placeholder="Enter your email"
                 placeholderTextColor="#9CA3AF"
                 className="rounded-lg border border-border bg-card px-4 py-3 text-foreground"
+                style={{ fontFamily: FontFamilies.primary }}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
@@ -82,13 +84,14 @@ export default function LoginScreen() {
             </View>
 
             <View>
-              <Text className="mb-2 font-medium text-foreground">Password</Text>
+              <Text className="mb-2 text-foreground" style={{ fontFamily: FontFamilies.primaryMedium }}>Password</Text>
               <TextInput
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Enter your password"
                 placeholderTextColor="#9CA3AF"
                 className="rounded-lg border border-border bg-card px-4 py-3 text-foreground"
+                style={{ fontFamily: FontFamilies.primary }}
                 secureTextEntry
                 autoComplete="current-password"
               />
@@ -98,31 +101,31 @@ export default function LoginScreen() {
               onPress={handleLogin}
               disabled={isLoading}
               className="mt-6 rounded-lg bg-primary py-4">
-              <Text className="text-center text-lg font-semibold text-primary-foreground">
+              <Text className="text-center text-lg text-primary-foreground" style={{ fontFamily: FontFamilies.primarySemiBold }}>
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </Text>
             </TouchableOpacity>
 
             <View className="my-6 flex-row items-center">
               <View className="h-px flex-1 bg-border" />
-              <Text className="mx-4 text-muted-foreground">or</Text>
+              <Text className="mx-4 text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>or</Text>
               <View className="h-px flex-1 bg-border" />
             </View>
 
             <TouchableOpacity
               onPress={handleGoogleLogin}
               className="flex-row items-center justify-center rounded-lg border border-border bg-card py-4">
-              <Text className="ml-2 text-lg font-semibold text-foreground">
+              <Text className="ml-2 text-lg text-foreground" style={{ fontFamily: FontFamilies.primarySemiBold }}>
                 Continue with Google
               </Text>
             </TouchableOpacity>
           </View>
 
           <View className="mt-8 flex-row justify-center">
-            <Text className="text-muted-foreground">{"Don't have an account? "}</Text>
+            <Text className="text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>{"Don't have an account? "}</Text>
             <Link href="/auth/signup" asChild>
               <TouchableOpacity>
-                <Text className="font-semibold text-primary">Sign Up</Text>
+                <Text className="text-primary" style={{ fontFamily: FontFamilies.primarySemiBold }}>Sign Up</Text>
               </TouchableOpacity>
             </Link>
           </View>

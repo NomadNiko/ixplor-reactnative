@@ -15,6 +15,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '~/lib/auth/context';
 import { supportTicketsApi } from '~/lib/api/support-tickets';
+import { FontFamilies } from '~/src/styles/fonts';
 import {
   SupportTicket,
   SupportTicketStatus,
@@ -285,11 +286,11 @@ const styles = StyleSheet.create({
   closeButton: {
     fontSize: 16,
     color: '#3B82F6',
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
   },
   content: {
@@ -311,13 +312,14 @@ const styles = StyleSheet.create({
   },
   ticketId: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#3B82F6',
     marginBottom: 4,
   },
   ticketDate: {
     fontSize: 12,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -326,7 +328,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#FFFFFF',
     textTransform: 'uppercase',
   },
@@ -342,13 +344,13 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#3B82F6',
     textTransform: 'uppercase',
   },
   ticketTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
     marginBottom: 12,
   },
@@ -356,6 +358,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#CBD5E1',
     lineHeight: 24,
+    fontFamily: FontFamilies.primary,
   },
   assignedInfo: {
     marginTop: 16,
@@ -367,10 +370,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94A3B8',
     marginBottom: 4,
+    fontFamily: FontFamilies.primary,
   },
   assignedValue: {
     fontSize: 14,
     color: '#F8FAFC',
+    fontFamily: FontFamilies.primaryMedium,
   },
   actionButtons: {
     flexDirection: 'row',
@@ -391,7 +396,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   updateForm: {
     backgroundColor: 'rgba(28, 40, 58, 0.4)',
@@ -403,7 +408,7 @@ const styles = StyleSheet.create({
   },
   updateFormTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 12,
   },
@@ -413,6 +418,7 @@ const styles = StyleSheet.create({
     padding: 12,
     color: '#F8FAFC',
     fontSize: 16,
+    fontFamily: FontFamilies.primary,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     minHeight: 100,
@@ -431,6 +437,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 16,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primaryMedium,
   },
   submitButton: {
     minWidth: 100,
@@ -444,14 +451,14 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   updatesSection: {
     marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
     marginBottom: 16,
   },
@@ -459,6 +466,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748B',
     fontStyle: 'italic',
+    fontFamily: FontFamilies.primary,
   },
   updateCard: {
     backgroundColor: 'rgba(28, 40, 58, 0.4)',
@@ -473,6 +481,7 @@ const styles = StyleSheet.create({
     color: '#E2E8F0',
     lineHeight: 20,
     marginBottom: 8,
+    fontFamily: FontFamilies.primary,
   },
   updateMeta: {
     flexDirection: 'row',
@@ -482,10 +491,12 @@ const styles = StyleSheet.create({
   updateUser: {
     fontSize: 12,
     color: '#64748B',
+    fontFamily: FontFamilies.primary,
   },
   updateDate: {
     fontSize: 12,
     color: '#64748B',
+    fontFamily: FontFamilies.primary,
   },
 });
 

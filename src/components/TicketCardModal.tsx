@@ -14,6 +14,7 @@ import QRCode from 'react-native-qrcode-svg';
 import { Ticket } from '~/lib/api/tickets';
 import { getTicketStatusColor, formatTicketDate, formatTicketPrice } from '~/lib/utils/ticketUtils';
 import { API_URL } from '~/lib/api/config';
+import { FontFamilies } from '~/src/styles/fonts';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const CARD_WIDTH = screenWidth * 0.9;
@@ -76,9 +77,7 @@ export const TicketCardModal: React.FC<TicketCardModalProps> = ({ visible, ticke
                     <Text style={styles.statusText}>{ticket.status}</Text>
                   </View>
                 </View>
-                <Text style={styles.ticketId}>
-                  Ticket #{ticket._id?.slice(-8).toUpperCase()}
-                </Text>
+                <Text style={styles.ticketId}>Ticket #{ticket._id?.slice(-8).toUpperCase()}</Text>
               </View>
 
               {/* Details Section */}
@@ -180,7 +179,7 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
     marginBottom: 4,
   },
@@ -188,6 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#64748B',
     fontStyle: 'italic',
+    fontFamily: FontFamilies.primary,
   },
   closeButton: {
     width: 32,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#F8FAFC',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   statusBadgeOverlay: {
     position: 'absolute',
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   statusText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     textTransform: 'uppercase',
   },
   qrContainer: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   ticketId: {
     fontSize: 14,
     color: '#94A3B8',
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    fontFamily: FontFamilies.primaryMedium,
   },
   detailsContainer: {
     flex: 1,
@@ -255,22 +255,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94A3B8',
     flex: 1,
+    fontFamily: FontFamilies.primary,
   },
   detailValue: {
     fontSize: 14,
     color: '#F8FAFC',
     flex: 2,
     textAlign: 'right',
+    fontFamily: FontFamilies.primaryMedium,
   },
   detailValuePrice: {
     fontSize: 16,
     color: '#3B82F6',
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     flex: 2,
     textAlign: 'right',
   },
   expiryText: {
     color: '#EF4444',
+    fontFamily: FontFamilies.primaryMedium,
   },
   descriptionContainer: {
     marginTop: 16,
@@ -281,6 +284,7 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
     lineHeight: 20,
     marginTop: 8,
+    fontFamily: FontFamilies.primary,
   },
   footer: {
     paddingTop: 16,
@@ -292,6 +296,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748B',
     textAlign: 'center',
+    fontFamily: FontFamilies.primary,
   },
 });
 

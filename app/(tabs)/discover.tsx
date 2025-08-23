@@ -5,153 +5,222 @@ import {
   Text,
   SafeAreaView,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
-  Image,
   Alert,
+  Modal,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
 import { productsApi } from '~/lib/api/products';
-import { Product, ProductType, PRODUCT_TYPE_LABELS } from '~/lib/types/product';
+import { ProductItem, PRODUCT_TYPE_LABELS } from '~/lib/types/product';
+import ProductCard from '~/src/components/ProductCard';
+import { ProductDetailModal } from '~/src/components/ProductDetailModal';
+import { imageCache } from '~/src/lib/services/imageCache';
+import { FontFamilies } from '~/src/styles/fonts';
+
+interface City {
+  name: string;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+const CITIES: City[] = [
+  {
+    name: 'Honolulu',
+    coordinates: {
+      latitude: 21.3099,
+      longitude: -157.8581,
+    },
+  },
+  {
+    name: 'Providence',
+    coordinates: {
+      latitude: 41.824,
+      longitude: -71.4128,
+    },
+  },
+  {
+    name: 'Prague',
+    coordinates: {
+      latitude: 50.0755,
+      longitude: 14.4378,
+    },
+  },
+];
 
 export default function Discover() {
   const { user } = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [selectedCity, setSelectedCity] = useState<City>(CITIES[0]);
+  const [productItems, setProductItems] = useState<ProductItem[]>([]);
+  const [allProductItems, setAllProductItems] = useState<ProductItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState<ProductType | 'all'>('all');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [tempDate, setTempDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+  const [showProductDetail, setShowProductDetail] = useState(false);
 
   useEffect(() => {
-    loadProducts();
-  }, []);
+    loadCityProducts();
+  }, [selectedCity]);
 
   useEffect(() => {
-    filterProducts();
-  }, [products, searchTerm, selectedType]);
+    filterProductsByDate();
+  }, [selectedDate, allProductItems]);
 
-  const loadProducts = async () => {
+  const loadCityProducts = async () => {
     try {
-      console.log('Discover - Loading all products');
       setIsLoading(true);
-      const response = await productsApi.getAllProducts();
+      console.log('Discover - Loading products for city:', selectedCity.name);
 
-      console.log('Discover - Products loaded:', {
+      // Use the nearby products API with ~100 mile radius (160km)
+      const response = await productsApi.getNearbyActivitiesForToday(
+        selectedCity.coordinates.latitude,
+        selectedCity.coordinates.longitude,
+        160 // ~100 miles in km
+      );
+
+      console.log('Discover - City products loaded:', {
+        city: selectedCity.name,
         total: response.data?.length || 0,
-        types: response.data?.reduce((acc: Record<string, number>, p) => {
-          acc[p.productType] = (acc[p.productType] || 0) + 1;
-          return acc;
-        }, {}),
       });
 
-      setProducts(response.data || []);
+      // Store all available products (regardless of date) for date filtering
+      const availableProductsOnly = (response.data || []).filter((item: ProductItem) => {
+        const sold = item.quantitySold || 0;
+        return item.quantityAvailable > sold;
+      });
+
+      setAllProductItems(availableProductsOnly);
+
+      // Preload product images for better UX
+      if (availableProductsOnly.length > 0) {
+        imageCache.preloadProductImages(availableProductsOnly);
+      }
     } catch (error) {
-      console.error('Discover - Failed to load products:', error);
+      console.error('Discover - Failed to load city products:', error);
       Alert.alert('Error', 'Failed to load products. Please try again.');
-      setProducts([]);
+      setAllProductItems([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filterProducts = () => {
-    let filtered = products;
+  const filterProductsByDate = () => {
+    const selectedDateString = selectedDate.toISOString().split('T')[0];
 
-    // Filter by type
-    if (selectedType !== 'all') {
-      filtered = filtered.filter((p) => p.productType === selectedType);
-    }
+    const filteredProducts = allProductItems.filter((item) => {
+      const itemDateString = item.productDate.split('T')[0];
+      return itemDateString === selectedDateString;
+    });
 
-    // Filter by search term
-    if (searchTerm.trim()) {
-      const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.productName.toLowerCase().includes(search) ||
-          p.productDescription.toLowerCase().includes(search)
-      );
-    }
-
-    setFilteredProducts(filtered);
+    setProductItems(filteredProducts);
   };
 
-  const renderProductCard = ({ item: product }: { item: Product }) => (
-    <TouchableOpacity
-      style={styles.productCard}
-      onPress={() => {
-        Alert.alert(
-          product.productName,
-          `${product.productDescription}\n\nPrice: $${product.productPrice}\nType: ${PRODUCT_TYPE_LABELS[product.productType]}`
-        );
-      }}>
-      <LinearGradient
-        colors={['rgba(28, 40, 58, 0.8)', 'rgba(21, 29, 43, 0.8)']}
-        style={styles.cardGradient}>
-        {product.productImageURL && (
-          <Image
-            source={{ uri: product.productImageURL }}
-            style={styles.productImage}
-            resizeMode="cover"
-          />
-        )}
-        <View style={styles.cardContent}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.productName} numberOfLines={2}>
-              {product.productName}
+  const formatDateForDisplay = (date: Date): string => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const onDateChange = (event: any, selectedDate?: Date) => {
+    if (event.type === 'dismissed') {
+      setShowDatePicker(false);
+      return;
+    }
+    if (selectedDate) {
+      setTempDate(selectedDate);
+    }
+  };
+
+  const openDatePicker = () => {
+    setTempDate(selectedDate);
+    setShowDatePicker(true);
+  };
+
+  const confirmDateSelection = () => {
+    setSelectedDate(tempDate);
+    setShowDatePicker(false);
+  };
+
+  const cancelDateSelection = () => {
+    setTempDate(selectedDate);
+    setShowDatePicker(false);
+  };
+
+  const getMinDate = (): Date => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  };
+
+  const getMaxDate = (): Date => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    if (currentMonth === 11) {
+      return new Date(currentYear + 1, 11, 31);
+    } else {
+      return new Date(currentYear, 11, 31);
+    }
+  };
+
+  const handleProductPress = (item: ProductItem) => {
+    setSelectedProduct(item);
+    setShowProductDetail(true);
+  };
+
+  const handleCloseProductDetail = () => {
+    setShowProductDetail(false);
+    setSelectedProduct(null);
+  };
+
+  const handleAddToCart = (product: ProductItem) => {
+    Alert.alert('Added to Cart', `${product.templateName} has been added to your cart!`);
+  };
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 3963; // Radius of Earth in miles
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const renderCitySelector = () => (
+    <View style={styles.cityContainer}>
+      {CITIES.map((city) => {
+        const isActive = selectedCity.name === city.name;
+        return (
+          <TouchableOpacity
+            key={city.name}
+            style={[styles.cityChip, isActive ? styles.cityChipActive : styles.cityChipInactive]}
+            onPress={() => setSelectedCity(city)}>
+            <Text
+              style={[styles.cityText, isActive ? styles.cityTextActive : styles.cityTextInactive]}>
+              {city.name}
             </Text>
-            <View
-              style={[styles.typeBadge, { backgroundColor: getTypeColor(product.productType) }]}>
-              <Text style={styles.typeText}>{PRODUCT_TYPE_LABELS[product.productType]}</Text>
-            </View>
-          </View>
-          <Text style={styles.productDescription} numberOfLines={3}>
-            {product.productDescription}
-          </Text>
-          <View style={styles.cardFooter}>
-            <Text style={styles.productPrice}>${product.productPrice}</Text>
-            {product.productDuration && (
-              <Text style={styles.duration}>{product.productDuration} min</Text>
-            )}
-          </View>
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
-
-  const getTypeColor = (type: ProductType): string => {
-    const colors = {
-      tours: '#3B82F6',
-      lessons: '#10B981',
-      rentals: '#F59E0B',
-      tickets: '#EF4444',
-    };
-    return colors[type];
-  };
-
-  const renderTypeFilter = () => (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
-      <TouchableOpacity
-        style={[styles.filterChip, selectedType === 'all' && styles.filterChipActive]}
-        onPress={() => setSelectedType('all')}>
-        <Text style={[styles.filterText, selectedType === 'all' && styles.filterTextActive]}>
-          All
-        </Text>
-      </TouchableOpacity>
-      {(['tours', 'lessons', 'rentals', 'tickets'] as ProductType[]).map((type) => (
-        <TouchableOpacity
-          key={type}
-          style={[styles.filterChip, selectedType === type && styles.filterChipActive]}
-          onPress={() => setSelectedType(type)}>
-          <Text style={[styles.filterText, selectedType === type && styles.filterTextActive]}>
-            {PRODUCT_TYPE_LABELS[type]}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 
   return (
@@ -159,57 +228,97 @@ export default function Discover() {
       <Header showCart={true} />
 
       <View style={styles.content}>
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search products..."
-            placeholderTextColor="#64748B"
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-          />
+        {/* City Selector */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Explore Cities</Text>
         </View>
+        {renderCitySelector()}
 
-        {/* Type Filters */}
-        {renderTypeFilter()}
+        {/* Date Picker */}
+        <TouchableOpacity style={styles.datePickerButton} onPress={openDatePicker}>
+          <Ionicons name="calendar-outline" size={20} color="#3B82F6" />
+          <Text style={styles.datePickerText}>{formatDateForDisplay(selectedDate)}</Text>
+          <Ionicons name="chevron-down" size={16} color="#94A3B8" />
+        </TouchableOpacity>
+
+        {/* Date Picker Modal */}
+        {showDatePicker && (
+          <Modal visible={true} transparent={true} animationType="fade">
+            <View style={styles.datePickerOverlay}>
+              <View style={styles.datePickerModalContent}>
+                <DateTimePicker
+                  value={tempDate}
+                  mode="date"
+                  display="spinner"
+                  onChange={onDateChange}
+                  minimumDate={getMinDate()}
+                  maximumDate={getMaxDate()}
+                />
+                <View style={styles.datePickerButtons}>
+                  <TouchableOpacity style={styles.cancelButton} onPress={cancelDateSelection}>
+                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.confirmButton} onPress={confirmDateSelection}>
+                    <Text style={styles.confirmButtonText}>Select</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        )}
 
         {/* Results Header */}
         <View style={styles.resultsHeader}>
           <Text style={styles.resultsCount}>
-            {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
+            {productItems.length} {productItems.length === 1 ? 'activity' : 'activities'} in{' '}
+            {selectedCity.name}
           </Text>
-          {searchTerm && (
-            <TouchableOpacity onPress={() => setSearchTerm('')}>
-              <Text style={styles.clearSearch}>Clear</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* Products List */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#3B82F6" />
-            <Text style={styles.loadingText}>Loading products...</Text>
+            <Text style={styles.loadingText}>Loading activities...</Text>
           </View>
-        ) : filteredProducts.length === 0 ? (
+        ) : productItems.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No products found</Text>
-            <Text style={styles.emptySubtext}>
-              {searchTerm ? 'Try adjusting your search terms' : 'Check back later for new products'}
-            </Text>
+            <Text style={styles.emptyText}>No activities found</Text>
+            <Text style={styles.emptySubtext}>Try selecting a different date or city</Text>
           </View>
         ) : (
           <FlatList
-            data={filteredProducts}
-            renderItem={renderProductCard}
+            data={productItems}
+            renderItem={({ item }) => {
+              const distance = calculateDistance(
+                selectedCity.coordinates.latitude,
+                selectedCity.coordinates.longitude,
+                item.latitude,
+                item.longitude
+              );
+
+              return (
+                <ProductCard
+                  product={item}
+                  distance={distance}
+                  onPress={() => handleProductPress(item)}
+                />
+              );
+            }}
             keyExtractor={(item) => item._id}
-            numColumns={2}
-            columnWrapperStyle={styles.row}
             contentContainerStyle={styles.listContainer}
             showsVerticalScrollIndicator={false}
           />
         )}
       </View>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        visible={showProductDetail}
+        product={selectedProduct}
+        onClose={handleCloseProductDetail}
+        onAddToCart={handleAddToCart}
+      />
     </SafeAreaView>
   );
 }
@@ -222,58 +331,120 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
+    paddingBottom: 0,
   },
-  searchContainer: {
-    marginBottom: 16,
+  sectionHeader: {
+    marginBottom: 12,
   },
-  searchInput: {
-    backgroundColor: 'rgba(28, 40, 58, 0.8)',
-    borderRadius: 12,
-    padding: 16,
+  sectionTitle: {
     color: '#F8FAFC',
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    fontSize: 18,
+    fontFamily: FontFamilies.primarySemiBold,
   },
-  filterContainer: {
-    marginBottom: 16,
+  cityContainer: {
+    flexDirection: 'row',
+    marginBottom: 24,
+    gap: 12,
   },
-  filterChip: {
-    backgroundColor: 'rgba(28, 40, 58, 0.6)',
+  cityChip: {
     borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
-  filterChipActive: {
+  cityChipActive: {
     backgroundColor: '#3B82F6',
     borderColor: '#3B82F6',
   },
-  filterText: {
-    color: '#94A3B8',
+  cityChipInactive: {
+    backgroundColor: 'rgba(28, 40, 58, 0.8)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  cityText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
+    textAlign: 'center',
   },
-  filterTextActive: {
+  cityTextActive: {
     color: '#FFFFFF',
+    fontFamily: FontFamilies.primarySemiBold,
   },
-  resultsHeader: {
+  cityTextInactive: {
+    color: '#E2E8F0',
+    fontFamily: FontFamilies.primaryMedium,
+  },
+  datePickerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  datePickerText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#F8FAFC',
+    marginLeft: 12,
+    fontFamily: FontFamilies.primary,
+  },
+  datePickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  datePickerModalContent: {
+    backgroundColor: 'rgba(28, 40, 58, 0.98)',
+    borderRadius: 16,
+    padding: 20,
+    margin: 20,
+    width: '80%',
+    maxWidth: 350,
+    alignItems: 'center',
+  },
+  datePickerButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 20,
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
+  },
+  confirmButton: {
+    flex: 1,
+    backgroundColor: '#3B82F6',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: '#F8FAFC',
+    fontSize: 16,
+    fontFamily: FontFamilies.primarySemiBold,
+  },
+  confirmButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: FontFamilies.primarySemiBold,
+  },
+  resultsHeader: {
     marginBottom: 16,
   },
   resultsCount: {
     color: '#F8FAFC',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  clearSearch: {
-    color: '#3B82F6',
-    fontSize: 14,
-    fontWeight: '500',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   loadingContainer: {
     flex: 1,
@@ -284,6 +455,7 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     marginTop: 12,
     fontSize: 16,
+    fontFamily: FontFamilies.primary,
   },
   emptyContainer: {
     flex: 1,
@@ -294,7 +466,7 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#F8FAFC',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -303,73 +475,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 24,
+    fontFamily: FontFamilies.primary,
   },
   listContainer: {
     paddingBottom: 20,
-  },
-  row: {
-    justifyContent: 'space-between',
-  },
-  productCard: {
-    width: '48%',
-    marginBottom: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  cardGradient: {
-    flex: 1,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  productImage: {
-    width: '100%',
-    height: 120,
-  },
-  cardContent: {
-    padding: 12,
-  },
-  cardHeader: {
-    marginBottom: 8,
-  },
-  productName: {
-    color: '#F8FAFC',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 6,
-    lineHeight: 20,
-  },
-  typeBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    marginBottom: 8,
-  },
-  typeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  productDescription: {
-    color: '#94A3B8',
-    fontSize: 12,
-    lineHeight: 16,
-    marginBottom: 12,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  productPrice: {
-    color: '#3B82F6',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  duration: {
-    color: '#94A3B8',
-    fontSize: 12,
   },
 });

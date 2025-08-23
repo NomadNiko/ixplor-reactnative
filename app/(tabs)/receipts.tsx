@@ -20,6 +20,8 @@ import {
   getInvoiceTotalItems,
   formatInvoiceDate,
 } from '~/lib/api/invoices';
+import { FontFamilies } from '~/src/styles/fonts';
+import { ReceiptDetailModal } from '~/src/components/ReceiptDetailModal';
 
 type ReceiptCardProps = {
   invoice: Invoice;
@@ -90,6 +92,8 @@ export default function Receipts() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -141,20 +145,13 @@ export default function Receipts() {
   };
 
   const showReceiptDetails = (invoice: Invoice) => {
-    const vendorDetails =
-      invoice.vendorGroups
-        ?.map((group) => `${group.vendorName}: $${group.subtotal.toFixed(2)}`)
-        .join('\n') || 'No vendor details';
+    setSelectedInvoice(invoice);
+    setShowReceiptModal(true);
+  };
 
-    Alert.alert(
-      `Receipt #${invoice._id.substring(0, 8)}`,
-      `Date: ${formatInvoiceDate(invoice.invoiceDate)}\n` +
-        `Total: ${formatInvoiceAmount(invoice.amount)}\n` +
-        `Status: ${invoice.status}\n` +
-        `Type: ${invoice.type}\n\n` +
-        `Vendors:\n${vendorDetails}`,
-      [{ text: 'Close', style: 'cancel' }]
-    );
+  const handleCloseModal = () => {
+    setShowReceiptModal(false);
+    setSelectedInvoice(null);
   };
 
   const getTotalSpent = (): number => {
@@ -240,6 +237,13 @@ export default function Receipts() {
           </View>
         )}
       </ScrollView>
+
+      {/* Receipt Detail Modal */}
+      <ReceiptDetailModal
+        visible={showReceiptModal}
+        invoice={selectedInvoice}
+        onClose={handleCloseModal}
+      />
     </SafeAreaView>
   );
 }
@@ -258,13 +262,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   summaryContainer: {
     marginBottom: 24,
@@ -288,10 +293,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94A3B8',
     marginBottom: 4,
+    fontFamily: FontFamilies.primary,
   },
   summaryValue: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
   },
   loadingContainer: {
@@ -304,6 +310,7 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     marginTop: 12,
     fontSize: 16,
+    fontFamily: FontFamilies.primary,
   },
   emptyContainer: {
     flex: 1,
@@ -315,7 +322,7 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#F8FAFC',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -324,6 +331,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 24,
+    fontFamily: FontFamilies.primary,
   },
   receiptsList: {
     gap: 12,
@@ -349,17 +357,18 @@ const styles = StyleSheet.create({
   },
   receiptId: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 2,
   },
   receiptDate: {
     fontSize: 14,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   receiptAmount: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#3B82F6',
   },
   cardBody: {
@@ -369,6 +378,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94A3B8',
     marginBottom: 8,
+    fontFamily: FontFamilies.primary,
   },
   vendorsList: {
     flexDirection: 'row',
@@ -377,12 +387,13 @@ const styles = StyleSheet.create({
   vendorName: {
     fontSize: 14,
     color: '#F8FAFC',
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
   },
   moreVendors: {
     fontSize: 14,
     color: '#94A3B8',
     fontStyle: 'italic',
+    fontFamily: FontFamilies.primary,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -395,7 +406,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#FFFFFF',
     textTransform: 'uppercase',
   },

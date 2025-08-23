@@ -28,6 +28,7 @@ import {
   SUPPORT_TICKET_STATUS_PRIORITY,
 } from '~/lib/types/support-ticket';
 import { Picker } from '@react-native-picker/picker';
+import { FontFamilies } from '~/src/styles/fonts';
 
 type SupportTicketCardProps = {
   ticket: SupportTicket;
@@ -421,13 +422,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   createButton: {
     marginBottom: 24,
@@ -440,7 +442,7 @@ const styles = StyleSheet.create({
   createButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   summaryContainer: {
     marginBottom: 24,
@@ -460,7 +462,7 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: FontFamilies.primaryBold,
     color: '#F8FAFC',
     marginBottom: 4,
   },
@@ -468,6 +470,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94A3B8',
     textAlign: 'center',
+    fontFamily: FontFamilies.primary,
   },
   loadingContainer: {
     flex: 1,
@@ -479,6 +482,7 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     marginTop: 12,
     fontSize: 16,
+    fontFamily: FontFamilies.primary,
   },
   emptyContainer: {
     flex: 1,
@@ -490,7 +494,7 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#F8FAFC',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -499,6 +503,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 24,
+    fontFamily: FontFamilies.primary,
   },
   ticketsList: {
     gap: 12,
@@ -524,13 +529,14 @@ const styles = StyleSheet.create({
   },
   ticketId: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#3B82F6',
     marginBottom: 2,
   },
   ticketDate: {
     fontSize: 12,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -539,7 +545,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 10,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#FFFFFF',
     textTransform: 'uppercase',
   },
@@ -548,7 +554,7 @@ const styles = StyleSheet.create({
   },
   ticketTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 8,
     lineHeight: 20,
@@ -557,6 +563,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94A3B8',
     lineHeight: 18,
+    fontFamily: FontFamilies.primary,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -573,13 +580,14 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 10,
-    fontWeight: '500',
+    fontFamily: FontFamilies.primaryMedium,
     color: '#3B82F6',
     textTransform: 'uppercase',
   },
   updatesCount: {
     fontSize: 12,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   // Modal styles
   modalContainer: {
@@ -596,17 +604,18 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
   },
   modalCancelText: {
     fontSize: 16,
     color: '#94A3B8',
+    fontFamily: FontFamilies.primary,
   },
   modalSubmitText: {
     fontSize: 16,
     color: '#3B82F6',
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
   },
   modalSubmitTextDisabled: {
     color: '#64748B',
@@ -620,7 +629,7 @@ const styles = StyleSheet.create({
   },
   formLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamilies.primarySemiBold,
     color: '#F8FAFC',
     marginBottom: 8,
   },
@@ -645,6 +654,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    fontFamily: FontFamilies.primary,
   },
   textAreaInput: {
     height: 120,

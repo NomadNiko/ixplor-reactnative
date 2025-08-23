@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '~/lib/auth/context';
+import { FontFamilies } from '~/src/styles/fonts';
 
 type HeaderProps = {
   showCart?: boolean;
@@ -12,7 +13,9 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
   const { user } = useAuth();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.wrapper}>
+      <View style={styles.backgroundExtension} />
+      <View style={styles.container}>
       <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
         <Ionicons name="menu" size={28} color="#F8FAFC" />
       </TouchableOpacity>
@@ -34,10 +37,23 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
         </TouchableOpacity>
       </View>
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    position: 'relative',
+    marginTop: -20,
+  },
+  backgroundExtension: {
+    position: 'absolute',
+    top: -150,
+    left: 0,
+    right: 0,
+    height: 150,
+    backgroundColor: '#1C283A',
+  },
   container: {
     height: 60,
     backgroundColor: '#1C283A',
@@ -47,19 +63,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.12)',
+    zIndex: 1,
   },
   menuButton: {
     padding: 4,
   },
   logo: {
     fontSize: 24,
-    fontWeight: '600',
     color: '#F8FAFC',
     position: 'absolute',
     left: 0,
     right: 0,
     textAlign: 'center',
-    fontFamily: 'Iceland_400Regular',
+    fontFamily: FontFamilies.logo,
   },
   rightSection: {
     flexDirection: 'row',
