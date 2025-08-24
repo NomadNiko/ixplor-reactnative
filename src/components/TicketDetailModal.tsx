@@ -182,7 +182,7 @@ export const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
                     disabled={isResolving}>
                     <LinearGradient colors={['#10B981', '#059669']} style={styles.buttonGradient}>
                       {isResolving ? (
-                        <ActivityIndicator color="#FFFFFF" />
+                        <ActivityIndicator color="#ADF7FF" />
                       ) : (
                         <Text style={styles.buttonText}>Mark as Resolved</Text>
                       )}
@@ -194,7 +194,7 @@ export const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
                   <TouchableOpacity
                     style={styles.actionButton}
                     onPress={() => setShowUpdateForm(true)}>
-                    <LinearGradient colors={['#3B82F6', '#2563EB']} style={styles.buttonGradient}>
+                    <LinearGradient colors={['#60A5FA', '#2563EB']} style={styles.buttonGradient}>
                       <Text style={styles.buttonText}>Add Update</Text>
                     </LinearGradient>
                   </TouchableOpacity>
@@ -229,10 +229,10 @@ export const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
                     onPress={handleAddUpdate}
                     disabled={isSubmitting || !updateText.trim()}>
                     <LinearGradient
-                      colors={['#3B82F6', '#2563EB']}
+                      colors={['#60A5FA', '#2563EB']}
                       style={styles.submitButtonGradient}>
                       {isSubmitting ? (
-                        <ActivityIndicator color="#FFFFFF" size="small" />
+                        <ActivityIndicator color="#ADF7FF" size="small" />
                       ) : (
                         <Text style={styles.submitButtonText}>Submit</Text>
                       )}
@@ -285,13 +285,13 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     fontSize: 16,
-    color: '#3B82F6',
+    color: '#60A5FA',
     fontFamily: FontFamilies.primarySemiBold,
   },
   headerTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   content: {
     flex: 1,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   ticketId: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
     marginBottom: 4,
   },
   ticketDate: {
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     textTransform: 'uppercase',
   },
   categoryBadge: {
@@ -339,19 +339,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    borderColor: '#60A5FA',
     marginBottom: 16,
   },
   categoryText: {
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
     textTransform: 'uppercase',
   },
   ticketTitle: {
     fontSize: 20,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 12,
   },
   ticketDescription: {
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   },
   assignedValue: {
     fontSize: 14,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontFamily: FontFamilies.primaryMedium,
   },
   actionButtons: {
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -409,14 +409,14 @@ const styles = StyleSheet.create({
   updateFormTitle: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 12,
   },
   updateInput: {
     backgroundColor: 'rgba(15, 23, 42, 0.8)',
     borderRadius: 8,
     padding: 12,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 16,
     fontFamily: FontFamilies.primary,
     borderWidth: 1,
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 16,
   },
   noUpdates: {

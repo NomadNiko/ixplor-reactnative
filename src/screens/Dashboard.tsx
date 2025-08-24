@@ -140,7 +140,7 @@ export default function Dashboard({ navigation }: any) {
           <Text style={styles.sectionTitle}>Your Tickets</Text>
           {isLoading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#3B82F6" />
+              <ActivityIndicator size="large" color="#60A5FA" />
               <Text style={styles.loadingText}>Loading tickets...</Text>
             </View>
           ) : tickets.length > 0 ? (
@@ -185,12 +185,12 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 16,
     borderWidth: 3,
-    borderColor: '#3B82F6',
+    borderColor: '#60A5FA',
   },
   userName: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   userEmail: {
@@ -199,13 +199,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   editButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
     paddingHorizontal: 32,
     paddingVertical: 10,
     borderRadius: 8,
   },
   editButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontWeight: '500',
   },
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 16,
   },
   ticketCard: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   ticketTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   ticketSubtitle: {
@@ -246,13 +246,13 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
   statusBadge: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
   },
   statusText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -283,12 +283,12 @@ const styles = StyleSheet.create({
   },
   quantityText: {
     fontSize: 14,
-    color: '#3B82F6',
+    color: '#60A5FA',
     fontWeight: '500',
   },
   priceText: {
     fontSize: 18,
-    color: '#3B82F6',
+    color: '#60A5FA',
     fontWeight: '600',
   },
   loadingContainer: {
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontWeight: '600',
     marginBottom: 8,
   },
@@ -317,6 +317,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
 });

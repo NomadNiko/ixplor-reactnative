@@ -54,7 +54,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product, distance, o
       case 'tours':
         return '#10B981';
       case 'lessons':
-        return '#3B82F6';
+        return '#60A5FA';
       case 'rentals':
         return '#F59E0B';
       case 'tickets':
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     flex: 1,
     marginRight: 12,
   },
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   typeText: {
     fontSize: 10,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     textTransform: 'uppercase',
   },
   details: {
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 20,
     fontFamily: FontFamilies.primaryBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
   },
   availability: {
     fontSize: 12,

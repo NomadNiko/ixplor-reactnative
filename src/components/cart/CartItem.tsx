@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { CartItem as CartItemType } from '~/lib/api/cart';
 import { useCart } from '~/hooks/useCart';
@@ -53,16 +54,19 @@ export default function CartItem({ item }: CartItemProps) {
 
   return (
     <View style={styles.container}>
-      {item.productImageURL && (
-        <Image
-          source={item.productImageURL}
-          style={styles.image}
-          contentFit="cover"
-          cachePolicy="memory-disk"
-        />
-      )}
-      
-      <View style={styles.content}>
+      <LinearGradient
+        colors={['rgba(28, 40, 58, 0.8)', 'rgba(21, 29, 43, 0.8)']}
+        style={styles.cardGradient}>
+        {item.productImageURL && (
+          <Image
+            source={item.productImageURL}
+            style={styles.image}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+          />
+        )}
+        
+        <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.name} numberOfLines={2}>{item.productName}</Text>
           <TouchableOpacity onPress={handleRemove} style={styles.removeButton}>
@@ -85,7 +89,7 @@ export default function CartItem({ item }: CartItemProps) {
               onPress={handleDecrease}
               style={styles.quantityButton}
               disabled={isUpdatingItem || isRemovingItem}>
-              <Ionicons name="remove" size={20} color="#F8FAFC" />
+              <Ionicons name="remove" size={20} color="#E0FCFF" />
             </TouchableOpacity>
             
             <Text style={styles.quantity}>{item.quantity}</Text>
@@ -94,26 +98,30 @@ export default function CartItem({ item }: CartItemProps) {
               onPress={handleIncrease}
               style={styles.quantityButton}
               disabled={isUpdatingItem}>
-              <Ionicons name="add" size={20} color="#F8FAFC" />
+              <Ionicons name="add" size={20} color="#E0FCFF" />
             </TouchableOpacity>
           </View>
           
           <Text style={styles.price}>${(item.price * item.quantity).toFixed(2)}</Text>
         </View>
-      </View>
+        </View>
+      </LinearGradient>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    backgroundColor: '#1C283A',
     borderRadius: 12,
-    padding: 12,
     marginBottom: 12,
+    overflow: 'hidden',
+  },
+  cardGradient: {
+    flexDirection: 'row',
+    padding: 12,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
   },
   image: {
     width: 80,
@@ -132,7 +140,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     flex: 1,
     marginRight: 8,
   },
@@ -165,12 +173,12 @@ const styles = StyleSheet.create({
   quantity: {
     fontSize: 16,
     fontFamily: FontFamilies.primaryMedium,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     paddingHorizontal: 16,
   },
   price: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
   },
 });

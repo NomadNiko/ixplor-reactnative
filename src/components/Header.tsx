@@ -25,7 +25,7 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
       <View style={styles.backgroundExtension} />
       <View style={styles.container}>
       <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
-        <Ionicons name="menu" size={28} color="#F8FAFC" />
+        <Ionicons name="menu" size={28} color="#E0FCFF" />
       </TouchableOpacity>
 
       <Text style={styles.logo}>iXplor</Text>
@@ -33,7 +33,7 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
       <View style={styles.rightSection}>
         {showCart && (
           <TouchableOpacity style={styles.cartButton} onPress={handleCartPress}>
-            <Ionicons name="cart-outline" size={28} color="#F8FAFC" />
+            <Ionicons name="cart-outline" size={28} color="#E0FCFF" />
             {itemCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{itemCount}</Text>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontSize: 24,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     position: 'absolute',
     left: 0,
     right: 0,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   badgeText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 12,
     fontFamily: FontFamilies.primaryBold,
   },
@@ -124,6 +124,6 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: '#3B82F6',
+    borderColor: '#60A5FA',
   },
 });

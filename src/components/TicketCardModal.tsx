@@ -71,7 +71,7 @@ export const TicketCardModal: React.FC<TicketCardModalProps> = ({ visible, ticke
               {/* QR Code Section */}
               <View style={styles.qrContainer}>
                 <View style={styles.qrWrapper}>
-                  <QRCode value={qrValue} size={200} color="#1F2937" backgroundColor="#F8FAFC" />
+                  <QRCode value={qrValue} size={200} color="#1F2937" backgroundColor="#E0FCFF" />
                   {/* Status Badge - Overlapping QR code */}
                   <View style={[styles.statusBadgeOverlay, { backgroundColor: statusColor }]}>
                     <Text style={styles.statusText}>{ticket.status}</Text>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 24,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   vendorName: {
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 20,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   statusText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 14,
     fontFamily: FontFamilies.primarySemiBold,
     textTransform: 'uppercase',
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   qrWrapper: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#E0FCFF',
     padding: 20,
     borderRadius: 16,
     marginBottom: 12,
@@ -259,14 +259,14 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     fontSize: 14,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     flex: 2,
     textAlign: 'right',
     fontFamily: FontFamilies.primaryMedium,
   },
   detailValuePrice: {
     fontSize: 16,
-    color: '#3B82F6',
+    color: '#60A5FA',
     fontFamily: FontFamilies.primarySemiBold,
     flex: 2,
     textAlign: 'right',

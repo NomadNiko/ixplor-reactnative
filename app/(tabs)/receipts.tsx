@@ -172,9 +172,10 @@ export default function Receipts() {
     <SafeAreaView style={styles.container}>
       <Header showCart={true} />
 
-      <ScrollView
-        style={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
+      <View style={styles.content}>
+        <ScrollView
+          style={styles.scrollView}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
         <View style={styles.header}>
           <Text style={styles.title}>All Receipts</Text>
           <Text style={styles.subtitle}>Your purchase history</Text>
@@ -215,7 +216,7 @@ export default function Receipts() {
         {/* Receipts List */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3B82F6" />
+            <ActivityIndicator size="large" color="#60A5FA" />
             <Text style={styles.loadingText}>Loading receipts...</Text>
           </View>
         ) : invoices.length === 0 ? (
@@ -236,7 +237,15 @@ export default function Receipts() {
             ))}
           </View>
         )}
-      </ScrollView>
+        </ScrollView>
+      </View>
+
+      {/* Gradient Fade Behind Bottom */}
+      <LinearGradient
+        colors={['transparent', 'rgba(15, 23, 42, 0)', 'rgba(15, 23, 42, .8)']}
+        style={styles.fadeGradient}
+        pointerEvents="none"
+      />
 
       {/* Receipt Detail Modal */}
       <ReceiptDetailModal
@@ -256,6 +265,10 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
+    paddingBottom: 0,
+  },
+  scrollView: {
+    flex: 1,
   },
   header: {
     marginBottom: 24,
@@ -263,7 +276,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   subtitle: {
@@ -298,7 +311,7 @@ const styles = StyleSheet.create({
   summaryValue: {
     fontSize: 20,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   loadingContainer: {
     flex: 1,
@@ -320,7 +333,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   emptyText: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 20,
     fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,
@@ -335,6 +348,13 @@ const styles = StyleSheet.create({
   },
   receiptsList: {
     gap: 12,
+  },
+  fadeGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
   },
   receiptCard: {
     borderRadius: 12,
@@ -358,7 +378,7 @@ const styles = StyleSheet.create({
   receiptId: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 2,
   },
   receiptDate: {
@@ -369,7 +389,7 @@ const styles = StyleSheet.create({
   receiptAmount: {
     fontSize: 20,
     fontFamily: FontFamilies.primaryBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
   },
   cardBody: {
     marginBottom: 12,
@@ -386,7 +406,7 @@ const styles = StyleSheet.create({
   },
   vendorName: {
     fontSize: 14,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontFamily: FontFamilies.primaryMedium,
   },
   moreVendors: {
@@ -407,7 +427,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     textTransform: 'uppercase',
   },
 });

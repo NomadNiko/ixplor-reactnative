@@ -17,7 +17,7 @@ const Tab = ({ name, icon, label, isActive, onPress, iconLibrary = 'ionicons' }:
 
   return (
     <TouchableOpacity style={styles.tab} onPress={onPress}>
-      <IconComponent name={icon as any} size={24} color={isActive ? '#3B82F6' : '#6B7280'} />
+      <IconComponent name={icon as any} size={24} color={isActive ? '#60A5FA' : '#6B7280'} />
       <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   activeTabLabel: {
-    color: '#3B82F6',
+    color: '#60A5FA',
     fontWeight: '500',
   },
 });

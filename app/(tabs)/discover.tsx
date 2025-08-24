@@ -230,13 +230,13 @@ export default function Discover() {
       <View style={styles.content}>
         {/* City Selector */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Explore Cities</Text>
+          <Text style={styles.sectionTitle}>Xplor</Text>
         </View>
         {renderCitySelector()}
 
         {/* Date Picker */}
         <TouchableOpacity style={styles.datePickerButton} onPress={openDatePicker}>
-          <Ionicons name="calendar-outline" size={20} color="#3B82F6" />
+          <Ionicons name="calendar-outline" size={20} color="#60A5FA" />
           <Text style={styles.datePickerText}>{formatDateForDisplay(selectedDate)}</Text>
           <Ionicons name="chevron-down" size={16} color="#94A3B8" />
         </TouchableOpacity>
@@ -278,7 +278,7 @@ export default function Discover() {
         {/* Products List */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3B82F6" />
+            <ActivityIndicator size="large" color="#60A5FA" />
             <Text style={styles.loadingText}>Loading activities...</Text>
           </View>
         ) : productItems.length === 0 ? (
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -356,8 +356,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cityChipActive: {
-    backgroundColor: '#3B82F6',
-    borderColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
+    borderColor: '#60A5FA',
   },
   cityChipInactive: {
     backgroundColor: 'rgba(28, 40, 58, 0.8)',
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cityTextActive: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontFamily: FontFamilies.primarySemiBold,
   },
   cityTextInactive: {
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   datePickerText: {
     flex: 1,
     fontSize: 16,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginLeft: 12,
     fontFamily: FontFamilies.primary,
   },
@@ -423,18 +423,18 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     flex: 1,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   cancelButtonText: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
   confirmButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   resultsCount: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   emptyText: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 20,
     fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,

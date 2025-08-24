@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
 import { ticketsApi, Ticket } from '~/lib/api/tickets';
@@ -33,28 +34,32 @@ const TicketListItem = ({ ticket, onPress }: TicketListItemProps) => {
 
   return (
     <TouchableOpacity style={styles.ticketItem} onPress={onPress}>
-      <View style={styles.ticketHeader}>
-        <Text style={styles.ticketTitle}>
-          {ticket.productName || ticket.product?.name || 'Unknown Product'}
-        </Text>
-        <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
-          <Text style={styles.statusText}>{ticket.status}</Text>
+      <LinearGradient
+        colors={['rgba(28, 40, 58, 0.8)', 'rgba(21, 29, 43, 0.8)']}
+        style={styles.ticketGradient}>
+        <View style={styles.ticketHeader}>
+          <Text style={styles.ticketTitle}>
+            {ticket.productName || ticket.product?.name || 'Unknown Product'}
+          </Text>
+          <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
+            <Text style={styles.statusText}>{ticket.status}</Text>
+          </View>
         </View>
-      </View>
 
-      {ticket.vendorName && <Text style={styles.vendorText}>by {ticket.vendorName}</Text>}
+        {ticket.vendorName && <Text style={styles.vendorText}>by {ticket.vendorName}</Text>}
 
-      <View style={styles.ticketDetails}>
-        <Text style={styles.detailText}>📅 {formatTicketDate(ticket)}</Text>
-        <Text style={styles.detailText}>Qty: {ticket.quantity}</Text>
-        <Text style={styles.priceText}>{formatTicketPrice(ticket)}</Text>
-      </View>
+        <View style={styles.ticketDetails}>
+          <Text style={styles.detailText}>📅 {formatTicketDate(ticket)}</Text>
+          <Text style={styles.detailText}>Qty: {ticket.quantity}</Text>
+          <Text style={styles.priceText}>{formatTicketPrice(ticket)}</Text>
+        </View>
 
-      {ticket.expiryDate && (
-        <Text style={styles.expiryText}>
-          Expires: {new Date(ticket.expiryDate).toLocaleDateString()}
-        </Text>
-      )}
+        {ticket.expiryDate && (
+          <Text style={styles.expiryText}>
+            Expires: {new Date(ticket.expiryDate).toLocaleDateString()}
+          </Text>
+        )}
+      </LinearGradient>
     </TouchableOpacity>
   );
 };
@@ -149,45 +154,54 @@ export default function Tickets() {
     <SafeAreaView style={styles.container}>
       <Header showCart={true} />
 
-      <View style={styles.headerSection}>
-        <Text style={styles.pageTitle}>All Tickets</Text>
-        <Text style={styles.pageSubtitle}>
-          {sortedTickets.length} ticket{sortedTickets.length !== 1 ? 's' : ''} sorted by status &
-          date
-        </Text>
+      <View style={styles.content}>
+        <View style={styles.headerSection}>
+          <Text style={styles.pageTitle}>Tickets</Text>
+          <Text style={styles.pageSubtitle}>
+            {sortedTickets.length} ticket{sortedTickets.length !== 1 ? 's' : ''} sorted by status &
+            date
+          </Text>
+        </View>
+
+        {isLoading ? (
+          <View style={styles.centerContainer}>
+            <ActivityIndicator size="large" color="#60A5FA" />
+            <Text style={styles.loadingText}>Loading all your tickets...</Text>
+          </View>
+        ) : sortedTickets.length > 0 ? (
+          <ScrollView
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#60A5FA"
+                colors={['#60A5FA']}
+              />
+            }>
+            {sortedTickets.map((ticket) => (
+              <TicketListItem
+                key={ticket.id || ticket._id}
+                ticket={ticket}
+                onPress={() => handleTicketPress(ticket)}
+              />
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={styles.centerContainer}>
+            <Text style={styles.emptyTitle}>No Tickets Yet</Text>
+            <Text style={styles.emptySubtitle}>Purchase tickets from vendors to see them here</Text>
+          </View>
+        )}
       </View>
 
-      {isLoading ? (
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.loadingText}>Loading all your tickets...</Text>
-        </View>
-      ) : sortedTickets.length > 0 ? (
-        <ScrollView
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              tintColor="#3B82F6"
-              colors={['#3B82F6']}
-            />
-          }>
-          {sortedTickets.map((ticket) => (
-            <TicketListItem
-              key={ticket.id || ticket._id}
-              ticket={ticket}
-              onPress={() => handleTicketPress(ticket)}
-            />
-          ))}
-        </ScrollView>
-      ) : (
-        <View style={styles.centerContainer}>
-          <Text style={styles.emptyTitle}>No Tickets Yet</Text>
-          <Text style={styles.emptySubtitle}>Purchase tickets from vendors to see them here</Text>
-        </View>
-      )}
+      {/* Gradient Fade Behind Bottom */}
+      <LinearGradient
+        colors={['transparent', 'rgba(15, 23, 42, 0)', 'rgba(15, 23, 42, .8)']}
+        style={styles.fadeGradient}
+        pointerEvents="none"
+      />
 
       <TicketCardModal
         visible={showTicketModal}
@@ -203,18 +217,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0F172A',
   },
+  content: {
+    flex: 1,
+    paddingBottom: 0,
+  },
   headerSection: {
     padding: 16,
     paddingBottom: 8,
   },
   pageTitle: {
-    fontSize: 28,
+    fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   pageSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#94A3B8',
     fontFamily: FontFamilies.primary,
   },
@@ -223,12 +241,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   ticketItem: {
-    backgroundColor: 'rgba(28, 40, 58, 0.8)',
     borderRadius: 12,
-    padding: 16,
     marginBottom: 12,
+    overflow: 'hidden',
+  },
+  ticketGradient: {
+    padding: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
   },
   ticketHeader: {
     flexDirection: 'row',
@@ -237,9 +258,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   ticketTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#ADF7FF',
     flex: 1,
     marginRight: 12,
   },
@@ -249,13 +270,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   statusText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
   },
   vendorText: {
     fontSize: 14,
-    color: '#64748B',
+    color: '#64744B',
     fontStyle: 'italic',
     marginBottom: 8,
     marginTop: -4,
@@ -275,7 +296,7 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
   },
   expiryText: {
     fontSize: 12,
@@ -298,7 +319,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 24,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -311,8 +332,15 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     textAlign: 'center',
     fontFamily: FontFamilies.primary,
+  },
+  fadeGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
   },
 });

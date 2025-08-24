@@ -248,7 +248,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
 
   const getTypeColor = (type: string): string => {
     const colors: { [key: string]: string } = {
-      tours: '#3B82F6',
+      tours: '#60A5FA',
       lessons: '#10B981',
       rentals: '#F59E0B',
       tickets: '#EF4444',
@@ -319,7 +319,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                       <TouchableOpacity
                         style={styles.datePickerButton}
                         onPress={openDatePicker}>
-                        <Ionicons name="calendar-outline" size={20} color="#3B82F6" />
+                        <Ionicons name="calendar-outline" size={20} color="#60A5FA" />
                         <Text style={styles.datePickerText}>
                           {formatDateForDisplay(selectedDate)}
                         </Text>
@@ -360,7 +360,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                   
                   {isLoadingProducts ? (
                     <View style={styles.loadingContainer}>
-                      <ActivityIndicator size="large" color="#3B82F6" />
+                      <ActivityIndicator size="large" color="#60A5FA" />
                       <Text style={styles.loadingText}>Loading products...</Text>
                     </View>
                   ) : allProductItems.length === 0 && !isLoadingProducts ? (
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   vendorName: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 2,
   },
   vendorType: {
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 16,
   },
   datePicker: {
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
   datePickerText: {
     flex: 1,
     fontSize: 16,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginLeft: 8,
     fontFamily: FontFamilies.primary,
   },
@@ -592,18 +592,18 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     flex: 1,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   cancelButtonText: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
   confirmButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -630,7 +630,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     flex: 1,
     marginRight: 8,
   },
@@ -642,7 +642,7 @@ const styles = StyleSheet.create({
   typeText: {
     fontSize: 10,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     textTransform: 'uppercase',
   },
   productDescription: {
@@ -674,7 +674,7 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 16,
     fontFamily: FontFamilies.primaryBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
   },
   productDuration: {
     fontSize: 12,

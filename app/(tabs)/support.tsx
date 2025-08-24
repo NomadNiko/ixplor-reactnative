@@ -147,13 +147,13 @@ const CreateTicketModal = ({
                 selectedValue={category}
                 onValueChange={setCategory}
                 style={styles.picker}
-                itemStyle={{ color: '#F8FAFC' }}>
+                itemStyle={{ color: '#E0FCFF' }}>
                 {Object.values(SupportTicketCategory).map((cat) => (
                   <Picker.Item
                     key={cat}
                     label={SUPPORT_TICKET_CATEGORY_LABELS[cat]}
                     value={cat}
-                    color="#F8FAFC"
+                    color="#E0FCFF"
                   />
                 ))}
               </Picker>
@@ -334,13 +334,13 @@ export default function Support() {
         style={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
         <View style={styles.header}>
-          <Text style={styles.title}>Support Tickets</Text>
+          <Text style={styles.title}>Support</Text>
           <Text style={styles.subtitle}>Get help with your Ixplor experience</Text>
         </View>
 
         {/* Create Ticket Button */}
         <TouchableOpacity style={styles.createButton} onPress={() => setShowCreateModal(true)}>
-          <LinearGradient colors={['#3B82F6', '#2563EB']} style={styles.createButtonGradient}>
+          <LinearGradient colors={['#60A5FA', '#2563EB']} style={styles.createButtonGradient}>
             <Text style={styles.createButtonText}>Create New Ticket</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -368,7 +368,7 @@ export default function Support() {
         {/* Tickets List */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3B82F6" />
+            <ActivityIndicator size="large" color="#60A5FA" />
             <Text style={styles.loadingText}>Loading support tickets...</Text>
           </View>
         ) : tickets.length === 0 ? (
@@ -390,6 +390,13 @@ export default function Support() {
           </View>
         )}
       </ScrollView>
+
+      {/* Gradient Fade Behind Bottom */}
+      <LinearGradient
+        colors={['transparent', 'rgba(15, 23, 42, 0)', 'rgba(15, 23, 42, .8)']}
+        style={styles.fadeGradient}
+        pointerEvents="none"
+      />
 
       <CreateTicketModal
         visible={showCreateModal}
@@ -417,13 +424,20 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  fadeGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+  },
   header: {
     marginBottom: 24,
   },
   title: {
     fontSize: 28,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   subtitle: {
@@ -440,7 +454,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   createButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -463,7 +477,7 @@ const styles = StyleSheet.create({
   summaryValue: {
     fontSize: 20,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   summaryLabel: {
@@ -492,7 +506,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   emptyText: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 20,
     fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,
@@ -530,7 +544,7 @@ const styles = StyleSheet.create({
   ticketId: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
     marginBottom: 2,
   },
   ticketDate: {
@@ -546,7 +560,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 10,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     textTransform: 'uppercase',
   },
   cardBody: {
@@ -555,7 +569,7 @@ const styles = StyleSheet.create({
   ticketTitle: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 8,
     lineHeight: 20,
   },
@@ -576,12 +590,12 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    borderColor: '#60A5FA',
   },
   categoryText: {
     fontSize: 10,
     fontFamily: FontFamilies.primaryMedium,
-    color: '#3B82F6',
+    color: '#60A5FA',
     textTransform: 'uppercase',
   },
   updatesCount: {
@@ -605,7 +619,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   modalCancelText: {
     fontSize: 16,
@@ -614,7 +628,7 @@ const styles = StyleSheet.create({
   },
   modalSubmitText: {
     fontSize: 16,
-    color: '#3B82F6',
+    color: '#60A5FA',
     fontFamily: FontFamilies.primarySemiBold,
   },
   modalSubmitTextDisabled: {
@@ -630,7 +644,7 @@ const styles = StyleSheet.create({
   formLabel: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 8,
   },
   pickerContainer: {
@@ -642,7 +656,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   picker: {
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     height: 50,
     width: '100%',
   },
@@ -650,7 +664,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(28, 40, 58, 0.8)',
     borderRadius: 8,
     padding: 16,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',

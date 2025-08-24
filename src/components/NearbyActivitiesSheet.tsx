@@ -18,16 +18,14 @@ import { ProductDetailModal } from './ProductDetailModal';
 import { FontFamilies } from '~/src/styles/fonts';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-const DOCKED_HEIGHT = 60; // Just the handle bar visible
-const THIRD_HEIGHT = screenHeight * 0.33; // 1/3 of screen
+const DOCKED_HEIGHT = 40; // Just the handle bar visible
 const MID_HEIGHT = screenHeight * 0.5; // Half screen
-const FULL_HEIGHT = screenHeight * 0.85; // Nearly full screen (leaving room for header)
-const HANDLE_HEIGHT = 30;
+const FULL_HEIGHT = screenHeight * 0.78; // Full Screen
+const HANDLE_HEIGHT = 40;
 
 // Snap positions enum
 enum SnapPosition {
   DOCKED = 'docked',
-  THIRD = 'third',
   MID = 'mid',
   FULL = 'full',
 }
@@ -52,14 +50,12 @@ export const NearbyActivitiesSheet: React.FC<NearbyActivitiesSheetProps> = ({
   const [showProductDetail, setShowProductDetail] = useState(false);
   const [selectedDay, setSelectedDay] = useState<'today' | 'tomorrow'>('today');
   const [isModalTransitioning, setIsModalTransitioning] = useState(false);
-  
+
   // Helper function to get height for position
   const getHeightForPosition = (position: SnapPosition): number => {
     switch (position) {
       case SnapPosition.DOCKED:
         return DOCKED_HEIGHT;
-      case SnapPosition.THIRD:
-        return THIRD_HEIGHT;
       case SnapPosition.MID:
         return MID_HEIGHT;
       case SnapPosition.FULL:
@@ -68,67 +64,67 @@ export const NearbyActivitiesSheet: React.FC<NearbyActivitiesSheetProps> = ({
         return DOCKED_HEIGHT;
     }
   };
-  
+
   // Helper function to get next position when tapping
   const getNextPosition = (current: SnapPosition): SnapPosition => {
     switch (current) {
       case SnapPosition.DOCKED:
-        return SnapPosition.THIRD;
-      case SnapPosition.THIRD:
         return SnapPosition.MID;
       case SnapPosition.MID:
         return SnapPosition.FULL;
       case SnapPosition.FULL:
         return SnapPosition.DOCKED;
       default:
-        return SnapPosition.THIRD;
+        return SnapPosition.MID;
     }
   };
-  
+
   // Find closest snap point
   const findClosestSnapPoint = (height: number): SnapPosition => {
     const distances = [
       { position: SnapPosition.DOCKED, distance: Math.abs(height - DOCKED_HEIGHT) },
-      { position: SnapPosition.THIRD, distance: Math.abs(height - THIRD_HEIGHT) },
       { position: SnapPosition.MID, distance: Math.abs(height - MID_HEIGHT) },
       { position: SnapPosition.FULL, distance: Math.abs(height - FULL_HEIGHT) },
     ];
-    
+
     distances.sort((a, b) => a.distance - b.distance);
     return distances[0].position;
   };
 
   // Memoized distance calculation with cache
   const distanceCache = useRef(new Map<string, number>());
-  
-  const calculateDistance = useCallback((lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const cacheKey = `${lat1.toFixed(4)},${lon1.toFixed(4)},${lat2.toFixed(4)},${lon2.toFixed(4)}`;
-    
-    if (distanceCache.current.has(cacheKey)) {
-      return distanceCache.current.get(cacheKey)!;
-    }
-    
-    const R = 3963; // Radius of Earth in miles
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c;
-    
-    // Cache with size limit
-    if (distanceCache.current.size > 200) {
-      const firstKey = distanceCache.current.keys().next().value;
-      distanceCache.current.delete(firstKey);
-    }
-    distanceCache.current.set(cacheKey, distance);
-    
-    return distance;
-  }, []);
+
+  const calculateDistance = useCallback(
+    (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+      const cacheKey = `${lat1.toFixed(4)},${lon1.toFixed(4)},${lat2.toFixed(4)},${lon2.toFixed(4)}`;
+
+      if (distanceCache.current.has(cacheKey)) {
+        return distanceCache.current.get(cacheKey)!;
+      }
+
+      const R = 3963; // Radius of Earth in miles
+      const dLat = ((lat2 - lat1) * Math.PI) / 180;
+      const dLon = ((lon2 - lon1) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) *
+          Math.cos((lat2 * Math.PI) / 180) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+
+      // Cache with size limit
+      if (distanceCache.current.size > 200) {
+        const firstKey = distanceCache.current.keys().next().value;
+        distanceCache.current.delete(firstKey);
+      }
+      distanceCache.current.set(cacheKey, distance);
+
+      return distance;
+    },
+    []
+  );
 
   // Filter activities based on selected day
   const getTodayString = () => {
@@ -144,7 +140,7 @@ export const NearbyActivitiesSheet: React.FC<NearbyActivitiesSheetProps> = ({
 
   // Memoize filtered and sorted activities to prevent recalculation on every render
   const sortedActivities = useMemo(() => {
-    const filtered = activities.filter(activity => {
+    const filtered = activities.filter((activity) => {
       if (!activity.productDate) return false;
       const activityDate = activity.productDate.split('T')[0];
       const targetDate = selectedDay === 'today' ? getTodayString() : getTomorrowString();
@@ -210,13 +206,13 @@ export const NearbyActivitiesSheet: React.FC<NearbyActivitiesSheetProps> = ({
       const currentHeight = getHeightForPosition(currentPosition);
       const projectedHeight = currentHeight - gestureState.dy;
       const velocity = gestureState.vy;
-      
+
       // Calculate final height considering velocity
       const finalHeight = projectedHeight - velocity * 100;
-      
+
       // Find closest snap point
       const closestPosition = findClosestSnapPoint(finalHeight);
-      
+
       // Snap to the closest position
       snapToPosition(closestPosition);
     },
@@ -226,17 +222,15 @@ export const NearbyActivitiesSheet: React.FC<NearbyActivitiesSheetProps> = ({
 
   return (
     <Animated.View style={[styles.container, { height: animatedHeight }]}>
-      <LinearGradient
-        colors={['rgba(28, 40, 58, 1)', 'rgba(21, 29, 43, 1)']}
-        style={styles.sheet}>
+      <LinearGradient colors={['rgba(28, 40, 58, 1)', 'rgba(21, 29, 43, 1)']} style={styles.sheet}>
         {/* Handle */}
         <View style={styles.handleContainer} {...panResponder.panHandlers}>
           <TouchableOpacity style={styles.handleButton} onPress={toggleNext}>
             <View style={styles.handle} />
             {currentPosition === SnapPosition.DOCKED ? (
               <Text style={styles.dockedText}>
-                {sortedActivities.length > 0 
-                  ? `${sortedActivities.length} Nearby Activities` 
+                {sortedActivities.length > 0
+                  ? `${sortedActivities.length} Nearby Activities`
                   : 'Nearby Activities'}
               </Text>
             ) : (
@@ -255,40 +249,42 @@ export const NearbyActivitiesSheet: React.FC<NearbyActivitiesSheetProps> = ({
               {sortedActivities.length} {sortedActivities.length === 1 ? 'activity' : 'activities'}{' '}
               found
             </Text>
-            
+
             {/* Day Toggle Buttons */}
             <View style={styles.dayToggleContainer}>
               <TouchableOpacity
                 style={[
                   styles.dayToggleButton,
-                  selectedDay === 'today' && styles.dayToggleButtonActive
+                  selectedDay === 'today' && styles.dayToggleButtonActive,
                 ]}
                 onPress={() => {
                   if (selectedDay !== 'today') {
                     setSelectedDay('today');
                   }
                 }}>
-                <Text style={[
-                  styles.dayToggleText,
-                  selectedDay === 'today' && styles.dayToggleTextActive
-                ]}>
+                <Text
+                  style={[
+                    styles.dayToggleText,
+                    selectedDay === 'today' && styles.dayToggleTextActive,
+                  ]}>
                   Today
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.dayToggleButton,
-                  selectedDay === 'tomorrow' && styles.dayToggleButtonActive
+                  selectedDay === 'tomorrow' && styles.dayToggleButtonActive,
                 ]}
                 onPress={() => {
                   if (selectedDay !== 'tomorrow') {
                     setSelectedDay('tomorrow');
                   }
                 }}>
-                <Text style={[
-                  styles.dayToggleText,
-                  selectedDay === 'tomorrow' && styles.dayToggleTextActive
-                ]}>
+                <Text
+                  style={[
+                    styles.dayToggleText,
+                    selectedDay === 'tomorrow' && styles.dayToggleTextActive,
+                  ]}>
                   Tomorrow
                 </Text>
               </TouchableOpacity>
@@ -299,60 +295,61 @@ export const NearbyActivitiesSheet: React.FC<NearbyActivitiesSheetProps> = ({
         {/* Content - Hide when docked */}
         {currentPosition !== SnapPosition.DOCKED && (
           <View style={styles.content}>
-          {isLoading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#3B82F6" />
-              <Text style={styles.loadingText}>Finding nearby activities...</Text>
-            </View>
-          ) : sortedActivities.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No activities found nearby</Text>
-              <Text style={styles.emptySubtext}>Try checking back later</Text>
-            </View>
-          ) : (
-            <ScrollView
-              ref={scrollViewRef}
-              style={styles.scrollView}
-              showsVerticalScrollIndicator={false}
-              scrollEnabled={currentPosition === SnapPosition.MID || currentPosition === SnapPosition.FULL}>
-              {sortedActivities.map((activity, index) => {
-                const distance = userLocation
-                  ? calculateDistance(
-                      userLocation.latitude,
-                      userLocation.longitude,
-                      activity.latitude,
-                      activity.longitude
-                    )
-                  : 0;
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#60A5FA" />
+                <Text style={styles.loadingText}>Finding nearby activities...</Text>
+              </View>
+            ) : sortedActivities.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No activities found nearby</Text>
+                <Text style={styles.emptySubtext}>Try checking back later</Text>
+              </View>
+            ) : (
+              <ScrollView
+                ref={scrollViewRef}
+                style={styles.scrollView}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={
+                  currentPosition === SnapPosition.MID || currentPosition === SnapPosition.FULL
+                }>
+                {sortedActivities.map((activity, index) => {
+                  const distance = userLocation
+                    ? calculateDistance(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        activity.latitude,
+                        activity.longitude
+                      )
+                    : 0;
 
-                // Show different number of items based on position
-                if (currentPosition === SnapPosition.DOCKED) return null;
-                if (currentPosition === SnapPosition.THIRD && index > 1) return null;
+                  // Show different number of items based on position
+                  if (currentPosition === SnapPosition.DOCKED) return null;
 
-                return (
-                  <ProductCard
-                    key={activity._id}
-                    product={activity}
-                    distance={distance}
-                    onPress={() => {
-                      // Prevent modal state race conditions
-                      if (!isModalTransitioning && !showProductDetail) {
-                        setIsModalTransitioning(true);
-                        setSelectedProduct(activity);
-                        setShowProductDetail(true);
-                        // Reset transitioning state after a brief delay
-                        setTimeout(() => setIsModalTransitioning(false), 300);
-                      }
-                    }}
-                  />
-                );
-              })}
-            </ScrollView>
-          )}
+                  return (
+                    <ProductCard
+                      key={activity._id}
+                      product={activity}
+                      distance={distance}
+                      onPress={() => {
+                        // Prevent modal state race conditions
+                        if (!isModalTransitioning && !showProductDetail) {
+                          setIsModalTransitioning(true);
+                          setSelectedProduct(activity);
+                          setShowProductDetail(true);
+                          // Reset transitioning state after a brief delay
+                          setTimeout(() => setIsModalTransitioning(false), 300);
+                        }
+                      }}
+                    />
+                  );
+                })}
+              </ScrollView>
+            )}
           </View>
         )}
       </LinearGradient>
-      
+
       <ProductDetailModal
         visible={showProductDetail}
         product={selectedProduct}
@@ -404,7 +401,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   handle: {
     width: 40,
@@ -420,20 +417,20 @@ const styles = StyleSheet.create({
   },
   dockedText: {
     fontSize: 14,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontFamily: FontFamilies.primarySemiBold,
     marginLeft: 8,
   },
   header: {
     paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   title: {
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   subtitle: {
@@ -447,7 +444,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 8,
   },
   loadingContainer: {
     flex: 1,
@@ -471,7 +468,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -496,7 +493,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dayToggleButtonActive: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
   },
   dayToggleText: {
     fontSize: 14,
@@ -504,7 +501,7 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
   dayToggleTextActive: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
   },
 });
 

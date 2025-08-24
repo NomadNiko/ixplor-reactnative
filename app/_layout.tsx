@@ -50,7 +50,7 @@ export default function RootLayout() {
           alignItems: 'center',
           backgroundColor: '#0F172A',
         }}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color="#60A5FA" />
       </View>
     );
   }
@@ -99,7 +99,7 @@ export default function RootLayout() {
               alignItems: 'center',
             }}>
               <Text style={{
-                color: '#FFFFFF',
+                color: '#ADF7FF',
                 fontSize: 16,
                 fontWeight: '600',
                 flex: 1,
@@ -122,7 +122,7 @@ export default function RootLayout() {
               alignItems: 'center',
             }}>
               <Text style={{
-                color: '#FFFFFF',
+                color: '#ADF7FF',
                 fontSize: 16,
                 fontWeight: '600',
                 flex: 1,

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FontFamilies } from '~/src/styles/fonts';
 
@@ -18,7 +13,7 @@ export default function EmptyCart({ onContinueShopping }: EmptyCartProps) {
       <Ionicons name="cart-outline" size={120} color="#475569" />
       <Text style={styles.title}>Your cart is empty</Text>
       <Text style={styles.subtitle}>Add items to get started</Text>
-      
+
       <TouchableOpacity onPress={onContinueShopping} style={styles.button}>
         <Text style={styles.buttonText}>Continue Shopping</Text>
       </TouchableOpacity>
@@ -31,12 +26,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
   },
   title: {
     fontSize: 24,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginTop: 24,
     marginBottom: 8,
   },
@@ -47,7 +41,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   button: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
@@ -55,6 +49,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
   },
 });

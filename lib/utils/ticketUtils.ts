@@ -93,7 +93,7 @@ export const getTicketStatusColor = (status: string): string => {
     case 'REVOKED':
       return '#8B5CF6'; // Purple
     default:
-      return '#3B82F6'; // Blue
+      return '#60A5FA'; // Blue
   }
 };
 

@@ -246,15 +246,15 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
           {/* Footer Actions */}
           <View style={styles.footerActions}>
             <TouchableOpacity style={styles.actionButton}>
-              <LinearGradient colors={['#3B82F6', '#2563EB']} style={styles.buttonGradient}>
-                <Ionicons name="download-outline" size={20} color="#FFFFFF" />
+              <LinearGradient colors={['#60A5FA', '#2563EB']} style={styles.buttonGradient}>
+                <Ionicons name="download-outline" size={20} color="#ADF7FF" />
                 <Text style={styles.buttonText}>Download Receipt</Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionButton}>
               <LinearGradient colors={['#8B5CF6', '#7C3AED']} style={styles.buttonGradient}>
-                <Ionicons name="share-outline" size={20} color="#FFFFFF" />
+                <Ionicons name="share-outline" size={20} color="#ADF7FF" />
                 <Text style={styles.buttonText}>Share Receipt</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -280,13 +280,13 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     fontSize: 16,
-    color: '#3B82F6',
+    color: '#60A5FA',
     fontFamily: FontFamilies.primarySemiBold,
   },
   headerTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   content: {
     flex: 1,
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   receiptId: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
     marginBottom: 4,
   },
   receiptDate: {
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     textTransform: 'uppercase',
   },
   divider: {
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 16,
   },
   vendorCard: {
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
   vendorName: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   vendorSubtotal: {
     fontSize: 16,
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
   itemPrice: {
     fontSize: 14,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#3B82F6',
+    color: '#60A5FA',
   },
   itemDetails: {
     flexDirection: 'row',
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 15,
     fontFamily: FontFamilies.primarySemiBold,
   },

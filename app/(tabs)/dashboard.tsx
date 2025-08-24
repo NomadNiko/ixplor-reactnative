@@ -635,7 +635,7 @@ export default function Dashboard() {
           </View>
           {isLoading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#3B82F6" />
+              <ActivityIndicator size="large" color="#60a5fa" />
               <Text style={styles.loadingText}>Loading recent tickets...</Text>
             </View>
           ) : recentActiveTickets.length > 0 ? (
@@ -666,7 +666,7 @@ export default function Dashboard() {
           </View>
           {isLoadingInvoices ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#3B82F6" />
+              <ActivityIndicator size="large" color="#60a5fa" />
               <Text style={styles.loadingText}>Loading receipts...</Text>
             </View>
           ) : recentInvoices.length > 0 ? (
@@ -697,7 +697,7 @@ export default function Dashboard() {
           </View>
           {isLoadingSupportTickets ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#3B82F6" />
+              <ActivityIndicator size="large" color="#60a5fa" />
               <Text style={styles.loadingText}>Loading support tickets...</Text>
             </View>
           ) : recentSupportTickets.length > 0 ? (
@@ -790,12 +790,12 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 16,
     borderWidth: 3,
-    borderColor: '#3B82F6',
+    borderColor: '#60a5fa',
   },
   userName: {
     fontSize: 24,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   userEmail: {
@@ -809,24 +809,24 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   editButton: {
-    backgroundColor: '#3B82F6',
-    paddingHorizontal: 24,
-    paddingVertical: 10,
+    backgroundColor: '#60a5fa',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: 8,
   },
   editButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primaryMedium,
   },
   logoutButton: {
-    backgroundColor: '#EF4444',
-    paddingHorizontal: 24,
-    paddingVertical: 10,
+    backgroundColor: '#fa6860',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: 8,
   },
   logoutButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primaryMedium,
   },
@@ -848,18 +848,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   subSectionTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginTop: 20,
     marginBottom: 12,
   },
   viewAllText: {
     fontSize: 14,
-    color: '#3B82F6',
+    color: '#60a5fa',
     fontFamily: FontFamilies.primaryMedium,
   },
   supportText: {
@@ -870,14 +870,14 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.primary,
   },
   supportButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60a5fa',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
     marginBottom: 16,
   },
   supportButtonText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
     textAlign: 'center',
@@ -899,7 +899,7 @@ const styles = StyleSheet.create({
   receiptAmount: {
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#3B82F6',
+    color: '#60a5fa',
   },
   receiptDate: {
     fontSize: 14,
@@ -918,7 +918,7 @@ const styles = StyleSheet.create({
   },
   receiptVendorName: {
     fontSize: 14,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontFamily: FontFamilies.primaryMedium,
   },
   ticketCard: {
@@ -941,7 +941,7 @@ const styles = StyleSheet.create({
   ticketTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 4,
   },
   ticketSubtitle: {
@@ -950,13 +950,13 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.primary,
   },
   statusBadge: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60a5fa',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
   },
   statusText: {
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
   },
@@ -988,12 +988,12 @@ const styles = StyleSheet.create({
   },
   quantityText: {
     fontSize: 14,
-    color: '#3B82F6',
+    color: '#60a5fa',
     fontFamily: FontFamilies.primaryMedium,
   },
   priceText: {
     fontSize: 18,
-    color: '#3B82F6',
+    color: '#60a5fa',
     fontFamily: FontFamilies.primarySemiBold,
   },
   loadingContainer: {
@@ -1012,7 +1012,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontFamily: FontFamilies.primarySemiBold,
     marginBottom: 8,
   },
@@ -1024,7 +1024,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontFamily: FontFamilies.primary,
   },
   // Support Ticket Card Styles
@@ -1045,7 +1045,7 @@ const styles = StyleSheet.create({
   supportTicketId: {
     fontSize: 14,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#3B82F6',
+    color: '#60a5fa',
   },
   supportStatusBadge: {
     paddingHorizontal: 8,
@@ -1055,13 +1055,13 @@ const styles = StyleSheet.create({
   supportStatusText: {
     fontSize: 10,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
     textTransform: 'uppercase',
   },
   supportTicketTitle: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 8,
     lineHeight: 20,
   },
@@ -1072,14 +1072,14 @@ const styles = StyleSheet.create({
   },
   // Profile placeholder styles
   profilePlaceholder: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60a5fa',
     justifyContent: 'center',
     alignItems: 'center',
   },
   profileInitials: {
     fontSize: 40,
     fontFamily: FontFamilies.primaryBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
   },
   // Modal styles
   modalContainer: {
@@ -1097,7 +1097,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   modalCancelText: {
     fontSize: 16,
@@ -1106,7 +1106,7 @@ const styles = StyleSheet.create({
   },
   modalSaveText: {
     fontSize: 16,
-    color: '#3B82F6',
+    color: '#60a5fa',
     fontFamily: FontFamilies.primarySemiBold,
   },
   modalButtonDisabled: {
@@ -1122,7 +1122,7 @@ const styles = StyleSheet.create({
   formLabel: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 8,
   },
   profileImageSection: {
@@ -1140,18 +1140,18 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    borderColor: '#60a5fa',
   },
   changePhotoText: {
     fontSize: 14,
-    color: '#3B82F6',
+    color: '#60a5fa',
     fontFamily: FontFamilies.primaryMedium,
   },
   textInput: {
     backgroundColor: 'rgba(28, 40, 58, 0.8)',
     borderRadius: 8,
     padding: 16,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     fontSize: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',

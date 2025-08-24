@@ -171,7 +171,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       onPress={handleDecreaseQuantity}
                       style={[styles.quantityButton, quantity <= 1 && styles.disabledButton]}
                       disabled={quantity <= 1}>
-                      <Ionicons name="remove" size={20} color={quantity <= 1 ? "#64748B" : "#F8FAFC"} />
+                      <Ionicons name="remove" size={20} color={quantity <= 1 ? "#64748B" : "#E0FCFF"} />
                     </TouchableOpacity>
                     
                     <Text style={styles.quantityText}>{quantity}</Text>
@@ -180,7 +180,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       onPress={handleIncreaseQuantity}
                       style={[styles.quantityButton, quantity >= availableQty && styles.disabledButton]}
                       disabled={quantity >= availableQty}>
-                      <Ionicons name="add" size={20} color={quantity >= availableQty ? "#64748B" : "#F8FAFC"} />
+                      <Ionicons name="add" size={20} color={quantity >= availableQty ? "#64748B" : "#E0FCFF"} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontFamily: FontFamilies.primaryBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     flex: 1,
     marginRight: 16,
   },
@@ -282,13 +282,13 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 16,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     flex: 1,
     fontFamily: FontFamilies.primary,
   },
   locationLink: {
     fontSize: 16,
-    color: '#3B82F6',
+    color: '#60A5FA',
     textDecorationLine: 'underline',
     fontFamily: FontFamilies.primaryMedium,
   },
@@ -307,11 +307,11 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
   },
   addToCartButton: {
     flex: 1,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#60A5FA',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   addToCartText: {
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#FFFFFF',
+    color: '#ADF7FF',
   },
   disabledButton: {
     opacity: 0.6,
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   quantityLabel: {
     fontSize: 16,
     fontFamily: FontFamilies.primaryMedium,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     marginBottom: 12,
   },
   quantityControls: {
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   quantityText: {
     fontSize: 18,
     fontFamily: FontFamilies.primaryMedium,
-    color: '#F8FAFC',
+    color: '#E0FCFF',
     paddingHorizontal: 20,
   },
 });

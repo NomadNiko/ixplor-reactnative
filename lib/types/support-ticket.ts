@@ -76,7 +76,7 @@ export const SUPPORT_TICKET_CATEGORY_LABELS: Record<SupportTicketCategory, strin
 };
 
 export const SUPPORT_TICKET_STATUS_COLORS: Record<SupportTicketStatus, string> = {
-  [SupportTicketStatus.OPENED]: '#3B82F6',
+  [SupportTicketStatus.OPENED]: '#60A5FA',
   [SupportTicketStatus.ASSIGNED]: '#F59E0B',
   [SupportTicketStatus.HOLD]: '#EF4444',
   [SupportTicketStatus.RESOLVED]: '#10B981',

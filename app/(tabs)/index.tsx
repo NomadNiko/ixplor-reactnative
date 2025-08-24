@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useRef, memo, useCallback, useMemo } from 'react';
-import { View, SafeAreaView, Text, Platform, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View,
+  SafeAreaView,
+  Text,
+  Platform,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import { router } from 'expo-router';
 import MapView, { PROVIDER_GOOGLE, PROVIDER_DEFAULT, Marker, Region } from 'react-native-maps';
 import { useAuth } from '~/lib/auth/context';
@@ -23,61 +31,64 @@ interface VendorMarkerProps {
   onPress: (vendor: Vendor) => void;
 }
 
-const VendorMarker = memo<VendorMarkerProps>(({ vendor, onPress }) => {
-  const location = getVendorLocation(vendor);
+const VendorMarker = memo<VendorMarkerProps>(
+  ({ vendor, onPress }) => {
+    const location = getVendorLocation(vendor);
 
-  // Skip vendor if coordinates are invalid
-  if (
-    !location.lat ||
-    !location.lng ||
-    isNaN(location.lat) ||
-    isNaN(location.lng) ||
-    Math.abs(location.lat) > 90 ||
-    Math.abs(location.lng) > 180
-  ) {
-    console.warn('Skipping vendor with invalid coordinates:', {
-      id: vendor._id?.substring(0, 8),
-      name: getVendorDisplayName(vendor),
-      coordinates: [location.lng, location.lat],
-    });
-    return null;
+    // Skip vendor if coordinates are invalid
+    if (
+      !location.lat ||
+      !location.lng ||
+      isNaN(location.lat) ||
+      isNaN(location.lng) ||
+      Math.abs(location.lat) > 90 ||
+      Math.abs(location.lng) > 180
+    ) {
+      console.warn('Skipping vendor with invalid coordinates:', {
+        id: vendor._id?.substring(0, 8),
+        name: getVendorDisplayName(vendor),
+        coordinates: [location.lng, location.lat],
+      });
+      return null;
+    }
+
+    return (
+      <Marker
+        key={vendor._id}
+        coordinate={{
+          latitude: location.lat,
+          longitude: location.lng,
+        }}
+        onPress={() => onPress(vendor)}
+        zIndex={1000}>
+        <View
+          style={{
+            backgroundColor: '#374151',
+            padding: 4,
+            borderRadius: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+          }}>
+          <Ionicons name="storefront-outline" size={25} color="#ADF7FF" />
+        </View>
+      </Marker>
+    );
+  },
+  (prevProps, nextProps) => {
+    // Only re-render if vendor ID or coordinates changed
+    const prevLocation = getVendorLocation(prevProps.vendor);
+    const nextLocation = getVendorLocation(nextProps.vendor);
+
+    return (
+      prevProps.vendor._id === nextProps.vendor._id &&
+      prevLocation.lat === nextLocation.lat &&
+      prevLocation.lng === nextLocation.lng
+    );
   }
-
-  return (
-    <Marker
-      key={vendor._id}
-      coordinate={{
-        latitude: location.lat,
-        longitude: location.lng,
-      }}
-      onPress={() => onPress(vendor)}
-      zIndex={1000}>
-      <View
-        style={{
-          backgroundColor: '#374151',
-          padding: 4,
-          borderRadius: 8,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-          elevation: 5,
-        }}>
-        <Ionicons name="storefront-outline" size={25} color="#ADF7FF" />
-      </View>
-    </Marker>
-  );
-}, (prevProps, nextProps) => {
-  // Only re-render if vendor ID or coordinates changed
-  const prevLocation = getVendorLocation(prevProps.vendor);
-  const nextLocation = getVendorLocation(nextProps.vendor);
-  
-  return (
-    prevProps.vendor._id === nextProps.vendor._id &&
-    prevLocation.lat === nextLocation.lat &&
-    prevLocation.lng === nextLocation.lng
-  );
-});
+);
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -138,8 +149,17 @@ export default function Home() {
         // Load nearby vendors and activities with shared controller
         const initialController = new AbortController();
         await Promise.all([
-          loadNearbyVendors(location.coords.latitude, location.coords.longitude, initialController.signal),
-          loadNearbyActivities(location.coords.latitude, location.coords.longitude, 10, initialController.signal),
+          loadNearbyVendors(
+            location.coords.latitude,
+            location.coords.longitude,
+            initialController.signal
+          ),
+          loadNearbyActivities(
+            location.coords.latitude,
+            location.coords.longitude,
+            10,
+            initialController.signal
+          ),
         ]);
       } catch (error) {
         console.error('Error getting location:', error);
@@ -160,16 +180,16 @@ export default function Home() {
       if (vendorAbortControllerRef.current) {
         vendorAbortControllerRef.current.abort();
       }
-      
+
       // Create new abort controller if not provided
       const controller = abortSignal ? null : new AbortController();
       if (controller) {
         vendorAbortControllerRef.current = controller;
       }
-      
+
       setIsLoadingVendors(true);
       console.log('Home - Loading nearby vendors for location:', { lat, lng });
-      
+
       // Check if request was aborted before making API call
       const signal = abortSignal || controller?.signal;
       if (signal?.aborted) {
@@ -178,7 +198,7 @@ export default function Home() {
 
       // Use client-side filtering approach (same as frontend)
       const response = await vendorsApi.getNearbyVendors(lat, lng, 10000); // 10km radius
-      
+
       // Check if request was aborted after API call
       if (signal?.aborted) {
         return;
@@ -225,21 +245,26 @@ export default function Home() {
     return Math.round(radius);
   };
 
-  const loadNearbyActivities = async (lat: number, lng: number, radius?: number, abortSignal?: AbortSignal) => {
+  const loadNearbyActivities = async (
+    lat: number,
+    lng: number,
+    radius?: number,
+    abortSignal?: AbortSignal
+  ) => {
     try {
       // Cancel any existing activities request
       if (activitiesAbortControllerRef.current) {
         activitiesAbortControllerRef.current.abort();
       }
-      
+
       // Create new abort controller if not provided
       const controller = abortSignal ? null : new AbortController();
       if (controller) {
         activitiesAbortControllerRef.current = controller;
       }
-      
+
       setIsLoadingActivities(true);
-      
+
       // Check if request was aborted before making API call
       const signal = abortSignal || controller?.signal;
       if (signal?.aborted) {
@@ -256,7 +281,7 @@ export default function Home() {
       });
 
       const response = await productsApi.getNearbyActivitiesForToday(lat, lng, searchRadius);
-      
+
       // Check if request was aborted after API call
       if (signal?.aborted) {
         return;
@@ -275,11 +300,11 @@ export default function Home() {
       });
 
       const activities = response.data || [];
-      
+
       // Only update state and preload images if request wasn't aborted
       if (!signal?.aborted) {
         setActivities(activities);
-        
+
         // Preload activity images for better UX (with throttling)
         if (activities.length > 0) {
           // Throttle image preloading to prevent memory pressure
@@ -310,22 +335,25 @@ export default function Home() {
     );
   };
 
-  const handleVendorPress = useCallback((vendor: Vendor) => {
-    console.log('Vendor pressed:', getVendorDisplayName(vendor));
-    // Clear previous vendor first if switching between vendors
-    if (selectedVendor && selectedVendor._id !== vendor._id) {
-      setShowVendorCard(false);
-      setSelectedVendor(null);
-      // Small delay to allow modal to close and clear state
-      setTimeout(() => {
+  const handleVendorPress = useCallback(
+    (vendor: Vendor) => {
+      console.log('Vendor pressed:', getVendorDisplayName(vendor));
+      // Clear previous vendor first if switching between vendors
+      if (selectedVendor && selectedVendor._id !== vendor._id) {
+        setShowVendorCard(false);
+        setSelectedVendor(null);
+        // Small delay to allow modal to close and clear state
+        setTimeout(() => {
+          setSelectedVendor(vendor);
+          setShowVendorCard(true);
+        }, 100);
+      } else {
         setSelectedVendor(vendor);
         setShowVendorCard(true);
-      }, 100);
-    } else {
-      setSelectedVendor(vendor);
-      setShowVendorCard(true);
-    }
-  }, [selectedVendor]);
+      }
+    },
+    [selectedVendor]
+  );
 
   const handleCloseVendorCard = useCallback(() => {
     setShowVendorCard(false);
@@ -334,15 +362,18 @@ export default function Home() {
 
   const recenterOnCurrentLocation = useCallback(async () => {
     if (userLocation && mapRef.current) {
-      mapRef.current.animateToRegion({
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      }, 1000);
+      mapRef.current.animateToRegion(
+        {
+          latitude: userLocation.coords.latitude,
+          longitude: userLocation.coords.longitude,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        },
+        1000
+      );
     }
   }, [userLocation]);
-  
+
   // Memoize user location object for activities sheet to prevent unnecessary re-renders
   const memoizedUserLocation = useMemo(() => {
     return userLocation
@@ -356,17 +387,19 @@ export default function Home() {
   // Check if region change is significant enough to warrant new API calls
   const isSignificantRegionChange = (newRegion: Region, lastRegion: Region | null): boolean => {
     if (!lastRegion) return true;
-    
+
     // Calculate distance moved (in degrees)
     const latDiff = Math.abs(newRegion.latitude - lastRegion.latitude);
     const lngDiff = Math.abs(newRegion.longitude - lastRegion.longitude);
     const deltaDiff = Math.abs(newRegion.latitudeDelta - lastRegion.latitudeDelta);
-    
+
     // Only trigger API calls if moved significantly or zoom changed significantly
     const MOVEMENT_THRESHOLD = 0.01; // ~1km
     const ZOOM_THRESHOLD = 0.005;
-    
-    return latDiff > MOVEMENT_THRESHOLD || lngDiff > MOVEMENT_THRESHOLD || deltaDiff > ZOOM_THRESHOLD;
+
+    return (
+      latDiff > MOVEMENT_THRESHOLD || lngDiff > MOVEMENT_THRESHOLD || deltaDiff > ZOOM_THRESHOLD
+    );
   };
 
   // Handle map region changes with debouncing and request deduplication
@@ -385,7 +418,7 @@ export default function Home() {
       clearTimeout(regionChangeTimeoutRef.current);
       regionChangeTimeoutRef.current = null;
     }
-    
+
     // Cancel any pending API requests
     if (vendorAbortControllerRef.current) {
       vendorAbortControllerRef.current.abort();
@@ -401,22 +434,22 @@ export default function Home() {
       console.log('Region change not significant, skipping API calls');
       return;
     }
-    
+
     lastRegionRef.current = region;
 
     // Set new timeout with increased delay to prevent excessive API calls
     regionChangeTimeoutRef.current = setTimeout(() => {
       const radius = calculateSearchRadius(region);
       console.log('Reloading data with new region, radius:', radius);
-      
+
       // Create shared abort controller for both API calls
       const sharedController = new AbortController();
-      
+
       // Load both vendors and activities with shared abort signal
       Promise.all([
         loadNearbyVendors(region.latitude, region.longitude, sharedController.signal),
-        loadNearbyActivities(region.latitude, region.longitude, radius, sharedController.signal)
-      ]).catch(error => {
+        loadNearbyActivities(region.latitude, region.longitude, radius, sharedController.signal),
+      ]).catch((error) => {
         if (error.name !== 'AbortError') {
           console.error('Home - Failed to reload region data:', error);
         }
@@ -569,7 +602,7 @@ export default function Home() {
         clearTimeout(regionChangeTimeoutRef.current);
         regionChangeTimeoutRef.current = null;
       }
-      
+
       // Cancel any pending requests
       if (vendorAbortControllerRef.current) {
         vendorAbortControllerRef.current.abort();
@@ -627,53 +660,47 @@ export default function Home() {
               alignItems: 'center',
               backgroundColor: '#0F172A',
             }}>
-            <ActivityIndicator size="large" color="#3B82F6" />
-            <Text style={{ color: '#94A3B8', marginTop: 16, fontFamily: FontFamilies.primary }}>Getting your location...</Text>
+            <ActivityIndicator size="large" color="#60A5FA" />
+            <Text style={{ color: '#94A3B8', marginTop: 16, fontFamily: FontFamilies.primary }}>
+              Getting your location...
+            </Text>
           </View>
         ) : (
           <View style={{ flex: 1 }}>
             <MapView
-            ref={mapRef}
-            style={{ flex: 1 }}
-            provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-            customMapStyle={isDarkColorScheme ? darkMapStyle : []}
-            initialRegion={getInitialRegion()}
-            onRegionChangeComplete={handleRegionChangeComplete}
-            showsUserLocation={true}
-            showsMyLocationButton={true}
-            rotateEnabled={true}
-            pitchEnabled={true}>
-            {vendors.map((vendor) => (
-              <VendorMarker
-                key={vendor._id}
-                vendor={vendor}
-                onPress={handleVendorPress}
-              />
-            ))}
-          </MapView>
-          
-          {/* Recenter Button */}
-          <TouchableOpacity
-            style={{
-              position: 'absolute',
-              top: 16,
-              right: 16,
-              backgroundColor: '#374151',
-              padding: 12,
-              borderRadius: 50,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-            }}
-            onPress={recenterOnCurrentLocation}>
-            <Ionicons 
-              name="locate" 
-              size={24} 
-              color="#ADF7FF" 
-            />
-          </TouchableOpacity>
+              ref={mapRef}
+              style={{ flex: 1 }}
+              provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+              customMapStyle={isDarkColorScheme ? darkMapStyle : []}
+              initialRegion={getInitialRegion()}
+              onRegionChangeComplete={handleRegionChangeComplete}
+              showsUserLocation={true}
+              showsMyLocationButton={true}
+              rotateEnabled={true}
+              pitchEnabled={true}>
+              {vendors.map((vendor) => (
+                <VendorMarker key={vendor._id} vendor={vendor} onPress={handleVendorPress} />
+              ))}
+            </MapView>
+
+            {/* Recenter Button */}
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                top: 4,
+                left: 4,
+                backgroundColor: '#374151',
+                padding: 12,
+                borderRadius: 50,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}
+              onPress={recenterOnCurrentLocation}>
+              <Ionicons name="locate" size={24} color="#ADF7FF" />
+            </TouchableOpacity>
           </View>
         )}
 
@@ -690,8 +717,10 @@ export default function Home() {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <ActivityIndicator size="small" color="#3B82F6" />
-            <Text style={{ color: '#F8FAFC', marginLeft: 8, fontFamily: FontFamilies.primary }}>Loading nearby vendors...</Text>
+            <ActivityIndicator size="small" color="#60A5FA" />
+            <Text style={{ color: '#E0FCFF', marginLeft: 8, fontFamily: FontFamilies.primary }}>
+              Loading nearby vendors...
+            </Text>
           </View>
         )}
 
