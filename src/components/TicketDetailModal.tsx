@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#ADF7FF',
+    color: '#E0FCFF',
     textTransform: 'uppercase',
   },
   categoryBadge: {
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 12,
     fontFamily: FontFamilies.primarySemiBold,
-    color: '#60A5FA',
+    color: '#E0FCFF',
     textTransform: 'uppercase',
   },
   ticketTitle: {
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   },
   assignedLabel: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: '#E0FCFF',
     marginBottom: 4,
     fontFamily: FontFamilies.primary,
   },

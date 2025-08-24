@@ -13,6 +13,7 @@ import {
   TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
 import { supportTicketsApi } from '~/lib/api/support-tickets';
@@ -27,7 +28,6 @@ import {
   SUPPORT_TICKET_STATUS_COLORS,
   SUPPORT_TICKET_STATUS_PRIORITY,
 } from '~/lib/types/support-ticket';
-import { Picker } from '@react-native-picker/picker';
 import { FontFamilies } from '~/src/styles/fonts';
 
 type SupportTicketCardProps = {
@@ -105,6 +105,7 @@ const CreateTicketModal = ({
   const [category, setCategory] = useState<SupportTicketCategory>(SupportTicketCategory.TECHNICAL);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const handleSubmit = async () => {
     if (!title.trim() || !description.trim()) {
@@ -142,22 +143,14 @@ const CreateTicketModal = ({
         <ScrollView style={styles.modalContent}>
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>Category</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={category}
-                onValueChange={setCategory}
-                style={styles.picker}
-                itemStyle={{ color: '#E0FCFF' }}>
-                {Object.values(SupportTicketCategory).map((cat) => (
-                  <Picker.Item
-                    key={cat}
-                    label={SUPPORT_TICKET_CATEGORY_LABELS[cat]}
-                    value={cat}
-                    color="#E0FCFF"
-                  />
-                ))}
-              </Picker>
-            </View>
+            <TouchableOpacity 
+              style={styles.dropdownSelector} 
+              onPress={() => setShowCategoryModal(true)}>
+              <Text style={styles.dropdownText}>
+                {SUPPORT_TICKET_CATEGORY_LABELS[category]}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color="#94A3B8" />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.formGroup}>
@@ -184,6 +177,49 @@ const CreateTicketModal = ({
             />
           </View>
         </ScrollView>
+
+        {/* Category Selection Modal */}
+        <Modal 
+          visible={showCategoryModal} 
+          transparent={true} 
+          animationType="fade"
+          onRequestClose={() => setShowCategoryModal(false)}>
+          <TouchableOpacity 
+            style={styles.modalOverlay} 
+            activeOpacity={1}
+            onPress={() => setShowCategoryModal(false)}>
+            <View style={styles.categoryModalContainer}>
+              <View style={styles.categoryModalHeader}>
+                <Text style={styles.categoryModalTitle}>Select Category</Text>
+                <TouchableOpacity onPress={() => setShowCategoryModal(false)}>
+                  <Ionicons name="close" size={24} color="#94A3B8" />
+                </TouchableOpacity>
+              </View>
+              {Object.values(SupportTicketCategory).map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  style={[
+                    styles.categoryOption,
+                    category === cat && styles.categoryOptionSelected
+                  ]}
+                  onPress={() => {
+                    setCategory(cat);
+                    setShowCategoryModal(false);
+                  }}>
+                  <Text style={[
+                    styles.categoryOptionText,
+                    category === cat && styles.categoryOptionTextSelected
+                  ]}>
+                    {SUPPORT_TICKET_CATEGORY_LABELS[cat]}
+                  </Text>
+                  {category === cat && (
+                    <Ionicons name="checkmark" size={20} color="#60A5FA" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </SafeAreaView>
     </Modal>
   );
@@ -340,8 +376,8 @@ export default function Support() {
 
         {/* Create Ticket Button */}
         <TouchableOpacity style={styles.createButton} onPress={() => setShowCreateModal(true)}>
-          <LinearGradient colors={['#60A5FA', '#2563EB']} style={styles.createButtonGradient}>
-            <Text style={styles.createButtonText}>Create New Ticket</Text>
+          <LinearGradient colors={['#A3FCFF', '#2563EB']} style={styles.createButtonGradient}>
+            <Text style={styles.createButtonText}>Get Support</Text>
           </LinearGradient>
         </TouchableOpacity>
 
@@ -647,18 +683,68 @@ const styles = StyleSheet.create({
     color: '#E0FCFF',
     marginBottom: 8,
   },
-  pickerContainer: {
+  dropdownSelector: {
     backgroundColor: 'rgba(28, 40, 58, 0.8)',
     borderRadius: 8,
+    padding: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  picker: {
+  dropdownText: {
     color: '#E0FCFF',
-    height: 50,
+    fontSize: 16,
+    fontFamily: FontFamilies.primary,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  categoryModalContainer: {
+    backgroundColor: '#1C283A',
+    borderRadius: 12,
     width: '100%',
+    maxWidth: 320,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  categoryModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  categoryModalTitle: {
+    fontSize: 18,
+    fontFamily: FontFamilies.primarySemiBold,
+    color: '#E0FCFF',
+  },
+  categoryOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  categoryOptionSelected: {
+    backgroundColor: 'rgba(96, 165, 250, 0.1)',
+  },
+  categoryOptionText: {
+    fontSize: 16,
+    fontFamily: FontFamilies.primary,
+    color: '#E0FCFF',
+  },
+  categoryOptionTextSelected: {
+    fontFamily: FontFamilies.primarySemiBold,
+    color: '#60A5FA',
   },
   textInput: {
     backgroundColor: 'rgba(28, 40, 58, 0.8)',

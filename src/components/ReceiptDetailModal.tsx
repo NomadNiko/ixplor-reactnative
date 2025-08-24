@@ -107,10 +107,7 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
                 <Text style={styles.receiptDate}>{formatInvoiceDate(invoice.invoiceDate)}</Text>
               </View>
               <View
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: getStatusColor(invoice.status) },
-                ]}>
+                style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status) }]}>
                 <Text style={styles.statusText}>{invoice.status}</Text>
               </View>
             </View>
@@ -158,9 +155,7 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
               <View key={group.vendorId} style={styles.vendorCard}>
                 <View style={styles.vendorHeader}>
                   <Text style={styles.vendorName}>{group.vendorName}</Text>
-                  <Text style={styles.vendorSubtotal}>
-                    ${(group.subtotal / 100).toFixed(2)}
-                  </Text>
+                  <Text style={styles.vendorSubtotal}>${group.subtotal.toFixed(2)}</Text>
                 </View>
 
                 {group.items?.map((item: InvoiceItem, itemIndex: number) => (
@@ -172,9 +167,7 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
                     ]}>
                     <View style={styles.itemHeader}>
                       <Text style={styles.itemName}>{item.productName}</Text>
-                      <Text style={styles.itemPrice}>
-                        ${(item.price / 100).toFixed(2)}
-                      </Text>
+                      <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
                     </View>
 
                     <View style={styles.itemDetails}>
@@ -205,9 +198,7 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
 
                       <View style={styles.itemDetailRow}>
                         <Ionicons name="layers-outline" size={14} color="#64748B" />
-                        <Text style={styles.itemDetailText}>
-                          Qty: {item.quantity}
-                        </Text>
+                        <Text style={styles.itemDetailText}>Qty: {item.quantity}</Text>
                       </View>
                     </View>
                   </View>
@@ -248,14 +239,14 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
             <TouchableOpacity style={styles.actionButton}>
               <LinearGradient colors={['#60A5FA', '#2563EB']} style={styles.buttonGradient}>
                 <Ionicons name="download-outline" size={20} color="#ADF7FF" />
-                <Text style={styles.buttonText}>Download Receipt</Text>
+                <Text style={styles.buttonText}>Download</Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionButton}>
               <LinearGradient colors={['#8B5CF6', '#7C3AED']} style={styles.buttonGradient}>
                 <Ionicons name="share-outline" size={20} color="#ADF7FF" />
-                <Text style={styles.buttonText}>Share Receipt</Text>
+                <Text style={styles.buttonText}>Share</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
