@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '~/lib/auth/context';
 import { FontFamilies } from '~/src/styles/fonts';
+import { useCart } from '~/hooks/useCart';
+import { useRouter } from 'expo-router';
 
 type HeaderProps = {
   showCart?: boolean;
@@ -11,6 +13,12 @@ type HeaderProps = {
 
 export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
   const { user } = useAuth();
+  const { itemCount } = useCart();
+  const router = useRouter();
+
+  const handleCartPress = () => {
+    router.push('/(tabs)/cart');
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -24,8 +32,13 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
 
       <View style={styles.rightSection}>
         {showCart && (
-          <TouchableOpacity style={styles.cartButton}>
+          <TouchableOpacity style={styles.cartButton} onPress={handleCartPress}>
             <Ionicons name="cart-outline" size={28} color="#F8FAFC" />
+            {itemCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{itemCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         )}
         <TouchableOpacity style={styles.profileButton}>
@@ -84,6 +97,24 @@ const styles = StyleSheet.create({
   },
   cartButton: {
     padding: 4,
+    position: 'relative',
+  },
+  badge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#EF4444',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: FontFamilies.primaryBold,
   },
   profileButton: {
     padding: 4,

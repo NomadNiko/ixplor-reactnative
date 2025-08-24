@@ -13,6 +13,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { ProductItem, PRODUCT_TYPE_LABELS } from '~/lib/types/product';
 import { FontFamilies } from '~/src/styles/fonts';
+import { useCart } from '~/hooks/useCart';
+import { AddToCartData } from '~/lib/api/cart';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const CARD_WIDTH = screenWidth * 0.9;
@@ -31,6 +33,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onClose,
   onAddToCart
 }) => {
+  const { addItem, isAddingItem } = useCart();
+  const [quantity, setQuantity] = React.useState(1);
+
   if (!product) return null;
 
   const availableQty = product.quantityAvailable - (product.quantitySold || 0);
@@ -53,10 +58,36 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
-  const handleAddToCart = () => {
-    if (onAddToCart) {
-      onAddToCart(product);
+  const handleIncreaseQuantity = () => {
+    if (quantity < availableQty) {
+      setQuantity(quantity + 1);
     }
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const handleAddToCart = () => {
+    console.log('Adding to cart:', {
+      productItemId: product._id || product.id,
+      productDate: product.productDate,
+      quantity,
+      vendorId: product.vendorId,
+      templateId: product.templateId,
+    });
+
+    const cartData: AddToCartData = {
+      productItemId: product._id || product.id,
+      productDate: new Date(product.productDate),
+      quantity: quantity,
+      vendorId: product.vendorId,
+      templateId: product.templateId,
+    };
+    
+    addItem(cartData);
     onClose();
   };
 
@@ -131,6 +162,28 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     {PRODUCT_TYPE_LABELS[product.productType]}
                   </Text>
                 </View>
+
+                {/* Quantity Selector */}
+                <View style={styles.quantitySection}>
+                  <Text style={styles.quantityLabel}>Quantity</Text>
+                  <View style={styles.quantityControls}>
+                    <TouchableOpacity
+                      onPress={handleDecreaseQuantity}
+                      style={[styles.quantityButton, quantity <= 1 && styles.disabledButton]}
+                      disabled={quantity <= 1}>
+                      <Ionicons name="remove" size={20} color={quantity <= 1 ? "#64748B" : "#F8FAFC"} />
+                    </TouchableOpacity>
+                    
+                    <Text style={styles.quantityText}>{quantity}</Text>
+                    
+                    <TouchableOpacity
+                      onPress={handleIncreaseQuantity}
+                      style={[styles.quantityButton, quantity >= availableQty && styles.disabledButton]}
+                      disabled={quantity >= availableQty}>
+                      <Ionicons name="add" size={20} color={quantity >= availableQty ? "#64748B" : "#F8FAFC"} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             </ScrollView>
 
@@ -143,9 +196,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={styles.addToCartButton}
-                onPress={handleAddToCart}>
-                <Text style={styles.addToCartText}>Add to Cart</Text>
+                style={[styles.addToCartButton, isAddingItem && styles.disabledButton]}
+                onPress={handleAddToCart}
+                disabled={isAddingItem || availableQty === 0}>
+                <Text style={styles.addToCartText}>
+                  {isAddingItem ? 'Adding...' : availableQty === 0 ? 'Out of Stock' : 'Add to Cart'}
+                </Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
@@ -264,6 +320,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: FontFamilies.primarySemiBold,
     color: '#FFFFFF',
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  quantitySection: {
+    marginTop: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  quantityLabel: {
+    fontSize: 16,
+    fontFamily: FontFamilies.primaryMedium,
+    color: '#F8FAFC',
+    marginBottom: 12,
+  },
+  quantityControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  quantityButton: {
+    padding: 12,
+  },
+  quantityText: {
+    fontSize: 18,
+    fontFamily: FontFamilies.primaryMedium,
+    color: '#F8FAFC',
+    paddingHorizontal: 20,
   },
 });
 
