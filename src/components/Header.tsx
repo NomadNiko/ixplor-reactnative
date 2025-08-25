@@ -20,6 +20,10 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
     router.push('/(tabs)/cart');
   };
 
+  const handleAvatarPress = () => {
+    router.push('/(tabs)/dashboard');
+  };
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.backgroundExtension} />
@@ -41,7 +45,7 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
             )}
           </TouchableOpacity>
         )}
-        <TouchableOpacity style={styles.profileButton}>
+        <TouchableOpacity style={styles.profileButton} onPress={handleAvatarPress}>
           <Image
             source={{ uri: user?.photo?.path || 'https://via.placeholder.com/40' }}
             style={styles.profileImage}

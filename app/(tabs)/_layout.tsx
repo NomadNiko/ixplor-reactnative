@@ -22,6 +22,11 @@ export default function TabLayout() {
             paddingBottom: 25,
             paddingTop: 12,
           },
+          tabBarIconStyle: {
+            overflow: 'visible',
+            width: 50,
+            height: 50,
+          },
           tabBarLabelStyle: {
             fontSize: 12,
             fontWeight: '500',
@@ -34,15 +39,6 @@ export default function TabLayout() {
             title: 'Home',
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="home" color={color} family="FontAwesome5" />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="dashboard"
-          options={{
-            title: 'Dashboard',
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="user-secret" color={color} family="FontAwesome" />
             ),
           }}
         />
@@ -74,12 +70,22 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="dashboard"
+          options={{
+            title: 'Dashboard',
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="user-secret" color={color} family="FontAwesome" />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="receipts"
           options={{
             title: 'Receipts',
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="receipt" color={color} family="FontAwesome5" />
             ),
+            href: null,
           }}
         />
         <Tabs.Screen
@@ -89,6 +95,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="headset" color={color} family="FontAwesome5" />
             ),
+            href: null,
           }}
         />
       </Tabs>

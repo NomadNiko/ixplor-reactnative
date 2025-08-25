@@ -176,67 +176,70 @@ export default function Receipts() {
         <ScrollView
           style={styles.scrollView}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
-        <View style={styles.header}>
-          <Text style={styles.title}>All Receipts</Text>
-          <Text style={styles.subtitle}>Your purchase history</Text>
-        </View>
+          <View style={styles.header}>
+            <Text style={styles.title}>Receipts</Text>
+            <Text style={styles.subtitle}>Your purchase history</Text>
+          </View>
 
-        {/* Summary Stats */}
-        {!isLoading && invoices.length > 0 && (
-          <View style={styles.summaryContainer}>
-            <LinearGradient
-              colors={['rgba(28, 40, 58, 0.6)', 'rgba(21, 29, 43, 0.6)']}
-              style={styles.summaryCard}>
-              <View style={styles.summaryRow}>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryLabel}>Total Receipts</Text>
-                  <Text style={styles.summaryValue}>{invoices.length}</Text>
+          {/* Summary Stats */}
+          {!isLoading && invoices.length > 0 && (
+            <View style={styles.summaryContainer}>
+              <LinearGradient
+                colors={['rgba(28, 40, 58, 0.6)', 'rgba(21, 29, 43, 0.6)']}
+                style={styles.summaryCard}>
+                <View style={styles.summaryRow}>
+                  <View style={styles.summaryItem}>
+                    <Text style={styles.summaryLabel}>Total Receipts</Text>
+                    <Text style={styles.summaryValue}>{invoices.length}</Text>
+                  </View>
+                  <View style={styles.summaryItem}>
+                    <Text style={styles.summaryLabel}>Total Spent</Text>
+                    <Text style={styles.summaryValue}>${getTotalSpent().toFixed(2)}</Text>
+                  </View>
                 </View>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryLabel}>Total Spent</Text>
-                  <Text style={styles.summaryValue}>${getTotalSpent().toFixed(2)}</Text>
+                <View style={styles.summaryRow}>
+                  <View style={styles.summaryItem}>
+                    <Text style={styles.summaryLabel}>This Month</Text>
+                    <Text style={styles.summaryValue}>${getThisMonthSpent().toFixed(2)}</Text>
+                  </View>
+                  <View style={styles.summaryItem}>
+                    <Text style={styles.summaryLabel}>Average Order</Text>
+                    <Text style={styles.summaryValue}>
+                      $
+                      {invoices.length > 0
+                        ? (getTotalSpent() / invoices.length).toFixed(2)
+                        : '0.00'}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.summaryRow}>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryLabel}>This Month</Text>
-                  <Text style={styles.summaryValue}>${getThisMonthSpent().toFixed(2)}</Text>
-                </View>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryLabel}>Average Order</Text>
-                  <Text style={styles.summaryValue}>
-                    ${invoices.length > 0 ? (getTotalSpent() / invoices.length).toFixed(2) : '0.00'}
-                  </Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </View>
-        )}
+              </LinearGradient>
+            </View>
+          )}
 
-        {/* Receipts List */}
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#60A5FA" />
-            <Text style={styles.loadingText}>Loading receipts...</Text>
-          </View>
-        ) : invoices.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No receipts found</Text>
-            <Text style={styles.emptySubtext}>
-              Your purchase receipts will appear here after you make purchases
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.receiptsList}>
-            {invoices.map((invoice) => (
-              <ReceiptCard
-                key={invoice._id}
-                invoice={invoice}
-                onPress={() => showReceiptDetails(invoice)}
-              />
-            ))}
-          </View>
-        )}
+          {/* Receipts List */}
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#60A5FA" />
+              <Text style={styles.loadingText}>Loading receipts...</Text>
+            </View>
+          ) : invoices.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No receipts found</Text>
+              <Text style={styles.emptySubtext}>
+                Your purchase receipts will appear here after you make purchases
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.receiptsList}>
+              {invoices.map((invoice) => (
+                <ReceiptCard
+                  key={invoice._id}
+                  invoice={invoice}
+                  onPress={() => showReceiptDetails(invoice)}
+                />
+              ))}
+            </View>
+          )}
         </ScrollView>
       </View>
 
@@ -274,29 +277,29 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
     color: '#E0FCFF',
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#94A3B8',
     fontFamily: FontFamilies.primary,
   },
   summaryContainer: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   summaryCard: {
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 8,
+    padding: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   summaryItem: {
     flex: 1,

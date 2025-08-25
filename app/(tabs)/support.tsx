@@ -143,12 +143,10 @@ const CreateTicketModal = ({
         <ScrollView style={styles.modalContent}>
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>Category</Text>
-            <TouchableOpacity 
-              style={styles.dropdownSelector} 
+            <TouchableOpacity
+              style={styles.dropdownSelector}
               onPress={() => setShowCategoryModal(true)}>
-              <Text style={styles.dropdownText}>
-                {SUPPORT_TICKET_CATEGORY_LABELS[category]}
-              </Text>
+              <Text style={styles.dropdownText}>{SUPPORT_TICKET_CATEGORY_LABELS[category]}</Text>
               <Ionicons name="chevron-down" size={20} color="#94A3B8" />
             </TouchableOpacity>
           </View>
@@ -179,13 +177,13 @@ const CreateTicketModal = ({
         </ScrollView>
 
         {/* Category Selection Modal */}
-        <Modal 
-          visible={showCategoryModal} 
-          transparent={true} 
+        <Modal
+          visible={showCategoryModal}
+          transparent={true}
           animationType="fade"
           onRequestClose={() => setShowCategoryModal(false)}>
-          <TouchableOpacity 
-            style={styles.modalOverlay} 
+          <TouchableOpacity
+            style={styles.modalOverlay}
             activeOpacity={1}
             onPress={() => setShowCategoryModal(false)}>
             <View style={styles.categoryModalContainer}>
@@ -198,23 +196,19 @@ const CreateTicketModal = ({
               {Object.values(SupportTicketCategory).map((cat) => (
                 <TouchableOpacity
                   key={cat}
-                  style={[
-                    styles.categoryOption,
-                    category === cat && styles.categoryOptionSelected
-                  ]}
+                  style={[styles.categoryOption, category === cat && styles.categoryOptionSelected]}
                   onPress={() => {
                     setCategory(cat);
                     setShowCategoryModal(false);
                   }}>
-                  <Text style={[
-                    styles.categoryOptionText,
-                    category === cat && styles.categoryOptionTextSelected
-                  ]}>
+                  <Text
+                    style={[
+                      styles.categoryOptionText,
+                      category === cat && styles.categoryOptionTextSelected,
+                    ]}>
                     {SUPPORT_TICKET_CATEGORY_LABELS[cat]}
                   </Text>
-                  {category === cat && (
-                    <Ionicons name="checkmark" size={20} color="#60A5FA" />
-                  )}
+                  {category === cat && <Ionicons name="checkmark" size={20} color="#60A5FA" />}
                 </TouchableOpacity>
               ))}
             </View>
@@ -471,13 +465,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 18,
     fontFamily: FontFamilies.primaryBold,
     color: '#E0FCFF',
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#94A3B8',
     fontFamily: FontFamilies.primary,
   },
@@ -491,7 +485,7 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     color: '#ADF7FF',
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: FontFamilies.primarySemiBold,
   },
   summaryContainer: {

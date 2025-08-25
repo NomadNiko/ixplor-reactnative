@@ -8,9 +8,12 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Platform,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { FontFamilies } from '~/src/styles/fonts';
 import {
   Invoice,
@@ -79,6 +82,228 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
 
   const totalItems = getInvoiceTotalItems(invoice);
   const vendorCount = invoice.vendorGroups?.length || 0;
+
+  const generateReceiptHTML = (): string => {
+    if (!invoice) return '';
+    
+    const vendorGroupsHTML = invoice.vendorGroups?.map((group: VendorGroup) => {
+      const itemsHTML = group.items?.map((item: InvoiceItem) => `
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
+            ${item.productName}
+            <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">
+              ${formatProductDate(item.productDate)} • ${item.productStartTime ? formatTime(item.productStartTime) : ''} 
+              ${item.productDuration > 0 ? `• ${formatDuration(item.productDuration)}` : ''}
+            </div>
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
+          <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${item.price.toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      return `
+        <div style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px; background-color: #f3f4f6; border-radius: 4px;">
+            <h3 style="margin: 0; font-size: 14px; color: #111827;">${group.vendorName}</h3>
+            <span style="font-weight: bold; color: #059669;">$${group.subtotal.toFixed(2)}</span>
+          </div>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background-color: #f9fafb;">
+                <th style="padding: 8px; text-align: left; font-size: 12px; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Item</th>
+                <th style="padding: 8px; text-align: center; font-size: 12px; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Qty</th>
+                <th style="padding: 8px; text-align: right; font-size: 12px; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHTML}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }).join('') || '';
+
+    const statusColor = getStatusColor(invoice.status);
+    
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Receipt #${invoice._id.substring(0, 8).toUpperCase()}</title>
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+              color: #111827;
+              padding: 20px;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              padding-bottom: 20px;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            .logo {
+              font-size: 32px;
+              font-weight: bold;
+              color: #2563eb;
+              margin-bottom: 10px;
+            }
+            .receipt-info {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: 20px;
+              padding: 15px;
+              background-color: #f9fafb;
+              border-radius: 8px;
+            }
+            .status-badge {
+              display: inline-block;
+              padding: 4px 12px;
+              border-radius: 4px;
+              background-color: ${statusColor};
+              color: white;
+              font-size: 12px;
+              font-weight: bold;
+              text-transform: uppercase;
+            }
+            .total-section {
+              text-align: center;
+              margin: 30px 0;
+              padding: 20px;
+              background-color: #f0fdf4;
+              border-radius: 8px;
+              border: 2px solid #10b981;
+            }
+            .total-amount {
+              font-size: 36px;
+              font-weight: bold;
+              color: #059669;
+            }
+            .summary-stats {
+              display: flex;
+              justify-content: space-around;
+              margin: 20px 0;
+              padding: 15px;
+              background-color: #f9fafb;
+              border-radius: 8px;
+            }
+            .footer {
+              margin-top: 40px;
+              padding-top: 20px;
+              border-top: 1px solid #e5e7eb;
+              text-align: center;
+              font-size: 12px;
+              color: #6b7280;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">IXPLOR</div>
+            <div style="color: #6b7280; font-size: 14px;">Your Adventure Awaits</div>
+          </div>
+          
+          <div class="receipt-info">
+            <div>
+              <div style="font-size: 18px; font-weight: bold; color: #2563eb; margin-bottom: 4px;">
+                #${invoice._id.substring(0, 8).toUpperCase()}
+              </div>
+              <div style="color: #6b7280; font-size: 14px;">
+                ${formatInvoiceDate(invoice.invoiceDate)}
+              </div>
+            </div>
+            <div class="status-badge">${invoice.status}</div>
+          </div>
+          
+          <div class="total-section">
+            <div style="color: #6b7280; margin-bottom: 8px;">Total Amount</div>
+            <div class="total-amount">${formatInvoiceAmount(invoice.amount)}</div>
+          </div>
+          
+          <div class="summary-stats">
+            <div>
+              <div style="font-size: 24px; font-weight: bold; color: #111827;">${vendorCount}</div>
+              <div style="color: #6b7280; font-size: 14px;">${vendorCount === 1 ? 'Vendor' : 'Vendors'}</div>
+            </div>
+            <div>
+              <div style="font-size: 24px; font-weight: bold; color: #111827;">${totalItems}</div>
+              <div style="color: #6b7280; font-size: 14px;">${totalItems === 1 ? 'Item' : 'Items'}</div>
+            </div>
+          </div>
+          
+          <h2 style="margin: 30px 0 20px; font-size: 20px; color: #111827;">Purchase Details</h2>
+          ${vendorGroupsHTML}
+          
+          ${invoice.customerName ? `
+            <div style="margin-top: 30px; padding: 15px; background-color: #f9fafb; border-radius: 8px;">
+              <h3 style="margin-bottom: 10px; font-size: 16px; color: #111827;">Customer Information</h3>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #6b7280;">Name:</span>
+                <span style="font-weight: 500;">${invoice.customerName}</span>
+              </div>
+              ${invoice.customerId ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="color: #6b7280;">Customer ID:</span>
+                  <span style="font-weight: 500;">${invoice.customerId.substring(0, 12)}...</span>
+                </div>
+              ` : ''}
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #6b7280;">Type:</span>
+                <span style="font-weight: 500;">${invoice.type || 'Standard'}</span>
+              </div>
+            </div>
+          ` : ''}
+          
+          ${invoice.stripeCheckoutSessionId ? `
+            <div style="margin-top: 20px; padding: 10px; background-color: #fef3c7; border-radius: 4px; border: 1px solid #fbbf24;">
+              <div style="font-size: 12px; color: #92400e;">
+                <strong>Transaction ID:</strong> ${invoice.stripeCheckoutSessionId.substring(0, 20)}...
+              </div>
+            </div>
+          ` : ''}
+          
+          <div class="footer">
+            <p>Thank you for your purchase!</p>
+            <p style="margin-top: 10px;">This is an official receipt from Ixplor</p>
+            <p style="margin-top: 5px;">Generated on ${new Date().toLocaleString()}</p>
+          </div>
+        </body>
+      </html>
+    `;
+  };
+
+  const handleDownloadReceipt = async () => {
+    try {
+      const html = generateReceiptHTML();
+      const { uri } = await Print.printToFileAsync({ 
+        html,
+        base64: false 
+      });
+      
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: 'Save or Share Receipt',
+          UTI: 'com.adobe.pdf'
+        });
+      } else {
+        Alert.alert('Success', 'Receipt has been generated');
+      }
+    } catch (error) {
+      console.error('Failed to generate receipt:', error);
+      Alert.alert('Error', 'Failed to generate receipt. Please try again.');
+    }
+  };
 
   return (
     <Modal
@@ -236,17 +461,10 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
 
           {/* Footer Actions */}
           <View style={styles.footerActions}>
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity style={styles.actionButton} onPress={handleDownloadReceipt}>
               <LinearGradient colors={['#60A5FA', '#2563EB']} style={styles.buttonGradient}>
                 <Ionicons name="download-outline" size={20} color="#ADF7FF" />
-                <Text style={styles.buttonText}>Download</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.actionButton}>
-              <LinearGradient colors={['#8B5CF6', '#7C3AED']} style={styles.buttonGradient}>
-                <Ionicons name="share-outline" size={20} color="#ADF7FF" />
-                <Text style={styles.buttonText}>Share</Text>
+                <Text style={styles.buttonText}>Download Receipt</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -472,12 +690,10 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.primaryMedium,
   },
   footerActions: {
-    flexDirection: 'row',
-    gap: 12,
     marginBottom: 30,
   },
   actionButton: {
-    flex: 1,
+    width: '100%',
   },
   buttonGradient: {
     flexDirection: 'row',

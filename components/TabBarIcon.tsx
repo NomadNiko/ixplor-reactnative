@@ -10,17 +10,18 @@ export const TabBarIcon = (props: { name: string; color: string; family?: FontFa
 
   switch (family) {
     case 'FontAwesome':
-      return <FontAwesome size={28} style={styles.tabBarIcon} {...iconProps} />;
+      return <FontAwesome size={36} style={styles.tabBarIcon} {...iconProps} />;
     case 'FontAwesome5':
-      return <FontAwesome5 size={28} style={styles.tabBarIcon} {...iconProps} />;
+      return <FontAwesome5 size={36} style={styles.tabBarIcon} {...iconProps} />;
     case 'FontAwesome6':
     default:
-      return <FontAwesome6 size={28} style={styles.tabBarIcon} {...iconProps} />;
+      return <FontAwesome6 size={36} style={styles.tabBarIcon} {...iconProps} />;
   }
 };
 
 export const styles = StyleSheet.create({
   tabBarIcon: {
-    marginBottom: -3,
+    marginBottom: 15,
+    overflow: 'visible',
   },
 });
