@@ -9,7 +9,7 @@ class ImageCacheService {
 
   async preloadProductImages(products: ProductItem[]): Promise<void> {
     const imageUrls = products
-      .map(product => product.imageURL)
+      .map((product) => product.imageURL)
       .filter((url): url is string => {
         // Filter out already preloaded or currently loading images
         return Boolean(url) && !this.preloadedImages.has(url) && !this.preloadingQueue.has(url);
@@ -30,7 +30,7 @@ class ImageCacheService {
 
   private async preloadInBatches(urls: string[]): Promise<void> {
     const batches: string[][] = [];
-    
+
     // Split URLs into batches
     for (let i = 0; i < urls.length; i += this.maxConcurrentLoads) {
       batches.push(urls.slice(i, i + this.maxConcurrentLoads));
@@ -38,12 +38,12 @@ class ImageCacheService {
 
     // Process each batch sequentially
     for (const batch of batches) {
-      const promises = batch.map(url => this.preloadSingleImage(url));
+      const promises = batch.map((url) => this.preloadSingleImage(url));
       await Promise.allSettled(promises);
-      
+
       // Small delay between batches to prevent overwhelming the system
       if (batch !== batches[batches.length - 1]) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
   }
@@ -53,11 +53,11 @@ class ImageCacheService {
     if (!this.preloadingQueue.has(url)) {
       const promise = this.loadImage(url);
       this.preloadingQueue.set(url, promise);
-      
+
       try {
         await promise;
         this.preloadedImages.add(url);
-        
+
         // Clean up cache if it gets too large
         this.cleanupCache();
       } catch (error) {
@@ -84,7 +84,7 @@ class ImageCacheService {
       // Remove oldest entries (first in Set)
       const imagesToRemove = Math.floor(this.maxCacheSize * 0.2); // Remove 20% of cache
       const iterator = this.preloadedImages.values();
-      
+
       for (let i = 0; i < imagesToRemove; i++) {
         const { value } = iterator.next();
         if (value) {
@@ -113,7 +113,7 @@ class ImageCacheService {
   getCacheStats(): { preloaded: number; loading: number } {
     return {
       preloaded: this.preloadedImages.size,
-      loading: this.preloadingQueue.size
+      loading: this.preloadingQueue.size,
     };
   }
 }

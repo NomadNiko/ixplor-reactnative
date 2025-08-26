@@ -1,13 +1,21 @@
 import React from 'react';
 import { StyleSheet, View, Text, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import Header from '~/src/components/Header';
 import { useCart } from '~/hooks/useCart';
 import CartItem from '~/src/components/cart/CartItem';
 import { FontFamilies } from '~/src/styles/fonts';
 
 export default function Cart() {
+  const router = useRouter();
   const { cart, itemCount } = useCart();
+
+  const handleCheckout = () => {
+    if (cart?.items && cart.items.length > 0) {
+      router.push('/checkout');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -52,16 +60,18 @@ export default function Cart() {
       />
 
       {/* Checkout Button */}
-      <View style={styles.checkoutContainer}>
-        <TouchableOpacity style={styles.checkoutButton}>
-          <Text style={styles.checkoutButtonText}>
-            Checkout - $
-            {(cart?.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0).toFixed(
-              2
-            )}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {cart?.items && cart.items.length > 0 && (
+        <View style={styles.checkoutContainer}>
+          <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
+            <Text style={styles.checkoutButtonText}>
+              Checkout - $
+              {(
+                cart?.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0
+              ).toFixed(2)}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

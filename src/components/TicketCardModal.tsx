@@ -7,13 +7,11 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import QRCode from 'react-native-qrcode-svg';
 import { Ticket } from '~/lib/api/tickets';
-import { getTicketStatusColor, formatTicketDate, formatTicketPrice } from '~/lib/utils/ticketUtils';
-import { API_URL } from '~/lib/api/config';
+import { getTicketStatusColor, formatTicketPrice } from '~/lib/utils/ticketUtils';
 import { FontFamilies } from '~/src/styles/fonts';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');

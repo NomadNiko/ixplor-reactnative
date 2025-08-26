@@ -7,7 +7,6 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Platform,
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -85,9 +84,13 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
 
   const generateReceiptHTML = (): string => {
     if (!invoice) return '';
-    
-    const vendorGroupsHTML = invoice.vendorGroups?.map((group: VendorGroup) => {
-      const itemsHTML = group.items?.map((item: InvoiceItem) => `
+
+    const vendorGroupsHTML =
+      invoice.vendorGroups
+        ?.map((group: VendorGroup) => {
+          const itemsHTML = group.items
+            ?.map(
+              (item: InvoiceItem) => `
         <tr>
           <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
             ${item.productName}
@@ -99,9 +102,11 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
           <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
           <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${item.price.toFixed(2)}</td>
         </tr>
-      `).join('');
+      `
+            )
+            .join('');
 
-      return `
+          return `
         <div style="margin-bottom: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px; background-color: #f3f4f6; border-radius: 4px;">
             <h3 style="margin: 0; font-size: 14px; color: #111827;">${group.vendorName}</h3>
@@ -121,10 +126,11 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
           </table>
         </div>
       `;
-    }).join('') || '';
+        })
+        .join('') || '';
 
     const statusColor = getStatusColor(invoice.status);
-    
+
     return `
       <!DOCTYPE html>
       <html>
@@ -244,33 +250,45 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
           <h2 style="margin: 30px 0 20px; font-size: 20px; color: #111827;">Purchase Details</h2>
           ${vendorGroupsHTML}
           
-          ${invoice.customerName ? `
+          ${
+            invoice.customerName
+              ? `
             <div style="margin-top: 30px; padding: 15px; background-color: #f9fafb; border-radius: 8px;">
               <h3 style="margin-bottom: 10px; font-size: 16px; color: #111827;">Customer Information</h3>
               <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <span style="color: #6b7280;">Name:</span>
                 <span style="font-weight: 500;">${invoice.customerName}</span>
               </div>
-              ${invoice.customerId ? `
+              ${
+                invoice.customerId
+                  ? `
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                   <span style="color: #6b7280;">Customer ID:</span>
                   <span style="font-weight: 500;">${invoice.customerId.substring(0, 12)}...</span>
                 </div>
-              ` : ''}
+              `
+                  : ''
+              }
               <div style="display: flex; justify-content: space-between;">
                 <span style="color: #6b7280;">Type:</span>
                 <span style="font-weight: 500;">${invoice.type || 'Standard'}</span>
               </div>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
           
-          ${invoice.stripeCheckoutSessionId ? `
+          ${
+            invoice.stripeCheckoutSessionId
+              ? `
             <div style="margin-top: 20px; padding: 10px; background-color: #fef3c7; border-radius: 4px; border: 1px solid #fbbf24;">
               <div style="font-size: 12px; color: #92400e;">
                 <strong>Transaction ID:</strong> ${invoice.stripeCheckoutSessionId.substring(0, 20)}...
               </div>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
           
           <div class="footer">
             <p>Thank you for your purchase!</p>
@@ -285,16 +303,16 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
   const handleDownloadReceipt = async () => {
     try {
       const html = generateReceiptHTML();
-      const { uri } = await Print.printToFileAsync({ 
+      const { uri } = await Print.printToFileAsync({
         html,
-        base64: false 
+        base64: false,
       });
-      
+
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, {
           mimeType: 'application/pdf',
           dialogTitle: 'Save or Share Receipt',
-          UTI: 'com.adobe.pdf'
+          UTI: 'com.adobe.pdf',
         });
       } else {
         Alert.alert('Success', 'Receipt has been generated');

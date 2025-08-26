@@ -20,6 +20,8 @@ import { useAppFonts } from '~/src/hooks/useFonts';
 import { ActivityIndicator, View, Text } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { StripeProvider } from '@stripe/stripe-react-native';
+import Constants from 'expo-constants';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -40,6 +42,10 @@ export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const fontsLoaded = useAppFonts();
+
+  // Get Stripe publishable key from config
+  const stripePublishableKey = Constants.expoConfig?.extra?.stripe?.publishableKey || '';
+  console.log('🔑 Layout: Full key being used:', stripePublishableKey);
 
   if (!fontsLoaded) {
     return (
@@ -66,75 +72,83 @@ export default function RootLayout() {
 
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
-          <BottomSheetModalProvider>
-            <ActionSheetProvider>
-              <NavThemeProvider value={NAV_THEME[colorScheme]}>
-                <AuthProvider>
-                  <Stack screenOptions={SCREEN_OPTIONS}>
-                    <Stack.Screen name="(tabs)" options={TABS_OPTIONS} />
-                    <Stack.Screen name="modal" options={MODAL_OPTIONS} />
-                  </Stack>
-                </AuthProvider>
-              </NavThemeProvider>
-            </ActionSheetProvider>
-          </BottomSheetModalProvider>
+          <StripeProvider publishableKey={stripePublishableKey}>
+            <BottomSheetModalProvider>
+              <ActionSheetProvider>
+                <NavThemeProvider value={NAV_THEME[colorScheme]}>
+                  <AuthProvider>
+                    <Stack screenOptions={SCREEN_OPTIONS}>
+                      <Stack.Screen name="(tabs)" options={TABS_OPTIONS} />
+                      <Stack.Screen name="checkout" options={{ headerShown: false }} />
+                      <Stack.Screen name="modal" options={MODAL_OPTIONS} />
+                    </Stack>
+                  </AuthProvider>
+                </NavThemeProvider>
+              </ActionSheetProvider>
+            </BottomSheetModalProvider>
+          </StripeProvider>
         </QueryClientProvider>
       </GestureHandlerRootView>
 
       {/* </ExampleProvider> */}
-      
-      <Toast 
+
+      <Toast
         config={{
           success: (props) => (
-            <View style={{
-              height: 60,
-              width: '90%',
-              backgroundColor: '#065F46',
-              borderRadius: 8,
-              borderLeftWidth: 5,
-              borderLeftColor: '#10B981',
-              paddingHorizontal: 15,
-              paddingVertical: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-              <Text style={{
-                color: '#ADF7FF',
-                fontSize: 16,
-                fontWeight: '600',
-                flex: 1,
+            <View
+              style={{
+                height: 60,
+                width: '90%',
+                backgroundColor: '#065F46',
+                borderRadius: 8,
+                borderLeftWidth: 5,
+                borderLeftColor: '#10B981',
+                paddingHorizontal: 15,
+                paddingVertical: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
               }}>
+              <Text
+                style={{
+                  color: '#ADF7FF',
+                  fontSize: 16,
+                  fontWeight: '600',
+                  flex: 1,
+                }}>
                 {props.text1}
               </Text>
             </View>
           ),
           error: (props) => (
-            <View style={{
-              height: 60,
-              width: '90%',
-              backgroundColor: '#7F1D1D',
-              borderRadius: 8,
-              borderLeftWidth: 5,
-              borderLeftColor: '#EF4444',
-              paddingHorizontal: 15,
-              paddingVertical: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-              <Text style={{
-                color: '#ADF7FF',
-                fontSize: 16,
-                fontWeight: '600',
-                flex: 1,
+            <View
+              style={{
+                height: 60,
+                width: '90%',
+                backgroundColor: '#7F1D1D',
+                borderRadius: 8,
+                borderLeftWidth: 5,
+                borderLeftColor: '#EF4444',
+                paddingHorizontal: 15,
+                paddingVertical: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
               }}>
+              <Text
+                style={{
+                  color: '#ADF7FF',
+                  fontSize: 16,
+                  fontWeight: '600',
+                  flex: 1,
+                }}>
                 {props.text1}
               </Text>
               {props.text2 && (
-                <Text style={{
-                  color: '#FCA5A5',
-                  fontSize: 14,
-                  marginTop: 2,
-                }}>
+                <Text
+                  style={{
+                    color: '#FCA5A5',
+                    fontSize: 14,
+                    marginTop: 2,
+                  }}>
                   {props.text2}
                 </Text>
               )}

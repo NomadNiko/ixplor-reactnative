@@ -94,14 +94,14 @@ const transformVendor = (vendor: any): Vendor => {
 export const vendorsApi = {
   async getVendors(): Promise<VendorsResponse> {
     // Check cache first
-    if (vendorCache && (Date.now() - vendorCache.timestamp) < vendorCache.ttl) {
+    if (vendorCache && Date.now() - vendorCache.timestamp < vendorCache.ttl) {
       console.log('VendorsAPI - Returning cached vendors data');
       return {
         data: vendorCache.data,
         total: vendorCache.data.length,
       };
     }
-    
+
     console.log('VendorsAPI - Fetching all approved vendors from API');
     const response = await fetch(`${API_URL}/vendors`, {
       method: 'GET',
@@ -118,7 +118,7 @@ export const vendorsApi = {
 
     // Transform vendor data to include computed lat/lng fields
     const transformedVendors = result.data?.map(transformVendor) || [];
-    
+
     // Update cache
     vendorCache = {
       data: transformedVendors,
@@ -235,12 +235,12 @@ export const vendorsApi = {
   calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     // Create cache key
     const cacheKey = `${lat1.toFixed(4)},${lon1.toFixed(4)},${lat2.toFixed(4)},${lon2.toFixed(4)}`;
-    
+
     // Check cache first
     if (distanceCache.has(cacheKey)) {
       return distanceCache.get(cacheKey)!;
     }
-    
+
     // Calculate distance using Haversine formula
     const R = 3963; // Radius of Earth in miles
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -253,7 +253,7 @@ export const vendorsApi = {
         Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c; // Distance in miles
-    
+
     // Cache the result (with size limit)
     if (distanceCache.size >= DISTANCE_CACHE_SIZE) {
       // Remove oldest entries (first in Map)
@@ -261,10 +261,10 @@ export const vendorsApi = {
       distanceCache.delete(firstKey);
     }
     distanceCache.set(cacheKey, distance);
-    
+
     return distance;
   },
-  
+
   // Clear caches (useful for testing or memory management)
   clearCaches(): void {
     vendorCache = null;

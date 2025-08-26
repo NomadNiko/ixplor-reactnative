@@ -28,32 +28,32 @@ export default function Header({ showCart = true, onMenuPress }: HeaderProps) {
     <View style={styles.wrapper}>
       <View style={styles.backgroundExtension} />
       <View style={styles.container}>
-      <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
-        <Ionicons name="menu" size={28} color="#E0FCFF" />
-      </TouchableOpacity>
-
-      <Text style={styles.logo}>iXplor</Text>
-
-      <View style={styles.rightSection}>
-        {showCart && (
-          <TouchableOpacity style={styles.cartButton} onPress={handleCartPress}>
-            <Ionicons name="cart-outline" size={28} color="#E0FCFF" />
-            {itemCount > 0 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{itemCount}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity style={styles.profileButton} onPress={handleAvatarPress}>
-          <Image
-            source={{ uri: user?.photo?.path || 'https://via.placeholder.com/40' }}
-            style={styles.profileImage}
-            onError={() => console.log('Header profile image failed to load')}
-          />
+        <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
+          <Ionicons name="menu" size={28} color="#E0FCFF" />
         </TouchableOpacity>
+
+        <Text style={styles.logo}>iXplor</Text>
+
+        <View style={styles.rightSection}>
+          {showCart && (
+            <TouchableOpacity style={styles.cartButton} onPress={handleCartPress}>
+              <Ionicons name="cart-outline" size={28} color="#E0FCFF" />
+              {itemCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{itemCount}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity style={styles.profileButton} onPress={handleAvatarPress}>
+            <Image
+              source={{ uri: user?.photo?.path || 'https://via.placeholder.com/40' }}
+              style={styles.profileImage}
+              onError={() => console.log('Header profile image failed to load')}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
     </View>
   );
 }

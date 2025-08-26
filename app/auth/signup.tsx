@@ -89,15 +89,25 @@ export default function SignUpScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="flex-1 justify-center px-6 py-8">
             <View className="mb-8">
-              <Text className="mb-2 text-4xl text-foreground" style={{ fontFamily: FontFamilies.primaryBold }}>Sign Up</Text>
-              <Text className="text-lg text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>
+              <Text
+                className="mb-2 text-4xl text-foreground"
+                style={{ fontFamily: FontFamilies.primaryBold }}>
+                Sign Up
+              </Text>
+              <Text
+                className="text-lg text-muted-foreground"
+                style={{ fontFamily: FontFamilies.primary }}>
                 Create your account to get started
               </Text>
             </View>
 
             <View className="space-y-4">
               <View>
-                <Text className="mb-2 text-foreground" style={{ fontFamily: FontFamilies.primaryMedium }}>First Name</Text>
+                <Text
+                  className="mb-2 text-foreground"
+                  style={{ fontFamily: FontFamilies.primaryMedium }}>
+                  First Name
+                </Text>
                 <TextInput
                   value={firstName}
                   onChangeText={setFirstName}
@@ -111,7 +121,11 @@ export default function SignUpScreen() {
               </View>
 
               <View>
-                <Text className="mb-2 text-foreground" style={{ fontFamily: FontFamilies.primaryMedium }}>Last Name</Text>
+                <Text
+                  className="mb-2 text-foreground"
+                  style={{ fontFamily: FontFamilies.primaryMedium }}>
+                  Last Name
+                </Text>
                 <TextInput
                   value={lastName}
                   onChangeText={setLastName}
@@ -125,7 +139,11 @@ export default function SignUpScreen() {
               </View>
 
               <View>
-                <Text className="mb-2 text-foreground" style={{ fontFamily: FontFamilies.primaryMedium }}>Email</Text>
+                <Text
+                  className="mb-2 text-foreground"
+                  style={{ fontFamily: FontFamilies.primaryMedium }}>
+                  Email
+                </Text>
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
@@ -140,7 +158,11 @@ export default function SignUpScreen() {
               </View>
 
               <View>
-                <Text className="mb-2 text-foreground" style={{ fontFamily: FontFamilies.primaryMedium }}>Password</Text>
+                <Text
+                  className="mb-2 text-foreground"
+                  style={{ fontFamily: FontFamilies.primaryMedium }}>
+                  Password
+                </Text>
                 <TextInput
                   value={password}
                   onChangeText={setPassword}
@@ -161,13 +183,25 @@ export default function SignUpScreen() {
                     className={`h-5 w-5 rounded border-2 ${
                       acceptPolicy ? 'border-primary bg-primary' : 'border-border bg-card'
                     } items-center justify-center`}>
-                    {acceptPolicy && <Text className="text-xs text-primary-foreground" style={{ fontFamily: FontFamilies.primary }}>✓</Text>}
+                    {acceptPolicy && (
+                      <Text
+                        className="text-xs text-primary-foreground"
+                        style={{ fontFamily: FontFamilies.primary }}>
+                        ✓
+                      </Text>
+                    )}
                   </View>
                 </TouchableOpacity>
                 <View className="flex-1">
-                  <Text className="text-sm leading-5 text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>
+                  <Text
+                    className="text-sm leading-5 text-muted-foreground"
+                    style={{ fontFamily: FontFamilies.primary }}>
                     {'I have read and accept the '}
-                    <Text className="text-primary underline" style={{ fontFamily: FontFamilies.primary }}>Privacy Policy</Text>
+                    <Text
+                      className="text-primary underline"
+                      style={{ fontFamily: FontFamilies.primary }}>
+                      Privacy Policy
+                    </Text>
                   </Text>
                 </View>
               </View>
@@ -176,31 +210,45 @@ export default function SignUpScreen() {
                 onPress={handleSignUp}
                 disabled={isLoading}
                 className="mt-6 rounded-lg bg-primary py-4">
-                <Text className="text-center text-lg text-primary-foreground" style={{ fontFamily: FontFamilies.primarySemiBold }}>
+                <Text
+                  className="text-center text-lg text-primary-foreground"
+                  style={{ fontFamily: FontFamilies.primarySemiBold }}>
                   {isLoading ? 'Creating Account...' : 'Sign Up'}
                 </Text>
               </TouchableOpacity>
 
               <View className="my-6 flex-row items-center">
                 <View className="h-px flex-1 bg-border" />
-                <Text className="mx-4 text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>OR</Text>
+                <Text
+                  className="mx-4 text-muted-foreground"
+                  style={{ fontFamily: FontFamilies.primary }}>
+                  OR
+                </Text>
                 <View className="h-px flex-1 bg-border" />
               </View>
 
               <TouchableOpacity
                 onPress={handleGoogleSignUp}
                 className="flex-row items-center justify-center rounded-lg border border-border bg-card py-4">
-                <Text className="ml-2 text-lg text-foreground" style={{ fontFamily: FontFamilies.primarySemiBold }}>
+                <Text
+                  className="ml-2 text-lg text-foreground"
+                  style={{ fontFamily: FontFamilies.primarySemiBold }}>
                   Continue with Google
                 </Text>
               </TouchableOpacity>
             </View>
 
             <View className="mt-8 flex-row justify-center">
-              <Text className="text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>Already have an account? </Text>
+              <Text className="text-muted-foreground" style={{ fontFamily: FontFamilies.primary }}>
+                Already have an account?{' '}
+              </Text>
               <Link href="/auth/login" asChild>
                 <TouchableOpacity>
-                  <Text className="text-primary" style={{ fontFamily: FontFamilies.primarySemiBold }}>Sign In</Text>
+                  <Text
+                    className="text-primary"
+                    style={{ fontFamily: FontFamilies.primarySemiBold }}>
+                    Sign In
+                  </Text>
                 </TouchableOpacity>
               </Link>
             </View>

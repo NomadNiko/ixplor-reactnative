@@ -31,7 +31,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   visible,
   product,
   onClose,
-  onAddToCart
+  onAddToCart,
 }) => {
   const { addItem, isAddingItem } = useCart();
   const [quantity, setQuantity] = React.useState(1);
@@ -86,7 +86,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       vendorId: product.vendorId,
       templateId: product.templateId,
     };
-    
+
     addItem(cartData);
     onClose();
   };
@@ -98,7 +98,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <LinearGradient
             colors={['rgba(28, 40, 58, 0.98)', 'rgba(21, 29, 43, 0.98)']}
             style={styles.card}>
-            
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.title}>{product.templateName}</Text>
@@ -128,9 +127,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <View style={styles.detailsSection}>
                 <View style={styles.detailRow}>
                   <Ionicons name="calendar-outline" size={20} color="#94A3B8" />
-                  <Text style={styles.detailText}>
-                    {formatDate(product.productDate)}
-                  </Text>
+                  <Text style={styles.detailText}>{formatDate(product.productDate)}</Text>
                 </View>
 
                 <View style={styles.detailRow}>
@@ -158,9 +155,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
                 <View style={styles.detailRow}>
                   <Ionicons name="folder-outline" size={20} color="#94A3B8" />
-                  <Text style={styles.detailText}>
-                    {PRODUCT_TYPE_LABELS[product.productType]}
-                  </Text>
+                  <Text style={styles.detailText}>{PRODUCT_TYPE_LABELS[product.productType]}</Text>
                 </View>
 
                 {/* Quantity Selector */}
@@ -171,16 +166,27 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       onPress={handleDecreaseQuantity}
                       style={[styles.quantityButton, quantity <= 1 && styles.disabledButton]}
                       disabled={quantity <= 1}>
-                      <Ionicons name="remove" size={20} color={quantity <= 1 ? "#64748B" : "#E0FCFF"} />
+                      <Ionicons
+                        name="remove"
+                        size={20}
+                        color={quantity <= 1 ? '#64748B' : '#E0FCFF'}
+                      />
                     </TouchableOpacity>
-                    
+
                     <Text style={styles.quantityText}>{quantity}</Text>
-                    
+
                     <TouchableOpacity
                       onPress={handleIncreaseQuantity}
-                      style={[styles.quantityButton, quantity >= availableQty && styles.disabledButton]}
+                      style={[
+                        styles.quantityButton,
+                        quantity >= availableQty && styles.disabledButton,
+                      ]}
                       disabled={quantity >= availableQty}>
-                      <Ionicons name="add" size={20} color={quantity >= availableQty ? "#64748B" : "#E0FCFF"} />
+                      <Ionicons
+                        name="add"
+                        size={20}
+                        color={quantity >= availableQty ? '#64748B' : '#E0FCFF'}
+                      />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -189,12 +195,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
             {/* Footer Buttons */}
             <View style={styles.footer}>
-              <TouchableOpacity
-                style={styles.closeFooterButton}
-                onPress={onClose}>
+              <TouchableOpacity style={styles.closeFooterButton} onPress={onClose}>
                 <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 style={[styles.addToCartButton, isAddingItem && styles.disabledButton]}
                 onPress={handleAddToCart}

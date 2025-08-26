@@ -2,7 +2,6 @@ node_modules/
 .expo/
 dist/
 npm-debug.*
-auth.config.js
 *.jks
 *.p8
 *.p12
@@ -29,3 +28,4 @@ CLAUDE.md
 
 # Sensitive configuration files
 
+auth.config.js

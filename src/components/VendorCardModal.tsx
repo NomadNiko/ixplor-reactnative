@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   Image,
   Alert,
-  Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -47,7 +46,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
 
   // Track previous vendor ID to detect changes
   const prevVendorIdRef = useRef<string | null>(null);
-  
+
   useEffect(() => {
     if (vendor && visible) {
       // ALWAYS clear data first when opening modal for ANY vendor
@@ -58,10 +57,10 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
       setSelectedProduct(null);
       setShowProductDetail(false);
       setCurrentVendorId(vendor._id); // Set current vendor ID for image rendering
-      
+
       // Update previous vendor ID
       prevVendorIdRef.current = vendor._id;
-      
+
       // Load new vendor's products
       loadVendorProducts();
     } else {
@@ -92,12 +91,12 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
       if (isLoadingProducts) {
         return;
       }
-      
+
       setIsLoadingProducts(true);
       console.log('Loading product items for vendor:', vendor._id);
-      
+
       // Fetch product items (inventory) instead of templates
-      // This matches the frontend implementation  
+      // This matches the frontend implementation
       const tokens = await getTokensInfo();
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -105,30 +104,33 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
       if (tokens?.token) {
         headers.Authorization = `Bearer ${tokens.token}`;
       }
-      
+
       const response = await fetch(`${API_URL}/product-items/by-vendor/${vendor._id}/public`, {
         method: 'GET',
         headers,
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch vendor products');
       }
-      
+
       const data = await response.json();
-      
+
       console.log('Vendor products loaded:', data.data?.length || 0);
-      
+
       // Store all available products (regardless of date) for date filtering
       const availableProductsOnly = (data.data || []).filter((item: ProductItem) => {
         const sold = item.quantitySold || 0;
         return item.quantityAvailable > sold;
       });
-      
+
       // Only update state if products actually changed
-      if (JSON.stringify(availableProductsOnly.map(p => p._id)) !== JSON.stringify(allProductItems.map(p => p._id))) {
+      if (
+        JSON.stringify(availableProductsOnly.map((p) => p._id)) !==
+        JSON.stringify(allProductItems.map((p) => p._id))
+      ) {
         setAllProductItems(availableProductsOnly);
-        
+
         // Preload product images for better UX (throttled)
         if (availableProductsOnly.length > 0) {
           const imagesToPreload = availableProductsOnly.slice(0, 5); // Limit to first 5
@@ -151,16 +153,19 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
       }
       return;
     }
-    
+
     const selectedDateString = selectedDate.toISOString().split('T')[0];
-    
+
     const filteredProducts = allProductItems.filter((item) => {
       const itemDateString = item.productDate.split('T')[0];
       return itemDateString === selectedDateString;
     });
-    
+
     // Only update state if the filtered results are different
-    if (JSON.stringify(filteredProducts.map(p => p._id)) !== JSON.stringify(productItems.map(p => p._id))) {
+    if (
+      JSON.stringify(filteredProducts.map((p) => p._id)) !==
+      JSON.stringify(productItems.map((p) => p._id))
+    ) {
       setProductItems(filteredProducts);
     }
   };
@@ -210,7 +215,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
     const today = new Date();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
-    
+
     // If current month is December (11), allow next year
     if (currentMonth === 11) {
       return new Date(currentYear + 1, 11, 31); // December 31 of next year
@@ -265,7 +270,6 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
               <LinearGradient
                 colors={['rgba(28, 40, 58, 0.98)', 'rgba(21, 29, 43, 0.98)']}
                 style={styles.card}>
-                
                 {/* Header with Close Button */}
                 <View style={styles.header}>
                   <View style={styles.headerContent}>
@@ -282,8 +286,14 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                       )}
                     </View>
                     <View style={styles.headerText}>
-                      <Text style={styles.vendorName}>{currentVendorId === vendor._id ? getVendorDisplayName(vendor) : 'Loading...'}</Text>
-                      <Text style={styles.vendorType}>{currentVendorId === vendor._id ? (vendor.vendorType || 'Vendor') : ''}</Text>
+                      <Text style={styles.vendorName}>
+                        {currentVendorId === vendor._id
+                          ? getVendorDisplayName(vendor)
+                          : 'Loading...'}
+                      </Text>
+                      <Text style={styles.vendorType}>
+                        {currentVendorId === vendor._id ? vendor.vendorType || 'Vendor' : ''}
+                      </Text>
                     </View>
                   </View>
                   <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -312,13 +322,11 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                 {/* Active Products Section */}
                 <View style={styles.productsSection}>
                   <Text style={styles.sectionTitle}>Available Products</Text>
-                  
+
                   {/* Date Picker */}
                   {!isLoadingProducts && allProductItems.length > 0 && (
                     <View style={styles.datePicker}>
-                      <TouchableOpacity
-                        style={styles.datePickerButton}
-                        onPress={openDatePicker}>
+                      <TouchableOpacity style={styles.datePickerButton} onPress={openDatePicker}>
                         <Ionicons name="calendar-outline" size={20} color="#60A5FA" />
                         <Text style={styles.datePickerText}>
                           {formatDateForDisplay(selectedDate)}
@@ -327,7 +335,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                       </TouchableOpacity>
                     </View>
                   )}
-                  
+
                   {/* Date Picker Modal */}
                   {showDatePicker && (
                     <Modal visible={true} transparent={true} animationType="fade">
@@ -357,7 +365,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                       </View>
                     </Modal>
                   )}
-                  
+
                   {isLoadingProducts ? (
                     <View style={styles.loadingContainer}>
                       <ActivityIndicator size="large" color="#60A5FA" />
@@ -399,7 +407,8 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                             </Text>
                             <View style={styles.productDetails}>
                               <Text style={styles.productDate}>
-                                {new Date(item.productDate).toLocaleDateString()} at {item.startTime}
+                                {new Date(item.productDate).toLocaleDateString()} at{' '}
+                                {item.startTime}
                               </Text>
                               <Text style={styles.productAvailability}>
                                 {availableQty} spots left
@@ -408,9 +417,7 @@ export const VendorCardModal: React.FC<VendorCardModalProps> = ({ visible, vendo
                             <View style={styles.productFooter}>
                               <Text style={styles.productPrice}>${item.price}</Text>
                               {item.duration && (
-                                <Text style={styles.productDuration}>
-                                  {item.duration} min
-                                </Text>
+                                <Text style={styles.productDuration}>{item.duration} min</Text>
                               )}
                             </View>
                           </TouchableOpacity>

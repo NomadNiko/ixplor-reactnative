@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { cartService, CartItem, CartResponse, AddToCartData, UpdateCartItemData } from '~/lib/api/cart';
+import { cartService, CartItem, AddToCartData, UpdateCartItemData } from '~/lib/api/cart';
 import { useAuth } from '~/lib/auth/context';
 import { API_URL } from '~/lib/api/config';
 import { getTokensInfo } from '~/lib/api/storage';
@@ -35,11 +35,14 @@ export function useCart() {
     return headers;
   };
 
-  const validateInventory = async (productItemId: string, quantity: number): Promise<ValidationError | null> => {
+  const validateInventory = async (
+    productItemId: string,
+    quantity: number
+  ): Promise<ValidationError | null> => {
     try {
       console.log('🔍 Validating inventory for item:', productItemId);
       const response = await fetch(`${API_URL}/product-items/${productItemId}`, {
-        headers: await createHeaders(true)
+        headers: await createHeaders(true),
       });
 
       console.log('📡 Inventory validation response status:', response.status);
@@ -49,9 +52,9 @@ export function useCart() {
         console.error('❌ Inventory validation request failed:', {
           status: response.status,
           statusText: response.statusText,
-          error: errorText
+          error: errorText,
         });
-        
+
         // For now, let's skip inventory validation if the endpoint fails
         // This allows the cart to work even if the product-items endpoint has issues
         console.log('⚠️ Skipping inventory validation due to API error');
@@ -66,25 +69,30 @@ export function useCart() {
         quantityAvailable: item.quantityAvailable,
         requestedQuantity: quantity,
         // Let's also check if it's nested in a data property
-        dataProperty: item.data ? {
-          status: item.data.itemStatus,
-          quantity: item.data.quantityAvailable
-        } : 'No data property'
+        dataProperty: item.data
+          ? {
+              status: item.data.itemStatus,
+              quantity: item.data.quantityAvailable,
+            }
+          : 'No data property',
       });
 
       // Handle both direct response and nested data response
       const actualItem = item.data || item;
-      
+
       if (actualItem.itemStatus !== 'PUBLISHED') {
         console.log('❌ Item is not published:', actualItem.itemStatus);
         return { type: 'ITEM_UNAVAILABLE', message: 'Item is not available' };
       }
 
       if (actualItem.quantityAvailable < quantity) {
-        console.log('❌ Insufficient quantity:', { available: actualItem.quantityAvailable, requested: quantity });
+        console.log('❌ Insufficient quantity:', {
+          available: actualItem.quantityAvailable,
+          requested: quantity,
+        });
         return {
           type: 'INSUFFICIENT_QUANTITY',
-          message: `Only ${actualItem.quantityAvailable} available`
+          message: `Only ${actualItem.quantityAvailable} available`,
         };
       }
 
@@ -103,13 +111,13 @@ export function useCart() {
     existingItems: CartItem[]
   ): ValidationError | null => {
     const newStart = new Date(`${newItem.productDate}T${newItem.productStartTime}`);
-    const newEnd = new Date(newStart.getTime() + (newItem.productDuration * 60 * 1000));
+    const newEnd = new Date(newStart.getTime() + newItem.productDuration * 60 * 1000);
 
-    const hasConflict = existingItems.some(item => {
+    const hasConflict = existingItems.some((item) => {
       if (!item.productDate || !item.productStartTime || !item.productDuration) return false;
       const itemStart = new Date(`${item.productDate}T${item.productStartTime}`);
-      const itemEnd = new Date(itemStart.getTime() + (item.productDuration * 60 * 1000));
-      return (newStart < itemEnd && newEnd > itemStart);
+      const itemEnd = new Date(itemStart.getTime() + item.productDuration * 60 * 1000);
+      return newStart < itemEnd && newEnd > itemStart;
     });
 
     if (hasConflict) {
@@ -122,7 +130,7 @@ export function useCart() {
   const addItemMutation = useMutation({
     mutationFn: async (data: AddToCartData) => {
       console.log('🛒 AddItem mutation started with data:', data);
-      
+
       console.log('🔍 Validating inventory...');
       const inventoryError = await validateInventory(data.productItemId, data.quantity);
       if (inventoryError) {
@@ -133,9 +141,9 @@ export function useCart() {
 
       console.log('📦 Fetching item details for time conflict check...');
       const itemResponse = await fetch(`${API_URL}/product-items/${data.productItemId}`, {
-        headers: await createHeaders(true)
+        headers: await createHeaders(true),
       });
-      
+
       if (!itemResponse.ok) {
         console.log('⚠️ Failed to fetch item details for time conflict check, skipping...');
         console.log('🚀 Proceeding directly to cart service...');
@@ -170,7 +178,7 @@ export function useCart() {
     onSuccess: (data) => {
       console.log('🎉 AddItem mutation succeeded, invalidating cart queries...');
       queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
-      
+
       const itemCount = data?.items?.length || 1;
       Toast.show({
         type: 'success',
@@ -276,6 +284,7 @@ export function useCart() {
     isClearingCart: clearCartMutation.isPending,
     refreshCart: () => queryClient.invalidateQueries({ queryKey: ['cart', user?.id] }),
     itemCount: cartQuery.data?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0,
-    cartTotal: cartQuery.data?.items?.reduce((sum, item) => sum + (item.price * item.quantity), 0) || 0,
+    cartTotal:
+      cartQuery.data?.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0,
   };
 }

@@ -4,7 +4,6 @@ import {
   View,
   Text,
   SafeAreaView,
-  ScrollView,
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
@@ -12,12 +11,11 @@ import {
   Modal,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '~/src/components/Header';
 import { useAuth } from '~/lib/auth/context';
 import { productsApi } from '~/lib/api/products';
-import { ProductItem, PRODUCT_TYPE_LABELS } from '~/lib/types/product';
+import { ProductItem } from '~/lib/types/product';
 import ProductCard from '~/src/components/ProductCard';
 import { ProductDetailModal } from '~/src/components/ProductDetailModal';
 import { imageCache } from '~/src/lib/services/imageCache';

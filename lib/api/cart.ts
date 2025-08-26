@@ -59,27 +59,27 @@ export const cartService = {
     console.log('🛒 CartService: Getting cart...');
     const token = await getAuthToken();
     console.log('🔑 CartService: Token obtained:', token ? 'Present' : 'Missing');
-    
+
     const response = await fetch(`${API_URL}/cart`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    
+
     console.log('📡 CartService: GET cart response status:', response.status);
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('❌ CartService: GET cart failed:', errorData);
       throw new Error(errorData.message || 'Failed to fetch cart');
     }
-    
+
     const result = await response.json();
     console.log('✅ CartService: Cart fetched successfully:', {
       itemCount: result.items?.length || 0,
       userId: result.userId,
     });
-    
+
     return result;
   },
 
@@ -89,18 +89,18 @@ export const cartService = {
       ...data,
       productDate: data.productDate.toISOString(),
     });
-    
+
     const token = await getAuthToken();
     console.log('🔑 CartService: Token obtained:', token ? 'Present' : 'Missing');
-    
+
     const requestBody = {
       ...data,
       productDate: data.productDate.toISOString(),
     };
-    
+
     console.log('📡 CartService: Making POST request to:', `${API_URL}/cart/add`);
     console.log('📦 CartService: Request body:', requestBody);
-    
+
     const response = await fetch(`${API_URL}/cart/add`, {
       method: 'POST',
       headers: {
@@ -109,9 +109,9 @@ export const cartService = {
       },
       body: JSON.stringify(requestBody),
     });
-    
+
     console.log('📡 CartService: POST cart/add response status:', response.status);
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('❌ CartService: Add to cart failed:', {
@@ -121,13 +121,13 @@ export const cartService = {
       });
       throw new Error(errorData.message || 'Failed to add item to cart');
     }
-    
+
     const result = await response.json();
     console.log('✅ CartService: Item added to cart successfully:', {
       itemCount: result.items?.length || 0,
       newItemId: result.items?.[result.items.length - 1]?.productItemId,
     });
-    
+
     return result;
   },
 

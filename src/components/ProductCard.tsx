@@ -86,8 +86,8 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product, distance, o
         style={styles.card}>
         {/* Image */}
         {product.imageURL && (
-          <Image 
-            source={product.imageURL} 
+          <Image
+            source={product.imageURL}
             style={styles.image}
             cachePolicy="memory-disk"
             transition={200}

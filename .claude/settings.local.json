@@ -1,8 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Read(//mnt/c/Users/admin/expo/**)"
-    ],
+    "allow": ["Read(//mnt/c/Users/admin/expo/**)"],
     "deny": [],
     "ask": []
   }

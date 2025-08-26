@@ -3,18 +3,24 @@
 // DO NOT commit auth.config.js to version control
 module.exports = {
   // EAS Project ID from Expo Application Services
-  easProjectId: "your-eas-project-id-here",
-  
+  easProjectId: 'your-eas-project-id-here',
+
   googleAuth: {
     // Google OAuth Client IDs from Google Cloud Console
     // https://console.developers.google.com/
-    webClientId: "your-web-client-id.apps.googleusercontent.com",
-    iosClientId: "your-ios-client-id.apps.googleusercontent.com", 
-    androidClientId: "your-android-client-id.apps.googleusercontent.com"
+    webClientId: 'your-web-client-id.apps.googleusercontent.com',
+    iosClientId: 'your-ios-client-id.apps.googleusercontent.com',
+    androidClientId: 'your-android-client-id.apps.googleusercontent.com',
   },
-  
+
   apiConfig: {
     // API base URL for your backend server
-    baseUrl: "https://your-api-server.com/api"
-  }
+    baseUrl: 'https://your-api-server.com/api',
+  },
+
+  stripe: {
+    // Stripe publishable key from Stripe Dashboard
+    // https://dashboard.stripe.com/apikeys
+    publishableKey: 'pk_test_your-stripe-publishable-key-here',
+  },
 };

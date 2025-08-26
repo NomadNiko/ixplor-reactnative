@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -65,45 +60,45 @@ export default function CartItem({ item }: CartItemProps) {
             cachePolicy="memory-disk"
           />
         )}
-        
+
         <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.name} numberOfLines={2}>{item.productName}</Text>
-          <TouchableOpacity onPress={handleRemove} style={styles.removeButton}>
-            <Ionicons name="trash-outline" size={20} color="#EF4444" />
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.details}>
-          <Text style={styles.detailText}>
-            {formatDate(item.productDate)} • {formatTime(item.productStartTime)}
-          </Text>
-          <Text style={styles.detailText}>
-            Duration: {item.productDuration} min
-          </Text>
-        </View>
-        
-        <View style={styles.footer}>
-          <View style={styles.quantityControls}>
-            <TouchableOpacity
-              onPress={handleDecrease}
-              style={styles.quantityButton}
-              disabled={isUpdatingItem || isRemovingItem}>
-              <Ionicons name="remove" size={20} color="#E0FCFF" />
-            </TouchableOpacity>
-            
-            <Text style={styles.quantity}>{item.quantity}</Text>
-            
-            <TouchableOpacity
-              onPress={handleIncrease}
-              style={styles.quantityButton}
-              disabled={isUpdatingItem}>
-              <Ionicons name="add" size={20} color="#E0FCFF" />
+          <View style={styles.header}>
+            <Text style={styles.name} numberOfLines={2}>
+              {item.productName}
+            </Text>
+            <TouchableOpacity onPress={handleRemove} style={styles.removeButton}>
+              <Ionicons name="trash-outline" size={20} color="#EF4444" />
             </TouchableOpacity>
           </View>
-          
-          <Text style={styles.price}>${(item.price * item.quantity).toFixed(2)}</Text>
-        </View>
+
+          <View style={styles.details}>
+            <Text style={styles.detailText}>
+              {formatDate(item.productDate)} • {formatTime(item.productStartTime)}
+            </Text>
+            <Text style={styles.detailText}>Duration: {item.productDuration} min</Text>
+          </View>
+
+          <View style={styles.footer}>
+            <View style={styles.quantityControls}>
+              <TouchableOpacity
+                onPress={handleDecrease}
+                style={styles.quantityButton}
+                disabled={isUpdatingItem || isRemovingItem}>
+                <Ionicons name="remove" size={20} color="#E0FCFF" />
+              </TouchableOpacity>
+
+              <Text style={styles.quantity}>{item.quantity}</Text>
+
+              <TouchableOpacity
+                onPress={handleIncrease}
+                style={styles.quantityButton}
+                disabled={isUpdatingItem}>
+                <Ionicons name="add" size={20} color="#E0FCFF" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.price}>${(item.price * item.quantity).toFixed(2)}</Text>
+          </View>
         </View>
       </LinearGradient>
     </View>
