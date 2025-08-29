@@ -8,7 +8,6 @@ const authConfigPath = join(process.cwd(), 'auth.config.js');
 if (existsSync(authConfigPath)) {
   try {
     authConfig = require('./auth.config.js');
-    console.log('✅ Loaded auth config with Stripe key:', authConfig.stripe?.publishableKey?.substring(0, 20) + '...');
   } catch (error) {
     console.warn('Failed to load auth.config.js:', error.message);
   }
@@ -63,6 +62,11 @@ module.exports = {
       supportsTablet: true,
       bundleIdentifier: 'us.nomadsoft.ixplor',
       usesAppleSignIn: true,
+      icon: {
+        dark: './assets/ios-dark.png',
+        light: './assets/ios-light.png',
+        tinted: './assets/ios-tinted.png',
+      },
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSLocationWhenInUseUsageDescription:
@@ -105,6 +109,9 @@ module.exports = {
       stripe: {
         publishableKey:
           authConfig.stripe?.publishableKey || 'pk_test_your-stripe-publishable-key-here',
+      },
+      googlePlaces: {
+        apiKey: authConfig.googlePlaces?.apiKey || 'your-google-places-api-key-here',
       },
     },
   },

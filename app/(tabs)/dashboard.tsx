@@ -37,6 +37,8 @@ import { FontFamilies } from '~/src/styles/fonts';
 import { TicketDetailModal } from '~/src/components/TicketDetailModal';
 import TicketCardModal from '~/src/components/TicketCardModal';
 import { ReceiptDetailModal } from '~/src/components/ReceiptDetailModal';
+import { VendorOnboardingModal } from '~/src/components/vendor/VendorOnboardingModal';
+import { VendorSuccessScreen } from '~/src/components/vendor/VendorSuccessScreen';
 
 type TicketCardProps = {
   title: string;
@@ -382,7 +384,7 @@ const EditProfileModal = ({
 };
 
 export default function Dashboard() {
-  const { user, logout, updateUser } = useAuth();
+  const { user, logout, updateUser, isVendor } = useAuth();
   const [recentActiveTickets, setRecentActiveTickets] = useState<Ticket[]>([]);
   const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
   const [recentSupportTickets, setRecentSupportTickets] = useState<SupportTicket[]>([]);
@@ -399,6 +401,8 @@ export default function Dashboard() {
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [showVendorOnboarding, setShowVendorOnboarding] = useState(false);
+  const [showVendorSuccess, setShowVendorSuccess] = useState(false);
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -718,6 +722,31 @@ export default function Dashboard() {
             </View>
           )}
         </View>
+
+        {/* Vendor Onboarding Section */}
+        {!isVendor && (
+          <View style={styles.section}>
+            <LinearGradient
+              colors={['#1E3A8A', '#1E40AF']}
+              style={styles.vendorOnboardingCard}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}>
+              <Text style={styles.vendorTitle}>Become a Vendor</Text>
+              <Text style={styles.vendorDescription}>
+                Start selling your products and services on ixplor
+              </Text>
+              <Text style={styles.vendorBenefits}>
+                Join hundreds of vendors already using our platform to reach customers and grow
+                their business
+              </Text>
+              <TouchableOpacity
+                style={styles.vendorButton}
+                onPress={() => setShowVendorOnboarding(true)}>
+                <Text style={styles.vendorButtonText}>Start Vendor Application</Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+        )}
       </ScrollView>
 
       <EditProfileModal
@@ -763,6 +792,22 @@ export default function Dashboard() {
           setShowReceiptModal(false);
           setSelectedInvoice(null);
         }}
+      />
+
+      {/* Vendor Onboarding Modal */}
+      <VendorOnboardingModal
+        visible={showVendorOnboarding}
+        onClose={() => setShowVendorOnboarding(false)}
+        onSuccess={() => {
+          setShowVendorOnboarding(false);
+          setShowVendorSuccess(true);
+        }}
+      />
+
+      {/* Vendor Success Screen */}
+      <VendorSuccessScreen
+        visible={showVendorSuccess}
+        onClose={() => setShowVendorSuccess(false)}
       />
     </SafeAreaView>
   );
@@ -1156,5 +1201,43 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     fontFamily: FontFamilies.primary,
+  },
+  // Vendor onboarding styles
+  vendorOnboardingCard: {
+    borderRadius: 12,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  vendorTitle: {
+    fontSize: 24,
+    fontFamily: FontFamilies.primaryBold,
+    color: '#E0FCFF',
+    marginBottom: 8,
+  },
+  vendorDescription: {
+    fontSize: 16,
+    fontFamily: FontFamilies.primaryMedium,
+    color: '#ADF7FF',
+    marginBottom: 12,
+  },
+  vendorBenefits: {
+    fontSize: 14,
+    fontFamily: FontFamilies.primary,
+    color: '#CBD5E1',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  vendorButton: {
+    backgroundColor: '#60a5fa',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  vendorButtonText: {
+    fontSize: 16,
+    fontFamily: FontFamilies.primarySemiBold,
+    color: '#0F172A',
   },
 });

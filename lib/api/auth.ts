@@ -1,6 +1,6 @@
 import { API_URL, AUTH_ENDPOINTS } from './config';
 import { getTokensInfo } from './storage';
-import type { AuthResponse, LoginRequest, RegisterRequest, GoogleAuthRequest, User } from './types';
+import type { AuthResponse, LoginRequest, RegisterRequest, GoogleAuthRequest, AppleAuthRequest, User } from './types';
 
 const createHeaders = async (includeAuth = true) => {
   const headers: Record<string, string> = {
@@ -65,6 +65,30 @@ export const authApi = {
       const error = await response.json();
       console.log('Error response from backend:', error);
       throw new Error(error.message || 'Google authentication failed');
+    }
+
+    const result = await response.json();
+    console.log('Success response from backend:', result);
+    return result;
+  },
+
+  async appleAuth(data: AppleAuthRequest): Promise<AuthResponse> {
+    console.log('🍎 Apple Auth API Call');
+    console.log('Endpoint:', `${API_URL}${AUTH_ENDPOINTS.APPLE_AUTH}`);
+    console.log('Request data being sent:', data);
+
+    const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.APPLE_AUTH}`, {
+      method: 'POST',
+      headers: await createHeaders(false),
+      body: JSON.stringify(data),
+    });
+
+    console.log('Response status:', response.status);
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.log('Error response from backend:', error);
+      throw new Error(error.message || 'Apple authentication failed');
     }
 
     const result = await response.json();

@@ -16,14 +16,8 @@ import { FontFamilies } from '~/src/styles/fonts';
 export default function Checkout() {
   const router = useRouter();
   const { cart } = useCart();
-  const {
-    initializeCheckout,
-    presentPayment,
-    isLoading,
-    error,
-    clientSecret,
-    paymentIntentId,
-  } = useCheckout();
+  const { initializeCheckout, presentPayment, isLoading, error, clientSecret, paymentIntentId } =
+    useCheckout();
 
   useEffect(() => {
     // Redirect to cart if no items
@@ -44,7 +38,6 @@ export default function Checkout() {
     console.log('🚀 Checkout: User tapped Pay Now');
     await presentPayment();
   };
-
 
   if (isLoading && !clientSecret) {
     return (
@@ -98,7 +91,7 @@ export default function Checkout() {
           <Text style={styles.headerTitle}>Checkout</Text>
           <View style={styles.headerSpacer} />
         </View>
-        
+
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#60A5FA" />
           <Text style={styles.loadingText}>Initializing secure checkout...</Text>
@@ -126,12 +119,12 @@ export default function Checkout() {
           <Text style={styles.paymentReadyText}>
             Your order is ready for secure payment processing with Stripe.
           </Text>
-          
+
           <TouchableOpacity style={styles.payNowButton} onPress={handlePayNow}>
             <Ionicons name="card" size={20} color="#ADF7FF" style={styles.payNowIcon} />
             <Text style={styles.payNowButtonText}>Pay Securely with Stripe</Text>
           </TouchableOpacity>
-          
+
           <View style={styles.securityBadge}>
             <Ionicons name="lock-closed" size={16} color="#10B981" />
             <Text style={styles.securityText}>Secured by Stripe • SSL Encrypted</Text>

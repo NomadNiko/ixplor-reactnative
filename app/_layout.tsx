@@ -1,3 +1,4 @@
+import 'react-native-get-random-values'; // Must be first import for crypto polyfill
 import '../global.css';
 import 'expo-dev-client';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
@@ -79,6 +80,7 @@ export default function RootLayout() {
                   <AuthProvider>
                     <Stack screenOptions={SCREEN_OPTIONS}>
                       <Stack.Screen name="(tabs)" options={TABS_OPTIONS} />
+                      <Stack.Screen name="auth" options={{ headerShown: false }} />
                       <Stack.Screen name="checkout" options={{ headerShown: false }} />
                       <Stack.Screen name="modal" options={MODAL_OPTIONS} />
                     </Stack>

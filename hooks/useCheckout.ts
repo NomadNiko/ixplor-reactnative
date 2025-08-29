@@ -39,19 +39,19 @@ export function useCheckout() {
       return null;
     }
 
-    setState((prev) => ({ 
-      ...prev, 
-      isLoading: true, 
-      error: null, 
-      clientSecret: null, 
-      paymentIntentId: null 
+    setState((prev) => ({
+      ...prev,
+      isLoading: true,
+      error: null,
+      clientSecret: null,
+      paymentIntentId: null,
     }));
 
     try {
       console.log('📦 useCheckout: Cart items:', cart.items.length);
 
       // Transform cart items to PaymentIntent format
-      const paymentIntentItems = cart.items.map(item => ({
+      const paymentIntentItems = cart.items.map((item) => ({
         productItemId: item.productItemId,
         productName: item.productName,
         price: item.price, // already in dollars
@@ -77,7 +77,7 @@ export function useCheckout() {
       // Initialize Payment Sheet
       console.log('🔄 useCheckout: Initializing Payment Sheet...');
       console.log('🔑 useCheckout: Client secret format check:', clientSecret.substring(0, 10));
-      
+
       const { error: initError } = await initPaymentSheet({
         paymentIntentClientSecret: clientSecret,
         merchantDisplayName: 'iXplor',
@@ -108,12 +108,12 @@ export function useCheckout() {
       const errorMessage = error instanceof Error ? error.message : 'Failed to initialize checkout';
       console.error('❌ useCheckout: Error:', errorMessage);
 
-      setState((prev) => ({ 
-        ...prev, 
-        isLoading: false, 
-        error: errorMessage, 
-        clientSecret: null, 
-        paymentIntentId: null 
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
+        clientSecret: null,
+        paymentIntentId: null,
       }));
 
       Toast.show({
@@ -131,7 +131,7 @@ export function useCheckout() {
 
   const presentPayment = useCallback(async () => {
     console.log('🚀 useCheckout: Presenting Payment Sheet...');
-    
+
     if (!state.clientSecret || !state.paymentIntentId) {
       const errorMessage = 'Payment not initialized. Please try again.';
       console.error('❌ useCheckout:', errorMessage);
@@ -151,7 +151,7 @@ export function useCheckout() {
 
       if (error) {
         console.error('❌ useCheckout: Payment failed:', error.message);
-        
+
         if (error.code === 'Canceled') {
           handlePaymentCancel();
         } else {
@@ -163,14 +163,20 @@ export function useCheckout() {
       console.log('✅ useCheckout: Payment completed successfully');
       handlePaymentSuccess();
       return true;
-      
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Payment failed';
       console.error('❌ useCheckout: Payment error:', errorMessage);
       handlePaymentError(errorMessage);
       return false;
     }
-  }, [state.clientSecret, state.paymentIntentId, presentPaymentSheet, handlePaymentCancel, handlePaymentError, handlePaymentSuccess]);
+  }, [
+    state.clientSecret,
+    state.paymentIntentId,
+    presentPaymentSheet,
+    handlePaymentCancel,
+    handlePaymentError,
+    handlePaymentSuccess,
+  ]);
 
   const handlePaymentSuccess = useCallback(() => {
     console.log('✅ useCheckout: Payment successful!');

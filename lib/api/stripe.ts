@@ -12,7 +12,7 @@ export interface CreateCheckoutSessionResponse {
 }
 
 export interface CreatePaymentIntentRequest {
-  items: Array<{
+  items: {
     productItemId: string;
     productName: string;
     price: number; // in dollars
@@ -21,7 +21,7 @@ export interface CreatePaymentIntentRequest {
     productDate: string; // ISO date string
     productStartTime: string;
     productDuration: number;
-  }>;
+  }[];
 }
 
 export interface CreatePaymentIntentResponse {
@@ -177,16 +177,13 @@ export const stripeService = {
       throw new Error('No auth token available');
     }
 
-    const response = await fetch(
-      `${API_URL}/stripe/confirm-payment-intent/${paymentIntentId}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${tokensInfo.token}`,
-        },
-      }
-    );
+    const response = await fetch(`${API_URL}/stripe/confirm-payment-intent/${paymentIntentId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tokensInfo.token}`,
+      },
+    });
 
     console.log('📡 StripeService: Response status:', response.status);
 

@@ -3,9 +3,11 @@ import { Tabs } from 'expo-router';
 import { TabBarIcon } from '../../components/TabBarIcon';
 import { MenuSheet } from '../../components/HamburgerMenu';
 import { useSheetRef } from '../../components/nativewindui/Sheet';
+import { useAuth } from '../../lib/auth/context';
 
 export default function TabLayout() {
   const menuSheetRef = useSheetRef();
+  const { isVendor } = useAuth();
 
   return (
     <>
@@ -96,6 +98,16 @@ export default function TabLayout() {
               <TabBarIcon name="headset" color={color} family="FontAwesome5" />
             ),
             href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="vendor-status"
+          options={{
+            title: 'Vendor',
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="store" color={color} family="FontAwesome5" />
+            ),
+            href: isVendor ? undefined : null,
           }}
         />
       </Tabs>

@@ -9,10 +9,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '~/lib/auth/context';
 import { useGoogleAuth } from '~/lib/auth/google';
+import { useAppleAuth } from '~/lib/auth/apple';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { FontFamilies } from '~/src/styles/fonts';
 
 export default function SignUpScreen() {
@@ -22,8 +25,9 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState('');
   const [acceptPolicy, setAcceptPolicy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { register, login, googleSignIn } = useAuth();
+  const { register, login, googleSignIn, appleSignIn } = useAuth();
   const { signInWithGoogle, isReady } = useGoogleAuth();
+  const { signInWithApple, isReady: isAppleReady } = useAppleAuth();
 
   const handleSignUp = async () => {
     if (!firstName || !lastName || !email || !password) {
@@ -81,6 +85,24 @@ export default function SignUpScreen() {
     }
   };
 
+  const handleAppleSignUp = async () => {
+    if (!isAppleReady) {
+      Alert.alert('Error', 'Apple Sign In is not available on this device.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const credential = await signInWithApple();
+      await appleSignIn(credential);
+      router.replace('/(tabs)/dashboard');
+    } catch (error) {
+      Alert.alert('Error', error instanceof Error ? error.message : 'Apple sign up failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <KeyboardAvoidingView
@@ -89,6 +111,13 @@ export default function SignUpScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="flex-1 justify-center px-6 py-8">
             <View className="mb-8">
+              <View className="mb-6 items-center">
+                <Image
+                  source={require('~/assets/iXlogoTrans.png')}
+                  className="h-16 w-16"
+                  resizeMode="contain"
+                />
+              </View>
               <Text
                 className="mb-2 text-4xl text-foreground"
                 style={{ fontFamily: FontFamilies.primaryBold }}>
@@ -236,6 +265,16 @@ export default function SignUpScreen() {
                   Continue with Google
                 </Text>
               </TouchableOpacity>
+
+              {isAppleReady && (
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                  cornerRadius={8}
+                  style={{ width: '100%', height: 56, marginTop: 12 }}
+                  onPress={handleAppleSignUp}
+                />
+              )}
             </View>
 
             <View className="mt-8 flex-row justify-center">

@@ -46,3 +46,12 @@ export interface GoogleAuthRequest {
   redirectUri?: string;
   codeVerifier?: string;
 }
+
+export interface AppleAuthRequest {
+  idToken?: string;
+  code?: string;
+  redirectUri?: string;
+  user?: string;
+  firstName?: string;
+  lastName?: string;
+}
